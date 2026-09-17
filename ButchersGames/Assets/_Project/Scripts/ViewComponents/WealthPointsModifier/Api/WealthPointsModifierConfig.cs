@@ -9,11 +9,9 @@ namespace ViewComponents.WealthPointsModifier
     {
         [SerializeField] private WealthPointsModifierType _type;
         [SerializeField] [Min(1)] private int _amount;
-        [SerializeField] private bool _deactivateGameObjectOnTrigger;
 
         public WealthPointsModifierType Type => _type;
         public int Amount => _amount;
-        public bool DeactivateGameObjectOnTrigger => _deactivateGameObjectOnTrigger;
 
         public void Validate()
         {
