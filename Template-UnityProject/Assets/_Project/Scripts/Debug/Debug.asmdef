@@ -1,0 +1,20 @@
+{
+    "name": "Debug",
+    "rootNamespace": "ProjectDebug",
+    "references": [
+        "Core",
+        "Bootstrap",
+        "Unity.InputSystem",
+        "VContainer",
+        "ViewComponents"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
