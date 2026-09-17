@@ -16,6 +16,7 @@
 | ViewComponents | `ViewComponents.{Feature}` | `ViewComponents.Hud` |
 | Input | `Input` | низкоуровневый ввод |
 | Infrastructure Bootstrap | `Infrastructure.Bootstrap` | `Infrastructure.Bootstrap` |
+| Infrastructure Persistence | `Infrastructure.Persistence` | `Infrastructure.Persistence` |
 | ExtendedExceptions | `ExtendedExceptions` | shared base |
 | Rendering | `Rendering` | URP features |
 

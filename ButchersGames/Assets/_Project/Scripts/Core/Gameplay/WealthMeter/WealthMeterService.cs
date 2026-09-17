@@ -4,14 +4,14 @@ namespace Core.Gameplay.WealthMeter
 {
     public sealed class WealthMeterService : IWealthMeterService
     {
-        private readonly WealthMeterConfig _config;
+        private readonly IWealthMeterSettings _settings;
         private readonly WealthMeterModel _model;
 
         public event Action Depleted;
 
-        public WealthMeterService(WealthMeterConfig config, WealthMeterModel model)
+        public WealthMeterService(IWealthMeterSettings settings, WealthMeterModel model)
         {
-            _config = config;
+            _settings = settings;
             _model = model;
 
             Reset();
@@ -32,7 +32,7 @@ namespace Core.Gameplay.WealthMeter
 
         public void Reset()
         {
-            SetValue(_config.StartValue);
+            SetValue(_settings.StartValue);
         }
 
         private void SetValue(int value)
@@ -53,10 +53,10 @@ namespace Core.Gameplay.WealthMeter
         {
             return value switch
             {
-                _ when value >= _config.MillionaireThreshold => WealthStage.Millionaire,
-                _ when value >= _config.RichThreshold => WealthStage.Rich,
-                _ when value >= _config.CasualThreshold => WealthStage.Casual,
-                _ when value >= _config.DescentThreshold => WealthStage.Descent,
+                _ when value >= _settings.MillionaireThreshold => WealthStage.Millionaire,
+                _ when value >= _settings.RichThreshold => WealthStage.Rich,
+                _ when value >= _settings.CasualThreshold => WealthStage.Casual,
+                _ when value >= _settings.DescentThreshold => WealthStage.Descent,
                 _ => WealthStage.Poor
             };
         }

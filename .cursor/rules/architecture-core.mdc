@@ -31,12 +31,13 @@ alwaysApply: true
 
 | Слой | Роль | Путь |
 |---|---|---|
-| **Core** | Model, Service, Config, Api — pure gameplay logic | `Core/` |
+| **Core** | Model, Service, Api (`I*Settings` и пр.) — pure gameplay logic | `Core/` |
 | **Core.Input** | InputHandler → Service | `Core/Input/` |
 | **Input** | Низкоуровневый ввод без знания фич | `Input/` |
-| **ViewComponents** | View, Providers, scene MonoBehaviour | `ViewComponents/` |
+| **ViewComponents** | View, Providers, SO Config, scene MonoBehaviour | `ViewComponents/` |
 | **Bootstrap** | CoreScope, CoreEntryPoint | `Core/Bootstrap/` |
 | **Infrastructure.Bootstrap** | ProjectScope, загрузка Core | `Infrastructure/Bootstrap/` |
+| **Infrastructure.Persistence** | Адаптеры хранения (PlayerPrefs и т.п.) | `Infrastructure/Persistence/` |
 | **ExtendedExceptions** | `ExtendedException`, `Guard` | `Infrastructure/ExtendedExceptions/` |
 | **Rendering** | URP Renderer Features (изолирован) | `Rendering/` |
 

@@ -20,6 +20,7 @@ alwaysApply: false
 | ViewComponents | `ViewComponents.{Feature}` | `ViewComponents.Hud` |
 | Input | `Input` | низкоуровневый ввод |
 | Infrastructure Bootstrap | `Infrastructure.Bootstrap` | `Infrastructure.Bootstrap` |
+| Infrastructure Persistence | `Infrastructure.Persistence` | `Infrastructure.Persistence` |
 | ExtendedExceptions | `ExtendedExceptions` | shared base |
 | Rendering | `Rendering` | URP features |
 
@@ -35,16 +36,21 @@ Model / Service / View / InputHandler — см. `architecture-core.mdc`. Зде�
 
 ## Структура класса
 
-- Порядок: Поля → Конструктор → Свойства → Методы
-- Внутри блока: `public` → `protected` → `private`
+- Порядок секций: Поля → Свойства/события-как-члены → Методы
+- **Порядок полей:** `const` / `static readonly` → события → остальные поля
+- **Порядок методов:**
+  1. Конструкторы / `[Inject] Construct`
+  2. Методы Unity lifecycle (`Awake`, `OnEnable`, `Update`, `OnDisable`, `OnDestroy`, …)
+  3. `public` / `protected` API
+  4. `private` хелперы
+- Внутри одной группы: читать класс как статью — основное действие выше, вызываемые детали ниже (`method-design.mdc`)
 - **Порядок полей и параметров конструктора:** сначала интерфейсы (`I…`), потом конкретные классы. Порядок параметров совпадает с порядком полей
-- События — выше остальных полей
 - Модификаторы доступа **явно** (кроме интерфейсов)
 - `static` для методов — **только при строгой необходимости** (factory без состояния, `RuntimeInitializeOnLoad`, extension-методы). Приватные хелперы класса — instance, не `static`
 - **Математические Helper-классы** — `public static class {Feature}Helper` в `{ViewLayer}/{Feature}/` (view-math); domain-math без Unity presentation — `{CoreLayer}/{Feature}/`. Stateless pure functions. Суффикс `Helper` **разрешён**. Без MonoBehaviour, DOTween и FMOD
 - **`[SerializeField]`** — порядок полей **не менять** (Inspector)
 
-После правок `.cs` — `reformat_file` (`rider-mcp.mdc`). Порядок членов после Rider — доверять результату reorder, не переставлять вручную обратно.
+После правок `.cs` — `reformat_file` (`rider-mcp.mdc`). Форматирование — да; **порядок членов** MonoBehaviour после Rider, если он нарушил п.1–4 выше — вернуть вручную.
 
 ## Именование
 

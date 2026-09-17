@@ -10,13 +10,14 @@
 Assets/_Project/Scripts/
 ├── Infrastructure/
 │   ├── Bootstrap/           Infrastructure.Bootstrap  — ProjectScope, EntryPoint
-│   └── ExtendedExceptions/  ExtendedExceptions        — ExtendedException, Guard
+│   ├── ExtendedExceptions/  ExtendedExceptions        — ExtendedException, Guard
+│   └── Persistence/         Infrastructure.Persistence — PlayerPrefs и пр. адаптеры хранения
 ├── Core/
 │   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, scene loader API
-│   ├── Gameplay/{Feature}/  Core                      — Model, Service, Config, Api
+│   ├── Gameplay/{Feature}/  Core                      — Model, Service, Api (в т.ч. I*Settings)
 │   └── Input/{Feature}/     Core.Input                — InputHandler → Service
 ├── Input/                   Input                     — feature-agnostic низкоуровневый ввод
-├── ViewComponents/{Feature}/ ViewComponents           — View, Providers, scene MonoBehaviour
+├── ViewComponents/{Feature}/ ViewComponents           — View, Providers, SO Config, scene MonoBehaviour
 └── Rendering/               Rendering                 — URP Renderer Features
 ```
 
@@ -28,6 +29,7 @@ Assets/_Project/Scripts/
 ExtendedExceptions  ←  Core  ←  ViewComponents
                     ←  Input  ←  ViewComponents
 Core  ←  Core.Input  ←  Bootstrap  ←  Infrastructure.Bootstrap
+Core  ←  Infrastructure.Persistence  ←  Bootstrap
 Input  ←  Core.Input
 Rendering  — изолирован от gameplay (URP only)
 ```
@@ -35,11 +37,12 @@ Rendering  — изолирован от gameplay (URP only)
 | Сборка | Ссылается на | Содержит |
 |---|---|---|
 | **ExtendedExceptions** | — | `ExtendedException`, `Guard` |
-| **Core** | ExtendedExceptions, VContainer, UniTask, R3 | Gameplay, порты `Api/` |
+| **Infrastructure.Persistence** | Core | Адаптеры persistence (PlayerPrefs и т.п.) |
+| **Core** | ExtendedExceptions, VContainer, UniTask, R3 | Gameplay, порты `Api/` (без SO Config) |
 | **Input** | (минимально, напр. uGUI) | Низкоуровневый ввод **без** знания фич |
-| **ViewComponents** | Core, Input, ExtendedExceptions, UniTask, DOTween | View, Providers |
+| **ViewComponents** | Core, Input, ExtendedExceptions, UniTask, DOTween | View, Providers, SO Config |
 | **Core.Input** | Core, Input, ExtendedExceptions, UniTask | `{Feature}InputHandler` |
-| **Bootstrap** | Core, Core.Input, ViewComponents, VContainer, UniTask | CoreScope, CoreEntryPoint |
+| **Bootstrap** | Core, Core.Input, ViewComponents, Infrastructure.Persistence, VContainer, UniTask | CoreScope, CoreEntryPoint |
 | **Infrastructure.Bootstrap** | Bootstrap, VContainer, UniTask | ProjectScope, загрузка Core |
 | **Rendering** | URP | Пост-эффекты |
 
@@ -95,18 +98,20 @@ Core/Gameplay/{Feature}/
 │   ├── I{Feature}Service.cs
 │   ├── I{Feature}View.cs          — порт; реализации во ViewComponents
 │   ├── I{Feature}Provider.cs      — опционально
+│   ├── I{Feature}Settings.cs      — pure C# порт настроек (если нужен Config)
 │   ├── {Feature}*Data.cs          — DTO
 │   └── Exceptions.cs
 ├── {Feature}Model.cs
-├── {Feature}Service.cs
-├── {Feature}*Registry.cs          — опционально
-└── {Feature}Config.cs             — опционально, ScriptableObject
+├── {Feature}Service.cs            — зависит от I{Feature}Settings, не от SO
+└── {Feature}*Registry.cs          — опционально
 
 Core/Input/{Feature}/
 └── {Feature}InputHandler.cs
 
 ViewComponents/{Feature}/
-├── Api/Exceptions.cs              — view/Inspector ошибки
+├── Api/
+│   ├── {Feature}Config.cs         — ScriptableObject : I{Feature}Settings (если нужен)
+│   └── Exceptions.cs              — view/Inspector ошибки
 ├── {Feature}View.cs               — : I{Feature}View
 └── {Feature}*Provider.cs          — : I{Feature}Provider (если нужен)
 ```
@@ -117,7 +122,8 @@ ViewComponents/{Feature}/
 |---|---|---|
 | **Model** | `Core/Gameplay/{Feature}/` | Mutable state. Без side effects. Без `UnityEngine.*` |
 | **Service** | `Core/Gameplay/{Feature}/` | Валидация, оркестрация, `ExtendedException`. Единственная точка вызова извне (`I{Feature}Service`) |
-| **Config** | `Core/Gameplay/{Feature}/` | `[CreateAssetMenu]` ScriptableObject |
+| **Settings** | `Core/Gameplay/{Feature}/Api/` | Pure C# порт `I{Feature}Settings` — геттеры без Unity |
+| **Config** | `ViewComponents/{Feature}/Api/` | `[CreateAssetMenu]` ScriptableObject, реализует `I{Feature}Settings`. `Validate()` здесь |
 | **Registry** | `Core/Gameplay/{Feature}/` | Индекс / lookup по данным Provider |
 | **Api/** | `Core/Gameplay/{Feature}/Api/` | Интерфейсы, DTO, `Exceptions.cs` |
 | **View** | `ViewComponents/{Feature}/` | Реализует `I{Feature}View`. DOTween, VFX, Animator. Не меняет game state |
@@ -146,7 +152,7 @@ R3: Model → View подписки живут во View или в тонком 
 ```csharp
 private void RegisterFeature(IContainerBuilder builder)
 {
-    builder.RegisterInstance(_featureConfig);
+    builder.RegisterInstance<IFeatureSettings>(_featureConfig);
     builder.RegisterInstance(_featureProvider).As<IFeatureProvider>();
     builder.RegisterComponentInHierarchy<FeatureView>().As<IFeatureView>();
     builder.Register<FeatureRegistry>(Lifetime.Singleton).As<IFeatureRegistry>();
@@ -158,15 +164,16 @@ private void RegisterFeature(IContainerBuilder builder)
 
 Правила:
 
-- **Config / Provider** (SerializeField на CoreScope) → `RegisterInstance`; Provider — `.As<I*Provider>()`
+- **Config** (SerializeField на CoreScope, тип из ViewComponents) → `RegisterInstance<I*Settings>(so)`; Provider — `.As<I*Provider>()`
 - **View на сцене** → `RegisterComponentInHierarchy<TView>().As<I*View>()`
 - **Model, Service, Registry, InputHandler** → `Register<T>(Lifetime.Singleton)`; Service — `.As<I*Service>()`
+- Core **не** ссылается на concrete Config SO — только на `I*Settings`
 
 ## Как добавить фичу
 
-1. `Core/Gameplay/{Feature}/Api/` — `I{Feature}Service`, порты View/Provider, DTO, `Exceptions.cs`
-2. `Core/Gameplay/{Feature}/` — Model, Service, Config/Registry при необходимости
-3. `ViewComponents/{Feature}/` — View, Providers; `Api/Exceptions.cs` для view-ошибок
+1. `Core/Gameplay/{Feature}/Api/` — `I{Feature}Service`, порты View/Provider/Settings, DTO, `Exceptions.cs`
+2. `Core/Gameplay/{Feature}/` — Model, Service, Registry при необходимости
+3. `ViewComponents/{Feature}/` — View, Providers, `{Feature}Config` SO; `Api/Exceptions.cs` для view-ошибок
 4. `Core/Input/{Feature}/` — InputHandler, если есть пользовательский ввод
 5. `CoreScope` — `Register{Feature}`, SerializeField для config/providers
 6. `CoreEntryPoint` — Start/Dispose для handler

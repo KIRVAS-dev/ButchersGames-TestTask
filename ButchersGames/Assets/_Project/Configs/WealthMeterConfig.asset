@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c06df7ff4c2ca8a4da53efbd47e704e1, type: 3}
   m_Name: WealthMeterConfig
-  m_EditorClassIdentifier: Core::Core.Gameplay.WealthMeter.WealthMeterConfig
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthMeter.WealthMeterConfig
   _startValue: 20
   _descentThreshold: 100
   _casualThreshold: 500

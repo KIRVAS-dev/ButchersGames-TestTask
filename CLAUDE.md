@@ -73,7 +73,7 @@ VContainer (DI), UniTask (async), R3 (реактивное связывание 
 
 ### Слои (кратко)
 
-`ExtendedExceptions` ← `Core` ← `ViewComponents`; `Core` ← `Core.Input` ← `Bootstrap` ← `Infrastructure.Bootstrap`; `Input` ← `Core.Input`; `Rendering` изолирован (URP only). Полный asmdef-граф и таблица сборок — [architecture.md](.claude/rules/architecture.md).
+`ExtendedExceptions` ← `Core` ← `ViewComponents`; `Core` ← `Core.Input` ← `Bootstrap` ← `Infrastructure.Bootstrap`; `Core` ← `Infrastructure.Persistence` ← `Bootstrap`; `Input` ← `Core.Input`; `Rendering` изолирован (URP only). Config SO — во ViewComponents (`I*Settings` в Core). Полный asmdef-граф — [architecture.md](.claude/rules/architecture.md).
 
 ### Dependency rule (топ)
 

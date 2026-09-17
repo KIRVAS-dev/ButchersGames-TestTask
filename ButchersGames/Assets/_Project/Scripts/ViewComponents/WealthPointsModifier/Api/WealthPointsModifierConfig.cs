@@ -1,9 +1,10 @@
+using Core.Gameplay.WealthPointsModifier;
 using ExtendedExceptions;
 using UnityEngine;
 
-namespace Core.Gameplay.WealthPointsModifier
+namespace ViewComponents.WealthPointsModifier
 {
-    [CreateAssetMenu(menuName = "Data/Wealth Points Modifier")]
+    [CreateAssetMenu(menuName = "Configs/Wealth Points Modifier")]
     public sealed class WealthPointsModifierConfig : ScriptableObject
     {
         [SerializeField] private WealthPointsModifierType _type;
