@@ -1,24 +1,37 @@
 using System;
+using Core.Gameplay.LevelProgression;
 
 namespace Core.Gameplay.WealthMeter
 {
-    public sealed class WealthMeterService : IWealthMeterService
+    public sealed class WealthMeterService
+        : IWealthMeterService,
+          IDisposable
     {
+        private readonly ILevelProvider _levelProvider;
         private readonly IWealthMeterSettings _settings;
         private readonly WealthMeterModel _model;
 
         public event Action Depleted;
 
-        public WealthMeterService(IWealthMeterSettings settings, WealthMeterModel model)
+        public WealthMeterService(
+            ILevelProvider levelProvider,
+            IWealthMeterSettings settings,
+            WealthMeterModel model)
         {
+            _levelProvider = levelProvider;
             _settings = settings;
             _model = model;
 
-            Reset();
+            _levelProvider.LevelLoaded += OnLevelLoaded;
         }
 
         public int Value => _model.Value.Value;
         public WealthStage Stage => _model.Stage.Value;
+
+        void IDisposable.Dispose()
+        {
+            _levelProvider.LevelLoaded -= OnLevelLoaded;
+        }
 
         public void Increase(int amount)
         {
@@ -33,6 +46,11 @@ namespace Core.Gameplay.WealthMeter
         public void Reset()
         {
             SetValue(_settings.StartValue);
+        }
+
+        private void OnLevelLoaded()
+        {
+            Reset();
         }
 
         private void SetValue(int value)

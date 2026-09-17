@@ -13,13 +13,35 @@ namespace Core.Gameplay.WealthPointsModifier
         {
             _registry = registry;
             _wealthMeter = wealthMeter;
+        }
 
+        public void StartListening()
+        {
             _registry.ModifiersChanged += ResubscribeToModifiers;
 
             ResubscribeToModifiers();
         }
 
+        public void StopListening()
+        {
+            _registry.ModifiersChanged -= ResubscribeToModifiers;
+
+            UnsubscribeAllModifiers();
+        }
+
         private void ResubscribeToModifiers()
+        {
+            UnsubscribeAllModifiers();
+
+            _subscribed.AddRange(_registry.Modifiers);
+
+            foreach (IWealthPointsModifier modifier in _subscribed)
+            {
+                modifier.Triggered += OnTriggered;
+            }
+        }
+
+        private void UnsubscribeAllModifiers()
         {
             foreach (IWealthPointsModifier modifier in _subscribed)
             {
@@ -27,12 +49,6 @@ namespace Core.Gameplay.WealthPointsModifier
             }
 
             _subscribed.Clear();
-            _subscribed.AddRange(_registry.Modifiers);
-
-            foreach (IWealthPointsModifier modifier in _subscribed)
-            {
-                modifier.Triggered += OnTriggered;
-            }
         }
 
         private void OnTriggered(WealthPointsModifierType type, int amount)
