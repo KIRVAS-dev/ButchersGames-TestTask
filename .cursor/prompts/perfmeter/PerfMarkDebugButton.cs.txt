@@ -1,0 +1,91 @@
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || PERFMETER_RELEASE
+using System;
+using System.IO;
+using SGG.PerfMeter;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace PerfMark
+{
+    public sealed class PerfMarkDebugButton : MonoBehaviour
+    {
+        private const string TempMarker = "[TEMP:perfmark]";
+        private const string Mark = "[PERFMARK]";
+
+        private int _index;
+        private bool _recording;
+        private Text _label;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            GameObject go = new GameObject(nameof(PerfMarkDebugButton));
+            DontDestroyOnLoad(go);
+            go.AddComponent<PerfMarkDebugButton>();
+        }
+
+        private void Awake()
+        {
+            Canvas canvas = gameObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = short.MaxValue;
+            gameObject.AddComponent<CanvasScaler>();
+            gameObject.AddComponent<GraphicRaycaster>();
+
+            GameObject buttonGo = new GameObject("Button");
+            buttonGo.transform.SetParent(transform, false);
+            RectTransform rect = buttonGo.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(1f, 0f);
+            rect.anchorMax = new Vector2(1f, 0f);
+            rect.pivot = new Vector2(1f, 0f);
+            rect.sizeDelta = new Vector2(340f, 170f);
+            rect.anchoredPosition = new Vector2(-24f, 24f);
+
+            buttonGo.AddComponent<Image>().color = new Color(0.10f, 0.55f, 0.20f, 0.85f);
+            buttonGo.AddComponent<Button>().onClick.AddListener(OnTap);
+
+            GameObject labelGo = new GameObject("Label");
+            labelGo.transform.SetParent(buttonGo.transform, false);
+            RectTransform labelRect = labelGo.AddComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+
+            _label = labelGo.AddComponent<Text>();
+            _label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _label.alignment = TextAnchor.MiddleCenter;
+            _label.fontSize = 40;
+            _label.color = Color.white;
+            _label.text = "PERFMARK\nSTART";
+        }
+
+        private void OnTap()
+        {
+            float timeReal = Time.realtimeSinceStartup;
+            string timeUtc = DateTime.UtcNow.ToString("o");
+
+            if (!_recording)
+            {
+                _index++;
+                Debug.Log($"{Mark} START #{_index} t_real={timeReal:F3} t_utc={timeUtc} frame={Time.frameCount} {TempMarker}");
+                PerformanceMeter.EnsureRunning();
+                PerformanceMeter.StartSession();
+                _recording = true;
+                _label.text = $"PERFMARK\nSTOP #{_index}";
+            }
+            else
+            {
+                PerformanceMeter.StopSession();
+                string directory = Path.Combine(Application.persistentDataPath, "PerfMarks");
+                Directory.CreateDirectory(directory);
+                string path = Path.Combine(directory, $"session_{_index}.json");
+                bool exported = PerformanceMeter.ExportSessionJson(path);
+                Debug.Log($"{Mark} STOP #{_index} t_real={timeReal:F3} t_utc={timeUtc} frame={Time.frameCount} exported={exported} path={path} {TempMarker}");
+                _recording = false;
+                _label.text = "PERFMARK\nSTART";
+            }
+        }
+    }
+}
+#endif

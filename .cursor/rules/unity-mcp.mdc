@@ -1,0 +1,89 @@
+---
+description: WebGL-Template — Unity Editor, Unity MCP, scenes, prefabs
+globs: "{Template-UnityProject/Assets/_Project/Scripts/**/*.cs,Template-UnityProject/Assets/_Project/Scenes/**/*,Template-UnityProject/Assets/_Project/**/*.prefab}"
+alwaysApply: false
+---
+
+# Unity MCP
+
+Проект: `Template-UnityProject/` (корень workspace — `WebGL-Template`). Скрипты: `Assets/_Project/Scripts/`. Сцены: `Assets/_Project/Scenes/` (Bootstrap, Core).
+
+C# rename/format — `rider-mcp.mdc`. Архитектура — `architecture-core.mdc`.
+
+Server: `user-unityMCP`. Перед вызовом — schema tool (`GetDynamicTools`, namespace `user-unityMCP`); не угадывать аргументы.
+
+## Обязательно через Unity MCP
+
+| Задача | Зачем MCP |
+|---|---|
+| Сцена (load/save/hierarchy/selection) | бинарный/YAML scene state |
+| GameObject / компоненты / свойства | Inspector-эквивалент |
+| Prefab create/edit/apply | не править `.prefab` «вслепую» |
+| Play mode / editor state | `manage_editor` |
+| Console после скриптов / domain reload | `read_console` |
+| Asset search (shader, prefab, и т.п.) | `manage_asset` |
+
+## Запрещено
+
+- Большой ручной diff / переписывание `.unity`, `.prefab`, `.asset` вместо Unity MCP
+- Угадывать содержимое сцены или hierarchy без запроса к MCP
+- Продолжать после правок скриптов без проверки console на compile errors
+- Подменять Unity MCP «креативным» YAML, если MCP доступен
+
+## Must после C#
+
+1. Дождаться конца компиляции (`editor_state` / `isCompiling`)
+2. `read_console` — Errors; исправить до шага, зависящего от новых типов
+3. Новые компоненты / play mode — только после чистой компиляции
+
+## Инстанс
+
+Несколько Unity → `set_active_instance` с точным `Name@hash` (из `mcpforunity://instances`) до остальных вызовов.
+
+## Последовательности
+
+**A. Осмотреть сцену** — `manage_scene` (active/load) → hierarchy (`page_size` ~50, paging) → find target → `get_components` с `include_properties=false` сначала.
+
+**B. Изменить объект** — find target → `manage_gameobject` / `manage_components` → при пачке `batch_execute` → save сцены при необходимости → `read_console`.
+
+**C. Prefab** — `manage_prefabs` / `manage_asset` → правки через MCP (не YAML) → apply/save → `read_console`.
+
+**D. После C#** — `isCompiling == false` → `read_console` Errors → затем компоненты / play.
+
+**E. Play mode** — `manage_editor` enter → проверка → exit перед структурными правками сцены/ассетов → `read_console`.
+
+## Payload / токены
+
+- Hierarchy и components — paging, summary-first
+- `include_properties=true` — только когда нужны значения
+- Asset search — скромный `page_size`; `generate_preview=false` по умолчанию
+- Однотипные мутации — `batch_execute`
+
+## Tools (ориентир)
+
+| Область | Tools |
+|---|---|
+| Сцена | `manage_scene` |
+| Объекты | `manage_gameobject`, `find_gameobjects` |
+| Компоненты | `manage_components` |
+| Prefab / assets | `manage_prefabs`, `manage_asset` |
+| Editor / play | `manage_editor` |
+| Console | `read_console` |
+| Пачки | `batch_execute` |
+| Инстанс | `set_active_instance` |
+
+## Если Unity MCP недоступен
+
+Остановиться и сказать пользователю. Не эмулировать сцену точечным diff «наугад».
+
+## Пути
+
+Относительно `Assets/` (forward slashes), если tool не требует абсолютный путь.
+
+## Разделение
+
+| Задача | MCP |
+|---|---|
+| Сцена, prefab, components, play mode, console | **Unity** |
+| Rename C# | **rider-native-rename** |
+| Format C# | **rider** `reformat_file` |

@@ -1,0 +1,37 @@
+---
+description: WebGL-Template — code review (trigger Review / ревью / review)
+alwaysApply: true
+---
+
+# Review
+
+Триггер: `Review` / «ревью» / `review` — в начале сообщения или отдельной строкой. Вне триггера — не применять.
+
+Rules: `architecture-core.mdc`, `architecture-reference.mdc`, `principles.mdc`, `class-design.mdc`, `method-design.mdc`, `variable-design.mdc`, `codestyle.mdc`, `exceptions.mdc` (+ делегаты). Правки — `user-approval-mode.mdc`.
+
+## Scope
+
+- По умолчанию — проект (`Template-UnityProject/Assets/_Project/Scripts/` по слоям)
+- Пользователь задал scope — ревью **только в нём**; не расширять самостоятельно
+
+## Процедура
+
+1. Scope → файлы **целиком** (не только диф)
+2. Проверки по категориям:
+   - **Архитектура** — `architecture-core.mdc`, детали — `architecture-reference.mdc`
+   - **Principles** — `principles.mdc`
+   - **Class design** — АТД, интерфейс, инкапсуляция, наследование vs композиция — `class-design.mdc`
+   - **Method design** — одна задача, имена, параметры, return vs void — `method-design.mdc`
+   - **Variable design** — init, scope, binding, одна цель — `variable-design.mdc`
+   - **Кодстайл** — `codestyle.mdc`
+   - **Исключения** — `exceptions.mdc`; soft-checks — `architecture-core.mdc`
+   - **Баги и логика:** null, async/`CancellationToken`, утечки подписок/tween, edge cases
+   - **Hot path / Unity 6 API** — `principles.mdc`, Context в `architecture-core.mdc`
+3. **Только отчёт**; правки — по отдельному ok
+
+## Findings
+
+- Вердикт **первым**: соответствует / есть замечания / блокеры
+- `Severity (Blocker / Major / Minor / Nit)` — `Файл:строка` — суть — обоснование — рекомендация
+- Нет findings → явно «без замечаний»
+- Не выдумывать советы; вкусовщина — не finding

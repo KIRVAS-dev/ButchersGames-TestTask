@@ -1,0 +1,37 @@
+---
+description: WebGL-Template — rules index (when each .mdc applies)
+alwaysApply: true
+---
+
+# Rules index
+
+WebGL-Template only. **Always:** approval, architecture-core, principles, review, этот index.
+
+| Rule | Когда |
+|---|---|
+| `user-approval-mode.mdc` | Всегда (мутации) |
+| `architecture-core.mdc` | Всегда (слои, decision tree) |
+| `architecture-reference.mdc` | Globs: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs` |
+| `codestyle.mdc` | Globs: Scripts `.cs` |
+| `exceptions.mdc` | Globs: Scripts `.cs` |
+| `rider-mcp.mdc` | Globs: Scripts `.cs` |
+| `class-design.mdc` | Globs: Scripts `.cs` |
+| `method-design.mdc` | Globs: Scripts `.cs` |
+| `variable-design.mdc` | Globs: Scripts `.cs` |
+| `unity-mcp.mdc` | Globs: Scripts, Scenes, prefab |
+| `planning.mdc` | Триггер: план / grill / Plan mode |
+| `review.mdc` | Always (процедура); триггер Review / ревью для применения |
+| `refactor.mdc` | Не always; по триггеру — **Read** (см. ниже) |
+| `perfmeter.mdc` | Триггер: Perf / PerfMeter / «перф» |
+
+Без открытого `.cs`: `@architecture-reference` или открыть файл в Scripts.
+
+## Refactor (stub)
+
+Триггер: `Refactor` / `refactor` / `refactoring` / «рефактор» / «рефакторинг» — в начале сообщения или отдельной строкой.
+
+При срабатывании:
+
+1. **Read** `.cursor/rules/refactor.mdc` целиком и следуй ему
+2. **Только отчёт** с рекомендациями; правки — по отдельному ok (`user-approval-mode.mdc`)
+3. Вне триггера — не применять

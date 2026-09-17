@@ -1,0 +1,61 @@
+---
+description: WebGL-Template — craft principles hub (SOLID, data flow)
+alwaysApply: true
+---
+
+# Principles
+
+Hub. Детали — по таблице; не дублировать codestyle / exceptions / design.
+
+| Задача | Rule |
+|---|---|
+| Слои, decision tree, dependency | `architecture-core.mdc` |
+| asmdef, DI, feature slice | `architecture-reference.mdc` |
+| Классы | `class-design.mdc` |
+| Методы | `method-design.mdc` |
+| Переменные | `variable-design.mdc` |
+| Формат, naming, async | `codestyle.mdc` |
+| Typed exceptions | `exceptions.mdc` |
+| Unity сцена/prefab | `unity-mcp.mdc` |
+| C# rename/format | `rider-mcp.mdc` |
+| План / grill | `planning.mdc` |
+| Ревью | `review.mdc` |
+| Рефакторинг (анализ) | `refactor.mdc` (по триггеру → Read; stub в `rules-index.mdc`) |
+| Runtime perf | `perfmeter.mdc` (по триггеру Perf) |
+| Одобрение мутаций | `user-approval-mode.mdc` |
+
+## SOLID (кратко)
+
+Finding только при реальном нарушении в scope.
+
+| | Смысл | Finding, когда |
+|---|---|---|
+| **S** | Один повод менять тип | Смешаны несвязанные ответственности |
+| **O** | Расширение без ломки | Новый кейс ломает ядро |
+| **L** | Подтип сохраняет контракт | Подмена меняет семантику |
+| **I** | Узкие контракты | Клиент не использует часть API |
+| **D** | Абстракции на границах | Жёсткая привязка к деталям |
+
+## DRY / YAGNI / KISS
+
+Стабильные повторы — в метод/тип. Абстракции без второго потребителя — YAGNI. Достаточное решение лучше framework'а.
+
+## Композиция
+
+Prefer composition — критерии в `class-design.mdc`.
+
+## Поток данных
+
+`architecture-core.mdc`: Input → Service → Model ← Provider → View.
+
+Finding: обратный вызов через слой; бизнес-логика во View; View → Service напрямую.
+
+## Hot path
+
+Не на каждом кадре: `Find`, лишние `GetComponent`, аллокации в Update/частых tick'ах.
+
+Finding — только если вызов реально на hot path. Платформа — Context в `architecture-core.mdc`.
+
+## Не делать
+
+Правки ради «чистоты» без нарушения rules/бага. Не дублировать другие `.mdc`.
