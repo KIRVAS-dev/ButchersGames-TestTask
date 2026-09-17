@@ -1,6 +1,9 @@
+using System;
+using Core;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.RunnerMovement;
 using ExtendedExceptions;
+using R3;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -10,27 +13,36 @@ namespace ViewComponents.RunnerMovement
 {
     public sealed class RunnerTrackFollower : MonoBehaviour
     {
+        private const int SkipInitialValue = 1;
+
         private ILevelProvider _levelProvider;
+        private IGameplayInputBlock _inputBlock;
         private IRunnerMovementSettings _settings;
+        private IDisposable _inputBlockSubscription;
         private RunnerMovementModel _model;
         private RunnerMovementView _view;
         private SplineContainer _splineContainer;
         private float _distanceTraveled;
         private float _splineLength;
+        private bool _isLevelLoaded;
 
         [Inject]
         private void Construct(
             ILevelProvider levelProvider,
+            IGameplayInputBlock inputBlock,
             IRunnerMovementSettings settings,
             RunnerMovementModel model,
             RunnerMovementView view)
         {
             _levelProvider = levelProvider;
+            _inputBlock = inputBlock;
             _settings = settings;
             _model = model;
             _view = view;
 
             _levelProvider.LevelLoaded += OnLevelLoaded;
+
+            SubscribeToInputBlockChanges();
         }
 
         private void Awake()
@@ -39,7 +51,7 @@ namespace ViewComponents.RunnerMovement
             Guard.AgainstNull(_model, () => new MissingRunnerMovementViewFieldException(nameof(_model), gameObject.name));
             Guard.AgainstNull(_view, () => new MissingRunnerMovementViewFieldException(nameof(_view), gameObject.name));
 
-            DisableTrackFollowing();
+            RefreshTrackFollowing();
         }
 
         private void Update()
@@ -64,6 +76,7 @@ namespace ViewComponents.RunnerMovement
         private void OnDestroy()
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _inputBlockSubscription?.Dispose();
         }
 
         private void OnLevelLoaded()
@@ -77,17 +90,18 @@ namespace ViewComponents.RunnerMovement
 
             Guard.AgainstNonPositive(_splineLength, () => new InvalidSplineLengthException(gameObject.name, _splineLength));
 
-            EnableTrackFollowing();
+            _isLevelLoaded = true;
+            RefreshTrackFollowing();
         }
 
-        private void EnableTrackFollowing()
+        private void RefreshTrackFollowing()
         {
-            enabled = true;
+            enabled = _isLevelLoaded && !_inputBlock.IsBlocked.CurrentValue;
         }
 
-        private void DisableTrackFollowing()
+        private void SubscribeToInputBlockChanges()
         {
-            enabled = false;
+            _inputBlockSubscription = _inputBlock.IsBlocked.Skip(SkipInitialValue).Subscribe(_ => RefreshTrackFollowing());
         }
     }
 }

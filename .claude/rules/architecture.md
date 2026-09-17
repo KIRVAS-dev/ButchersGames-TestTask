@@ -82,9 +82,9 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | EntryPoint | Scope | Start | Dispose |
 |---|---|---|---|
 | Infrastructure Bootstrap EntryPoint | Project | additive load Core | — |
-| `CoreEntryPoint` | Core | `StartListening()` у InputHandler фич | `StopListening()` |
+| `CoreEntryPoint` | Core | `StartListening()` у InputHandler'ов и у сервисов-наблюдателей без потребителя через ctor | `StopListening()` |
 
-Новая фича с вводом: подключить handler в `CoreEntryPoint` (Start/Dispose).
+`CoreEntryPoint` — единственная точка входа VContainer в Core-scope (`RegisterEntryPoint<CoreEntryPoint>()`), общий стартер Core-геймплея, не только InputHandler'ов. Новая фича с вводом: подключить handler в `CoreEntryPoint` (Start/Dispose). Новая фича-«наблюдатель» без потребителя через ctor (сервис, который должен начать подписки на чужие события сразу при старте сцены, но которого никто не резолвит из другого конструктора и который не View на сцене — как `GameFlowService`, `WealthPointsModifierService`) — **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`; вместо этого получает обычные публичные методы `StartListening()`/`StopListening()`, которые вызывает `CoreEntryPoint.Start()`/`Dispose()`. Единый паттерн на все такие сервисы, без ветвления по способу инициализации.
 
 ## Эталон фичи `{Feature}`
 
@@ -176,7 +176,7 @@ private void RegisterFeature(IContainerBuilder builder)
 3. `ViewComponents/{Feature}/` — View, Providers, `{Feature}Config` SO; `Api/Exceptions.cs` для view-ошибок
 4. `Core/Input/{Feature}/` — InputHandler, если есть пользовательский ввод
 5. `CoreScope` — `Register{Feature}`, SerializeField для config/providers
-6. `CoreEntryPoint` — Start/Dispose для handler
+6. `CoreEntryPoint` — Start/Dispose для handler (ввод) или `StartListening()`/`StopListening()` (сервис-наблюдатель без потребителя через ctor)
 7. Сцена Core — View, Providers; ссылки на CoreScope
 
 Проверка на Core: happy path + edge cases (busy, cancel, invalid data → exception).

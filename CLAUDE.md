@@ -104,11 +104,11 @@ URP / post-effects? → Rendering
 
 ```
 Bootstrap (ProjectScope) → additive load Core.unity
-  → CoreScope → CoreEntryPoint.StartListening() (InputHandlers)
-  → gameplay → dispose handlers on CoreEntryPoint.Dispose()
+  → CoreScope → CoreEntryPoint.Start() (InputHandlers + сервисы-наблюдатели без потребителя через ctor)
+  → gameplay → CoreEntryPoint.Dispose()
 ```
 
-Ключевые типы: Infrastructure `EntryPoint`, `CoreScope`, `CoreEntryPoint`, scene loader API.
+`CoreEntryPoint` — единственная точка входа VContainer в Core-scope: общий стартер Core-геймплея, не только ввода. Ключевые типы: Infrastructure `EntryPoint`, `CoreScope`, `CoreEntryPoint`, scene loader API.
 
 ### Soft-checks
 

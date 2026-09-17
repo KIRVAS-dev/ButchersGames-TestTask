@@ -1,4 +1,5 @@
 using Core.Gameplay.Finish;
+using Core.Gameplay.GameFlow;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthMeter;
@@ -31,6 +32,7 @@ namespace Core.Bootstrap
             RegisterWealthPointsModifier(builder);
             RegisterFinish(builder);
             RegisterRunnerMovement(builder);
+            RegisterGameFlow(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
@@ -66,8 +68,7 @@ namespace Core.Bootstrap
         private static void RegisterWealthPointsModifier(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<WealthPointsModifierRegistry>().As<IWealthPointsModifierRegistry>();
-            builder.Register<WealthPointsModifierService>(Lifetime.Singleton);
-            builder.RegisterBuildCallback(resolver => resolver.Resolve<WealthPointsModifierService>());
+            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
         }
 
         private static void RegisterFinish(IContainerBuilder builder)
@@ -91,6 +92,12 @@ namespace Core.Bootstrap
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
             builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>();
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
+        }
+
+        private static void RegisterGameFlow(IContainerBuilder builder)
+        {
+            builder.Register<GameFlowModel>(Lifetime.Singleton);
+            builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
         }
     }
 }
