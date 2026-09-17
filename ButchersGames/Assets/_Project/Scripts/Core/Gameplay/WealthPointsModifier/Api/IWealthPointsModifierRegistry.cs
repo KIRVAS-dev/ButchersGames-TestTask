@@ -5,8 +5,8 @@ namespace Core.Gameplay.WealthPointsModifier
 {
     public interface IWealthPointsModifierRegistry
     {
-        event Action ModifiersChanged;
-
         IReadOnlyList<IWealthPointsModifier> Modifiers { get; }
+
+        event Action ModifiersChanged;
     }
 }

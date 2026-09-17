@@ -4,6 +4,6 @@ namespace Input
 {
     public interface ITrigger
     {
-        event Action OnTriggered;
+        event Action Triggered;
     }
 }

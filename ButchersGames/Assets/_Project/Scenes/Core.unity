@@ -211,6 +211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelView
   _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
+  _levelProvider: {fileID: 581031788}
 --- !u!114 &581031788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,6 +306,7 @@ MonoBehaviour:
     TypeName: Infrastructure.Bootstrap.ProjectScope
   autoRun: 1
   autoInjectGameObjects: []
+  _wealthMeterConfig: {fileID: 11400000, guid: c62d96ad6e430db43b06e36e98bd48a0, type: 2}
 --- !u!1 &642159709
 GameObject:
   m_ObjectHideFlags: 0
