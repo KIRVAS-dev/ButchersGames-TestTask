@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace ViewComponents.Level
 {
-    public sealed class LevelView : MonoBehaviour, ILevelView
+    public sealed class LevelView
+        : MonoBehaviour,
+          ILevelView
     {
         [SerializeField] private LevelListConfig _levelListConfig;
+        [SerializeField] private LevelProvider _levelProvider;
 
         private void Awake()
         {
@@ -26,7 +29,13 @@ namespace ViewComponents.Level
         {
             Guard.AgainstNull(
                 _levelListConfig,
-                () => new MissingLevelListConfigException(nameof(_levelListConfig), gameObject.name));
+                () => new MissingLevelListConfigException(nameof(_levelListConfig), gameObject.name)
+            );
+
+            Guard.AgainstNull(
+                _levelProvider,
+                () => new MissingLevelProviderReferenceException(nameof(_levelProvider), gameObject.name)
+            );
         }
 
         private void ClearChildren()
@@ -43,6 +52,7 @@ namespace ViewComponents.Level
             if (Application.isPlaying)
             {
                 Instantiate(levelPrefab, transform);
+                _levelProvider.NotifyLevelLoaded();
             }
             else
             {
@@ -50,6 +60,7 @@ namespace ViewComponents.Level
             }
 #else
             Instantiate(levelPrefab, transform);
+            _levelProvider.NotifyLevelLoaded();
 #endif
         }
     }

@@ -1,7 +1,9 @@
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.WealthMeter;
+using Core.Gameplay.WealthPointsModifier;
 using ExtendedExceptions;
 using ViewComponents.Level;
+using ViewComponents.WealthPointsModifier;
 using VContainer;
 using VContainer.Unity;
 using UnityEngine;
@@ -17,6 +19,7 @@ namespace Core.Bootstrap
             RegisterEntryPoint(builder);
             RegisterLevelProgression(builder);
             RegisterWealthMeter(builder);
+            RegisterWealthPointsModifier(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
@@ -47,6 +50,13 @@ namespace Core.Bootstrap
             builder.RegisterInstance(_wealthMeterConfig);
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>();
+        }
+
+        private static void RegisterWealthPointsModifier(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<WealthPointsModifierRegistry>().As<IWealthPointsModifierRegistry>();
+            builder.Register<WealthPointsModifierService>(Lifetime.Singleton);
+            builder.RegisterBuildCallback(resolver => resolver.Resolve<WealthPointsModifierService>());
         }
     }
 }

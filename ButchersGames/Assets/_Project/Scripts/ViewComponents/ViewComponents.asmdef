@@ -6,7 +6,8 @@
         "Input",
         "ExtendedExceptions",
         "UniTask",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "VContainer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

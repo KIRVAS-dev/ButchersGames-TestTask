@@ -1,5 +1,4 @@
 using System;
-using ExtendedExceptions;
 
 namespace Core.Gameplay.WealthMeter
 {
@@ -23,26 +22,17 @@ namespace Core.Gameplay.WealthMeter
 
         public void Increase(int amount)
         {
-            ValidateAmount(amount);
-
             SetValue(_model.Value.Value + amount);
         }
 
         public void Decrease(int amount)
         {
-            ValidateAmount(amount);
-
             SetValue(_model.Value.Value - amount);
         }
 
         public void Reset()
         {
             SetValue(_config.StartValue);
-        }
-
-        private void ValidateAmount(int amount)
-        {
-            Guard.AgainstNonPositive(amount, () => new InvalidWealthMeterAmountException(amount));
         }
 
         private void SetValue(int value)
