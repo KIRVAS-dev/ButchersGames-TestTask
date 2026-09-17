@@ -1,10 +1,13 @@
+using Core.Gameplay.WealthMeter;
 using ExtendedExceptions;
 using UnityEngine;
 
-namespace Core.Gameplay.WealthMeter
+namespace ViewComponents.WealthMeter
 {
-    [CreateAssetMenu(menuName = "Data/Wealth Meter Config")]
-    public sealed class WealthMeterConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/Wealth Meter Config")]
+    public sealed class WealthMeterConfig
+        : ScriptableObject,
+          IWealthMeterSettings
     {
         [SerializeField] private int _startValue;
         [SerializeField] private int _descentThreshold;

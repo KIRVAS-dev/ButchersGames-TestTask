@@ -1,6 +1,7 @@
+using Core.Gameplay.LevelProgression;
 using UnityEngine;
 
-namespace Core.Gameplay.LevelProgression
+namespace Infrastructure.Persistence
 {
     public sealed class PlayerPrefsLevelProgressStore : ILevelProgressStore
     {

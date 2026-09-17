@@ -1,5 +1,5 @@
+using System;
 using ExtendedExceptions;
-using UnityEngine;
 
 namespace Core.Gameplay.LevelProgression
 {
@@ -9,6 +9,7 @@ namespace Core.Gameplay.LevelProgression
         private readonly ILevelView _levelView;
         private readonly ILevelProgressStore _progressStore;
         private readonly LevelModel _model;
+        private readonly Random _random = new();
 
         public LevelService(
             ILevelProvider levelProvider,
@@ -70,7 +71,7 @@ namespace Core.Gameplay.LevelProgression
 
         private int RandomLevelIndexExcludingCurrent(int levelCount)
         {
-            int randomIndex = Random.Range(0, levelCount - 1);
+            int randomIndex = _random.Next(levelCount - 1);
 
             return randomIndex >= _model.CurrentLevelIndex
                 ? randomIndex + 1
