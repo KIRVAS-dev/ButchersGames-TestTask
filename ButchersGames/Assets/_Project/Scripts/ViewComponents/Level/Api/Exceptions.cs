@@ -13,4 +13,10 @@ namespace ViewComponents.Level
         public MissingLevelPrefabException(int index, string objectName)
             : base("level-2", $"Level prefab at index {index} is not assigned on {objectName}") { }
     }
+
+    public sealed class MissingLevelProviderReferenceException : ExtendedException
+    {
+        public MissingLevelProviderReferenceException(string fieldName, string objectName)
+            : base("level-3", $"Missing field {fieldName} on {objectName}") { }
+    }
 }
