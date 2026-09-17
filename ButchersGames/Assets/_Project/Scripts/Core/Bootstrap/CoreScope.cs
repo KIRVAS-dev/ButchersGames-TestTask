@@ -88,7 +88,7 @@ namespace Core.Bootstrap
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
             builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().AsSelf();
-            builder.RegisterComponentInHierarchy<RunnerTrackFollower>();
+            builder.RegisterComponentInHierarchy<RunnerTrackFollower>().AsSelf();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
             builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>();
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
