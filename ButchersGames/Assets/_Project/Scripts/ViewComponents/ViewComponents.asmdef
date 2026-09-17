@@ -1,0 +1,22 @@
+{
+    "name": "ViewComponents",
+    "rootNamespace": "ViewComponents",
+    "references": [
+        "Core",
+        "Input",
+        "ExtendedExceptions",
+        "UniTask",
+        "DOTween.Modules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "DOTween.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
