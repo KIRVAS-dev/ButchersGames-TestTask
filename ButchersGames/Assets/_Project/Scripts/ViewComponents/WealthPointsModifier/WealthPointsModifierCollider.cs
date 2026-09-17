@@ -2,6 +2,7 @@ using System;
 using Core.Gameplay.WealthPointsModifier;
 using ExtendedExceptions;
 using UnityEngine;
+using ViewComponents.Collectables;
 
 namespace ViewComponents.WealthPointsModifier
 {
@@ -32,16 +33,15 @@ namespace ViewComponents.WealthPointsModifier
 
             Triggered?.Invoke(_config.Type, _config.Amount);
 
-            if (_config.DeactivateGameObjectOnTrigger)
+            if (TryGetComponent(out Collectable collectable))
             {
-                gameObject.SetActive(false);
+                collectable.Collect();
             }
         }
 
         private void Validate()
         {
-            Guard.AgainstNull(_config, () =>
-                new MissingWealthPointsModifierConfigException(nameof(_config), gameObject.name));
+            Guard.AgainstNull(_config, () => new MissingWealthPointsModifierConfigException(nameof(_config), gameObject.name));
 
             _config.Validate();
         }
