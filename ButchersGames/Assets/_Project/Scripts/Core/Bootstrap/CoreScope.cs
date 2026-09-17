@@ -1,10 +1,16 @@
 using Core.Gameplay.Finish;
 using Core.Gameplay.LevelProgression;
+using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
+using Core.Input.RunnerMovement;
 using ExtendedExceptions;
+using Infrastructure.Persistence;
+using Input;
 using ViewComponents.Finish;
 using ViewComponents.Level;
+using ViewComponents.RunnerMovement;
+using ViewComponents.WealthMeter;
 using ViewComponents.WealthPointsModifier;
 using VContainer;
 using VContainer.Unity;
@@ -15,6 +21,7 @@ namespace Core.Bootstrap
     public sealed class CoreScope : LifetimeScope
     {
         [SerializeField] private WealthMeterConfig _wealthMeterConfig;
+        [SerializeField] private RunnerMovementConfig _runnerMovementConfig;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -23,6 +30,7 @@ namespace Core.Bootstrap
             RegisterWealthMeter(builder);
             RegisterWealthPointsModifier(builder);
             RegisterFinish(builder);
+            RegisterRunnerMovement(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
@@ -50,7 +58,7 @@ namespace Core.Bootstrap
 
             _wealthMeterConfig.Validate();
 
-            builder.RegisterInstance(_wealthMeterConfig);
+            builder.RegisterInstance<IWealthMeterSettings>(_wealthMeterConfig);
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>();
         }
@@ -65,6 +73,24 @@ namespace Core.Bootstrap
         private static void RegisterFinish(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<FinishProvider>().As<IFinishProvider>();
+        }
+
+        private void RegisterRunnerMovement(IContainerBuilder builder)
+        {
+            Guard.AgainstNull(
+                _runnerMovementConfig,
+                () => new MissingRunnerMovementConfigException(nameof(_runnerMovementConfig), gameObject.name)
+            );
+
+            _runnerMovementConfig.Validate();
+
+            builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
+            builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>();
+            builder.RegisterComponentInHierarchy<RunnerMovementView>().AsSelf();
+            builder.RegisterComponentInHierarchy<RunnerTrackFollower>();
+            builder.Register<RunnerMovementModel>(Lifetime.Singleton);
+            builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>();
+            builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
         }
     }
 }

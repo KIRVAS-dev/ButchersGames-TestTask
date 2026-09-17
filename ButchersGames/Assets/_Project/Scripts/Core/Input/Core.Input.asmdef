@@ -1,17 +1,11 @@
 {
-    "name": "Bootstrap",
-    "rootNamespace": "Core.Bootstrap",
+    "name": "Core.Input",
+    "rootNamespace": "Core.Input",
     "references": [
-        "ExtendedExceptions",
-        "VContainer",
-        "UniTask",
         "Core",
-        "Core.Input",
         "Input",
-        "UI",
-        "Unity.InputSystem",
-        "ViewComponents",
-        "Infrastructure.Persistence"
+        "ExtendedExceptions",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
