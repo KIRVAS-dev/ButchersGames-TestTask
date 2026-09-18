@@ -1,6 +1,7 @@
 using Core.Gameplay.Finish;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LevelProgression;
+using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
@@ -10,6 +11,7 @@ using Infrastructure.Persistence;
 using Input;
 using ViewComponents.Finish;
 using ViewComponents.Level;
+using ViewComponents.Obstacles;
 using ViewComponents.RunnerMovement;
 using ViewComponents.WealthMeter;
 using ViewComponents.WealthPointsModifier;
@@ -30,6 +32,7 @@ namespace Core.Bootstrap
             RegisterLevelProgression(builder);
             RegisterWealthMeter(builder);
             RegisterWealthPointsModifier(builder);
+            RegisterObstacle(builder);
             RegisterFinish(builder);
             RegisterRunnerMovement(builder);
             RegisterGameFlow(builder);
@@ -69,6 +72,11 @@ namespace Core.Bootstrap
         {
             builder.RegisterComponentInHierarchy<WealthPointsModifierRegistry>().As<IWealthPointsModifierRegistry>();
             builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
+        }
+
+        private static void RegisterObstacle(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<ObstacleRegistry>().As<IObstacleRegistry>();
         }
 
         private static void RegisterFinish(IContainerBuilder builder)

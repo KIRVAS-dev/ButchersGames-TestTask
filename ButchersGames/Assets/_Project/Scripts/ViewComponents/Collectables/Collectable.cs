@@ -2,9 +2,13 @@ using UnityEngine;
 
 namespace ViewComponents.Collectables
 {
-    public sealed class Collectable : MonoBehaviour
+    public sealed class Collectable
+        : MonoBehaviour,
+          ITriggerReaction
     {
-        public void Collect()
+        void ITriggerReaction.React() => Collect();
+
+        private void Collect()
         {
             gameObject.SetActive(false);
         }
