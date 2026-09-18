@@ -1,5 +1,5 @@
-using Infrastructure.ExtendedExceptions;
 using System;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using UnityEngine.UI;
 
