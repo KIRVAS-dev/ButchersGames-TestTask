@@ -203,7 +203,33 @@ UX-гейты во InputHandler (например busy → игнор клика
 | **InputHandler** | Тонкий адаптер. Guard только на UX-гейты (busy и т.п.) |
 | **Provider** | Читает сцену, отдаёт данные в Core. Конфиг-ошибки → view-исключения |
 
-**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую сущность.
+**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую геймплей-сущность (Model/Service/View — умолчание). Исключение — UI-экраны, см. **UI-экраны (GameUI, MVP)** ниже.
+
+## UI-экраны (GameUI, MVP)
+
+Экран UI (старт/HUD/результат и т.п.) не имеет собственной игровой модели — он только отображает уже существующее Core-состояние (`GameFlowModel`, `WealthMeterModel` и т.п. других фич). Обычная пара Model/View здесь не подходит: View обязан оставаться пассивным (без R3-подписок, без условий видимости), а трансляция Core-состояния в show/hide — презентационная развязка, не бизнес-правило самого экрана. Для UI-экранов (и только для них) единственное исключение из запрета на Presenter выше — MVP.
+
+### Структура файлов
+
+```
+ViewComponents/{Screen}/
+├── Api/
+│   ├── I{Screen}View.cs        — пассивный контракт: Show()/Hide()/SetX(value), без R3, без условий
+│   └── Exceptions.cs           — view/Inspector-ошибки, как у обычного View
+├── {Screen}View.cs             — : MonoBehaviour, I{Screen}View — только применяет вызовы, ничего не решает
+└── {Screen}Presenter.cs        — plain C# (не MonoBehaviour)
+```
+
+### Роли
+
+| Роль | Где | Обязанности |
+|---|---|---|
+| **Presenter** | `ViewComponents/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`) |
+| **View** | `ViewComponents/{Screen}/` | Реализует `I{Screen}View`. Только `SetActive`/`Set*` на UI-элементах — без чтения Core, без R3, без условий |
+
+Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `CoreScope`, без своего `I*Service` в Core Api (на него не ссылается никто, кроме `CoreEntryPoint`). Лайфцикл — `StartListening()`/`StopListening()` через параметр `CoreEntryPoint` (форсирует eager-резолв, тот же паттерн, что у сервиса-наблюдателя без потребителя через ctor — см. **Entry points**).
+
+**Не размножать** MVP на геймплей-сущности (пикапы, препятствия, персонаж и т.п.) — там остаётся обычная пара Model+Service (Core) / View (ViewComponents), см. **Model / View** выше и **Эталон фичи**.
 
 ## Architectural constraints
 

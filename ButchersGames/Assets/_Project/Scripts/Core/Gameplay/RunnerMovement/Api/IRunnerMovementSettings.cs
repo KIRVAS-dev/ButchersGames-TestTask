@@ -4,5 +4,6 @@ namespace Core.Gameplay.RunnerMovement
     {
         float ForwardSpeed { get; }
         float TrackHalfWidth { get; }
+        float LateralCorrectionSpeed { get; }
     }
 }

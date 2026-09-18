@@ -114,7 +114,7 @@ Bootstrap (ProjectScope) → additive load Core.unity
 
 Bad data и невалидная конфигурация → `ExtendedException` (обычно через `Guard` — см. [exceptions.md](.claude/rules/exceptions.md)). Запрещено: soft `return`/early-exit без throw, `LogWarning` вместо исключения, «проглотить ошибку и продолжить» в Service/Validate/Provider. UX-гейты во InputHandler (busy → игнор клика) — не soft-check.
 
-**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую сущность.
+**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую геймплей-сущность. Исключение — UI-экраны (MVP), см. [architecture.md](.claude/rules/architecture.md) §«UI-экраны (GameUI, MVP)».
 
 **MCP:** Unity/Rider — global `~/.cursor/mcp.json` (Claude Code — MCP-серверы сессии, см. [unity-mcp.md](.claude/rules/unity-mcp.md) / [rider-mcp.md](.claude/rules/rider-mcp.md)); project `.cursor/mcp.json` не используется.
 

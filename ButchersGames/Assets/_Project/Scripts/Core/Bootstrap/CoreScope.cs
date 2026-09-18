@@ -1,5 +1,6 @@
 using Core.Gameplay.Finish;
 using Core.Gameplay.GameFlow;
+using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
@@ -10,6 +11,7 @@ using ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
 using ViewComponents.Finish;
+using ViewComponents.LaneBarriers;
 using ViewComponents.Level;
 using ViewComponents.Obstacles;
 using ViewComponents.RunnerMovement;
@@ -33,6 +35,7 @@ namespace Core.Bootstrap
             RegisterWealthMeter(builder);
             RegisterWealthPointsModifier(builder);
             RegisterObstacle(builder);
+            RegisterLaneBarrier(builder);
             RegisterFinish(builder);
             RegisterRunnerMovement(builder);
             RegisterGameFlow(builder);
@@ -77,6 +80,11 @@ namespace Core.Bootstrap
         private static void RegisterObstacle(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<ObstacleRegistry>().As<IObstacleRegistry>();
+        }
+
+        private static void RegisterLaneBarrier(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<LaneBarrierRegistry>().As<ILaneBarrierRegistry>();
         }
 
         private static void RegisterFinish(IContainerBuilder builder)
