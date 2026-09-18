@@ -12,6 +12,8 @@ namespace Core.Gameplay.WealthMeter
         private readonly WealthMeterModel _model;
 
         public event Action Depleted;
+        public event Action<int> Increased;
+        public event Action<int> Decreased;
 
         public WealthMeterService(
             ILevelProvider levelProvider,
@@ -36,11 +38,15 @@ namespace Core.Gameplay.WealthMeter
         public void Increase(int amount)
         {
             SetValue(_model.Value.Value + amount);
+
+            Increased?.Invoke(amount);
         }
 
         public void Decrease(int amount)
         {
             SetValue(_model.Value.Value - amount);
+
+            Decreased?.Invoke(amount);
         }
 
         public void Reset()
@@ -61,7 +67,9 @@ namespace Core.Gameplay.WealthMeter
             _model.Value.Value = value;
             _model.Stage.Value = StageFor(value);
 
-            if (isDepleted && !wasDepleted)
+            bool hasBecomeDepleted = isDepleted && !wasDepleted;
+
+            if (hasBecomeDepleted)
             {
                 Depleted?.Invoke();
             }

@@ -2,10 +2,12 @@ using System;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthPointsModifier;
 using Core.Input.RunnerMovement;
+using UI.FloatingText;
 using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
 using VContainer.Unity;
+using ViewComponents.Feedback;
 using ViewComponents.RunnerMovement;
 using ViewComponents.WealthMeter;
 
@@ -23,6 +25,8 @@ namespace Core.Bootstrap
         private readonly StartScreenPresenter _startScreenPresenter;
         private readonly HudPresenter _hudPresenter;
         private readonly ResultScreenPresenter _resultScreenPresenter;
+        private readonly FeedbackPresenter _feedbackPresenter;
+        private readonly FloatingTextPresenter _floatingTextPresenter;
 
         public CoreEntryPoint(
             RunnerMovementInputHandler runnerMovementInputHandler,
@@ -32,7 +36,9 @@ namespace Core.Bootstrap
             RunnerMovementPresenter runnerMovementPresenter,
             StartScreenPresenter startScreenPresenter,
             HudPresenter hudPresenter,
-            ResultScreenPresenter resultScreenPresenter)
+            ResultScreenPresenter resultScreenPresenter,
+            FeedbackPresenter feedbackPresenter,
+            FloatingTextPresenter floatingTextPresenter)
         {
             _runnerMovementInputHandler = runnerMovementInputHandler;
             _wealthPointsModifierService = wealthPointsModifierService;
@@ -42,6 +48,8 @@ namespace Core.Bootstrap
             _startScreenPresenter = startScreenPresenter;
             _hudPresenter = hudPresenter;
             _resultScreenPresenter = resultScreenPresenter;
+            _feedbackPresenter = feedbackPresenter;
+            _floatingTextPresenter = floatingTextPresenter;
         }
 
         void IStartable.Start()
@@ -53,6 +61,8 @@ namespace Core.Bootstrap
             _startScreenPresenter.StartListening();
             _hudPresenter.StartListening();
             _resultScreenPresenter.StartListening();
+            _feedbackPresenter.StartListening();
+            _floatingTextPresenter.StartListening();
             _gameFlowService.StartListening();
         }
 
@@ -66,6 +76,8 @@ namespace Core.Bootstrap
             _startScreenPresenter.StopListening();
             _hudPresenter.StopListening();
             _resultScreenPresenter.StopListening();
+            _feedbackPresenter.StopListening();
+            _floatingTextPresenter.StopListening();
         }
     }
 }

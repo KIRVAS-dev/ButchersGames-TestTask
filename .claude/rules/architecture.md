@@ -59,7 +59,7 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | View принимает gameplay-решения / меняет Model | Логика только в Service |
 | View напрямую держит ссылку на конкретный `Model`-класс | Между View и Model — Presenter, см. **Model → View через Presenter** |
 
-Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
+Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Performer` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
 
 ## DI scopes
 
@@ -127,7 +127,8 @@ ViewComponents/{Feature}/
 | **Config** | `ViewComponents/{Feature}/Api/` | `[CreateAssetMenu]` ScriptableObject, реализует `I{Feature}Settings`. `Validate()` здесь |
 | **Registry** | `Core/Gameplay/{Feature}/` | Индекс / lookup по данным Provider |
 | **Api/** | `Core/Gameplay/{Feature}/Api/` | Интерфейсы, DTO, `Exceptions.cs` |
-| **View** | `ViewComponents/{Feature}/` | Реализует `I{Feature}View`. DOTween, VFX, Animator. Не меняет game state |
+| **View** | `ViewComponents/{Feature}/` | Отображает **одну конкретную сущность или экран** сцены (персонаж, уровень, HUD) и реализует `I{Feature}View`. DOTween, VFX, Animator. Не меняет game state |
+| **Performer** | `ViewComponents/{Feature}/` | Один на сцену, без своей сущности: принимает смысловой тип события (`enum`) и проигрывает эффекты по таблице записей (звук FMOD, VFX). Реализует `I{Feature}Performer` из Core Api. Не меняет game state. Пример: `FeedbackPerformer` |
 | **Provider** | `ViewComponents/{Feature}/` | Сцена → DTO / данные для Core через порт |
 | **InputHandler** | `Core/Input/{Feature}/` | Низкий Input → `I{Feature}Service`. Без ссылок на ViewComponents |
 | **Scope** | `Core/Bootstrap/CoreScope` | `Register{Feature}(builder)` |

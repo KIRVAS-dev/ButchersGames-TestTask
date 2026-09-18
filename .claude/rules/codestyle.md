@@ -27,7 +27,7 @@
 Model / Service / View / InputHandler — см. [architecture.md](architecture.md). Здесь только формат типов:
 
 - **Core:** Model pure C#; Service — ctor DI; Api-ports наружу
-- **ViewComponents:** MonoBehaviour + `[SerializeField]`; View реализует `I*View`
+- **ViewComponents:** MonoBehaviour + `[SerializeField]`; View реализует `I*View` (отображение одной сущности/экрана), Performer реализует `I*Performer` (эффекты по типу события)
 - **InputHandler:** тонкий адаптер, ctor DI на `I*Service`
 
 ## Структура класса
@@ -60,7 +60,8 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 | Имя | Где | Смысл |
 |---|---|---|
 | `I*Service` | Core Api | единственная точка вызова фичи |
-| `I*View` | Core Api | порт отображения |
+| `I*View` | Core Api | порт отображения **одной конкретной сущности или экрана** сцены |
+| `I*Performer` | Core Api | порт проигрывания эффектов (звук/VFX) по смысловому типу события; реализация без собственной сущности — `*Performer` во ViewComponents |
 | `I*Provider` | Core Api | данные сцены для Core |
 | `*InputHandler` | Core.Input | адаптер ввода |
 | `*Helper` | Core / ViewComponents | `public static class`, stateless functions |

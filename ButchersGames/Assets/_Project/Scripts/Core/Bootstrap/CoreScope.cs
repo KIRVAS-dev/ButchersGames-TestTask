@@ -1,3 +1,4 @@
+using Core.Gameplay.Feedback;
 using Core.Gameplay.Finish;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
@@ -10,9 +11,11 @@ using Core.Input.RunnerMovement;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
+using UI.FloatingText;
 using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
+using ViewComponents.Feedback;
 using ViewComponents.Finish;
 using ViewComponents.LaneBarriers;
 using ViewComponents.Level;
@@ -45,6 +48,8 @@ namespace Core.Bootstrap
             RegisterStartScreen(builder);
             RegisterHud(builder);
             RegisterResultScreen(builder);
+            RegisterFeedback(builder);
+            RegisterFloatingText(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
@@ -140,6 +145,18 @@ namespace Core.Bootstrap
         {
             builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>();
             builder.Register<ResultScreenPresenter>(Lifetime.Singleton);
+        }
+
+        private static void RegisterFeedback(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<FeedbackPerformer>().As<IFeedbackPerformer>();
+            builder.Register<FeedbackPresenter>(Lifetime.Singleton);
+        }
+
+        private static void RegisterFloatingText(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<FloatingTextView>().As<IFloatingTextView>();
+            builder.Register<FloatingTextPresenter>(Lifetime.Singleton);
         }
     }
 }

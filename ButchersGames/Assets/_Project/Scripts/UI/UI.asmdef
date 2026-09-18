@@ -4,6 +4,7 @@
     "references": [
         "ExtendedExceptions",
         "Core",
+        "DOTween.Modules",
         "Unity.TextMeshPro",
         "Unity.ugui"
     ],
@@ -12,6 +13,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
+        "DOTween.dll",
         "R3.dll"
     ],
     "autoReferenced": true,
