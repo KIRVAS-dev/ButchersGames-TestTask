@@ -1,6 +1,6 @@
 {
     "name": "ExtendedExceptions",
-    "rootNamespace": "ExtendedExceptions",
+    "rootNamespace": "Infrastructure.ExtendedExceptions",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

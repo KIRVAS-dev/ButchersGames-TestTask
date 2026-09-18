@@ -2,7 +2,7 @@ using System;
 using Core;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.RunnerMovement;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using R3;
 using Unity.Mathematics;
 using UnityEngine;

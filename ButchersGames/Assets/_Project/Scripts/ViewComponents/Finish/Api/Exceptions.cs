@@ -1,4 +1,4 @@
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 
 namespace ViewComponents.Finish
 {

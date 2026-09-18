@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
-namespace ExtendedExceptions
+namespace Infrastructure.ExtendedExceptions
 {
     public static class Guard
     {

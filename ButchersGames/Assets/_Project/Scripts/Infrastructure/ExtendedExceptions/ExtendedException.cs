@@ -1,6 +1,6 @@
 using System;
 
-namespace ExtendedExceptions
+namespace Infrastructure.ExtendedExceptions
 {
     public class ExtendedException : Exception
     {

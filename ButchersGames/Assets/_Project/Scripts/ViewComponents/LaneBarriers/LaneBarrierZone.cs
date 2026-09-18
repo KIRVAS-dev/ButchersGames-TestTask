@@ -1,6 +1,6 @@
 using System;
 using Core.Gameplay.LaneBarrier;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -29,8 +29,7 @@ namespace ViewComponents.LaneBarriers
             Validate();
 
             SplineContainer splineContainer = FindAnyObjectByType<SplineContainer>();
-            Guard.AgainstNull(splineContainer, () =>
-                new MissingLaneBarrierSplineContainerException(gameObject.name));
+            Guard.AgainstNull(splineContainer, () => new MissingLaneBarrierSplineContainerException(gameObject.name));
 
             (_minLateralOffset, _maxLateralOffset) = CalculateLateralRange(splineContainer);
         }
@@ -74,8 +73,7 @@ namespace ViewComponents.LaneBarriers
 
         private void Validate()
         {
-            Guard.AgainstTrue(!_collider.isTrigger, () =>
-                new InvalidLaneBarrierColliderException(gameObject.name));
+            Guard.AgainstTrue(!_collider.isTrigger, () => new InvalidLaneBarrierColliderException(gameObject.name));
         }
     }
 }

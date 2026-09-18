@@ -1,4 +1,4 @@
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.AnimationTriggers
@@ -30,18 +30,15 @@ namespace ViewComponents.AnimationTriggers
 
         private void Validate()
         {
-            Guard.AgainstNull(_animator, () =>
-                new MissingAnimationTriggerZoneFieldException(nameof(_animator), gameObject.name));
+            Guard.AgainstNull(_animator, () => new MissingAnimationTriggerZoneFieldException(nameof(_animator), gameObject.name));
 
             Guard.AgainstTrue(
                 string.IsNullOrEmpty(_animationName),
-                () =>
-                    new MissingAnimationTriggerZoneFieldException(nameof(_animationName), gameObject.name)
+                () => new MissingAnimationTriggerZoneFieldException(nameof(_animationName), gameObject.name)
             );
 
             Collider zoneCollider = GetComponent<Collider>();
-            Guard.AgainstTrue(!zoneCollider.isTrigger, () =>
-                new InvalidAnimationTriggerZoneColliderException(gameObject.name));
+            Guard.AgainstTrue(!zoneCollider.isTrigger, () => new InvalidAnimationTriggerZoneColliderException(gameObject.name));
         }
     }
 }

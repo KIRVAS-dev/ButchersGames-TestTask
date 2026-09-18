@@ -1,5 +1,5 @@
 using Core.Gameplay.RunnerMovement;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.RunnerMovement

@@ -1,5 +1,5 @@
 using Core.Gameplay.LevelProgression;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.Level

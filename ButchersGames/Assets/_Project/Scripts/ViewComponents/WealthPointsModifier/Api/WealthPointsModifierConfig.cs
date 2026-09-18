@@ -1,5 +1,5 @@
 using Core.Gameplay.WealthPointsModifier;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.WealthPointsModifier
