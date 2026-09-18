@@ -1,29 +1,37 @@
 using System;
 using Infrastructure.ExtendedExceptions;
-using Input;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.ResultScreen
 {
     public sealed class ResultScreenView
         : MonoBehaviour,
-          IResultScreenView,
-          IResultScreenInput
+          IResultScreenView
     {
         [SerializeField] private RectTransform _root;
         [SerializeField] private RectTransform _winVisualRoot;
         [SerializeField] private RectTransform _loseVisualRoot;
         [SerializeField] private TextMeshProUGUI _moneyAmountText;
-        [SerializeField] private ButtonClickTrigger _retryButton;
-        [SerializeField] private ButtonClickTrigger _nextButton;
+        [SerializeField] private Button _retryButton;
+        [SerializeField] private Button _nextButton;
 
-        public ITrigger RetryTrigger => _retryButton;
-        public ITrigger NextTrigger => _nextButton;
+        public event Action RetryClicked;
+        public event Action NextClicked;
 
         private void Awake()
         {
             Validate();
+
+            _retryButton.onClick.AddListener(OnRetryButtonClicked);
+            _nextButton.onClick.AddListener(OnNextButtonClicked);
+        }
+
+        private void OnDestroy()
+        {
+            _retryButton.onClick.RemoveListener(OnRetryButtonClicked);
+            _nextButton.onClick.RemoveListener(OnNextButtonClicked);
         }
 
         public void Show()
@@ -51,6 +59,16 @@ namespace UI.ResultScreen
         public void SetMoneyAmount(int amount)
         {
             _moneyAmountText.text = amount.ToString();
+        }
+
+        private void OnRetryButtonClicked()
+        {
+            RetryClicked?.Invoke();
+        }
+
+        private void OnNextButtonClicked()
+        {
+            NextClicked?.Invoke();
         }
 
         private void Validate()

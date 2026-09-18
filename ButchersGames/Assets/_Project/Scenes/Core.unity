@@ -172,8 +172,8 @@ MonoBehaviour:
   _winVisualRoot: {fileID: 1854295369}
   _loseVisualRoot: {fileID: 1624947193}
   _moneyAmountText: {fileID: 2100766408}
-  _retryButton: {fileID: 1288197449}
-  _nextButton: {fileID: 45417012}
+  _retryButton: {fileID: 1288197450}
+  _nextButton: {fileID: 45417013}
 --- !u!1 &45417010
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,7 +186,6 @@ GameObject:
   - component: {fileID: 45417015}
   - component: {fileID: 45417014}
   - component: {fileID: 45417013}
-  - component: {fileID: 45417012}
   m_Layer: 0
   m_Name: NextButton
   m_TagString: Untagged
@@ -214,19 +213,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 520, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &45417012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45417010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e313b9fed2dc241b0609eeac2fe76b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Input::Input.ButtonClickTrigger
-  _button: {fileID: 45417013}
 --- !u!114 &45417013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1673,7 +1659,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UI::UI.StartScreen.StartScreenView
   _root: {fileID: 1201889599}
-  _startButton: {fileID: 1610497667}
+  _startButton: {fileID: 1610497668}
 --- !u!1 &1071281846
 GameObject:
   m_ObjectHideFlags: 0
@@ -2013,7 +1999,6 @@ GameObject:
   - component: {fileID: 1288197452}
   - component: {fileID: 1288197451}
   - component: {fileID: 1288197450}
-  - component: {fileID: 1288197449}
   m_Layer: 0
   m_Name: RetryButton
   m_TagString: Untagged
@@ -2041,19 +2026,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 520, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1288197449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1288197447}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e313b9fed2dc241b0609eeac2fe76b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Input::Input.ButtonClickTrigger
-  _button: {fileID: 1288197450}
 --- !u!114 &1288197450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2412,7 +2384,6 @@ GameObject:
   - component: {fileID: 1610497670}
   - component: {fileID: 1610497669}
   - component: {fileID: 1610497668}
-  - component: {fileID: 1610497667}
   m_Layer: 0
   m_Name: StartButton
   m_TagString: Untagged
@@ -2440,19 +2411,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 520, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1610497667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1610497665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e313b9fed2dc241b0609eeac2fe76b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Input::Input.ButtonClickTrigger
-  _button: {fileID: 1610497668}
 --- !u!114 &1610497668
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,10 +2,7 @@
     "name": "Input",
     "rootNamespace": "Input",
     "references": [
-        "ExtendedExceptions",
-        "Unity.InputSystem",
-        "Unity.ugui",
-        "VContainer"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
