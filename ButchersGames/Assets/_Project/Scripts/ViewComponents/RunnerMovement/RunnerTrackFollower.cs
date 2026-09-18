@@ -18,6 +18,7 @@ namespace ViewComponents.RunnerMovement
         private ILevelProvider _levelProvider;
         private IGameplayInputBlock _inputBlock;
         private IRunnerMovementSettings _settings;
+        private IRunnerMovementService _runnerMovementService;
         private IDisposable _inputBlockSubscription;
         private IDisposable _movementStateSubscription;
         private RunnerMovementModel _model;
@@ -32,12 +33,14 @@ namespace ViewComponents.RunnerMovement
             ILevelProvider levelProvider,
             IGameplayInputBlock inputBlock,
             IRunnerMovementSettings settings,
+            IRunnerMovementService runnerMovementService,
             RunnerMovementModel model,
             RunnerMovementView view)
         {
             _levelProvider = levelProvider;
             _inputBlock = inputBlock;
             _settings = settings;
+            _runnerMovementService = runnerMovementService;
             _model = model;
             _view = view;
 
@@ -58,6 +61,8 @@ namespace ViewComponents.RunnerMovement
 
         private void Update()
         {
+            _runnerMovementService.AdvanceLateralCorrections(Time.deltaTime);
+
             _distanceTraveled += _settings.ForwardSpeed * Time.deltaTime;
 
             float normalizedSplineProgress = Mathf.Clamp01(_distanceTraveled / _splineLength);
@@ -97,15 +102,6 @@ namespace ViewComponents.RunnerMovement
             RefreshTrackFollowing();
         }
 
-        private void RefreshTrackFollowing()
-        {
-            bool isReadyToFollowTrack = _isLevelLoaded
-             && !_inputBlock.IsBlocked.CurrentValue
-             && _model.State.CurrentValue == RunnerMovementState.Moving;
-
-            enabled = isReadyToFollowTrack;
-        }
-
         private void SubscribeToInputBlockChanges()
         {
             _inputBlockSubscription = _inputBlock.IsBlocked.Skip(SkipInitialValue).Subscribe(_ => RefreshTrackFollowing());
@@ -114,6 +110,15 @@ namespace ViewComponents.RunnerMovement
         private void SubscribeToMovementStateChanges()
         {
             _movementStateSubscription = _model.State.Skip(SkipInitialValue).Subscribe(_ => RefreshTrackFollowing());
+        }
+
+        private void RefreshTrackFollowing()
+        {
+            bool isReadyToFollowTrack = _isLevelLoaded
+             && !_inputBlock.IsBlocked.CurrentValue
+             && _model.State.CurrentValue == RunnerMovementState.Moving;
+
+            enabled = isReadyToFollowTrack;
         }
     }
 }
