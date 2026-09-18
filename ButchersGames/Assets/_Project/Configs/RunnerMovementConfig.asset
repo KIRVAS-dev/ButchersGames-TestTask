@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.RunnerMovementConfig
   _forwardSpeed: 5
   _trackHalfWidth: 3
+  _lateralCorrectionSpeed: 5
