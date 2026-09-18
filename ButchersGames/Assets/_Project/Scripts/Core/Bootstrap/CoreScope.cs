@@ -6,15 +6,20 @@ using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
+using Core.Input.ResultScreen;
 using Core.Input.RunnerMovement;
+using Core.Input.StartScreen;
 using ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
 using ViewComponents.Finish;
+using UI.Hud;
 using ViewComponents.LaneBarriers;
 using ViewComponents.Level;
 using ViewComponents.Obstacles;
+using UI.ResultScreen;
 using ViewComponents.RunnerMovement;
+using UI.StartScreen;
 using ViewComponents.WealthMeter;
 using ViewComponents.WealthPointsModifier;
 using VContainer;
@@ -39,6 +44,9 @@ namespace Core.Bootstrap
             RegisterFinish(builder);
             RegisterRunnerMovement(builder);
             RegisterGameFlow(builder);
+            RegisterStartScreen(builder);
+            RegisterHud(builder);
+            RegisterResultScreen(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
@@ -116,6 +124,26 @@ namespace Core.Bootstrap
         {
             builder.Register<GameFlowModel>(Lifetime.Singleton);
             builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
+        }
+
+        private static void RegisterStartScreen(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>().As<IStartScreenInput>();
+            builder.Register<StartScreenPresenter>(Lifetime.Singleton);
+            builder.Register<StartScreenInputHandler>(Lifetime.Singleton);
+        }
+
+        private static void RegisterHud(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<HudView>().As<IHudView>();
+            builder.Register<HudPresenter>(Lifetime.Singleton);
+        }
+
+        private static void RegisterResultScreen(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>().As<IResultScreenInput>();
+            builder.Register<ResultScreenPresenter>(Lifetime.Singleton);
+            builder.Register<ResultScreenInputHandler>(Lifetime.Singleton);
         }
     }
 }

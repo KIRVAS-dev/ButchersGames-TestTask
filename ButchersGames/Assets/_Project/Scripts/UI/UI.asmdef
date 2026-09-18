@@ -5,6 +5,8 @@
         "ExtendedExceptions",
         "DOTween.Modules",
         "Input",
+        "Core",
+        "Unity.TextMeshPro",
         "Unity.ugui",
         "VContainer"
     ],
@@ -13,7 +15,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "DOTween.dll"
+        "DOTween.dll",
+        "R3.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
