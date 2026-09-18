@@ -1,22 +1,29 @@
+using System;
 using Infrastructure.ExtendedExceptions;
-using Input;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.StartScreen
 {
     public sealed class StartScreenView
         : MonoBehaviour,
-          IStartScreenView,
-          IStartScreenInput
+          IStartScreenView
     {
         [SerializeField] private RectTransform _root;
-        [SerializeField] private ButtonClickTrigger _startButton;
+        [SerializeField] private Button _startButton;
 
-        public ITrigger StartTrigger => _startButton;
+        public event Action StartClicked;
 
         private void Awake()
         {
             Validate();
+
+            _startButton.onClick.AddListener(OnStartButtonClicked);
+        }
+
+        private void OnDestroy()
+        {
+            _startButton.onClick.RemoveListener(OnStartButtonClicked);
         }
 
         public void Show()
@@ -29,10 +36,18 @@ namespace UI.StartScreen
             _root.gameObject.SetActive(false);
         }
 
+        private void OnStartButtonClicked()
+        {
+            StartClicked?.Invoke();
+        }
+
         private void Validate()
         {
-            Guard.AgainstNull(_root, () => new MissingStartScreenFieldException(nameof(_root), gameObject.name));
-            Guard.AgainstNull(_startButton, () => new MissingStartScreenFieldException(nameof(_startButton), gameObject.name));
+            Func<string, ExtendedException> missing = fieldName =>
+                new MissingStartScreenFieldException(fieldName, gameObject.name);
+
+            Guard.AgainstNull(_root, () => missing(nameof(_root)));
+            Guard.AgainstNull(_startButton, () => missing(nameof(_startButton)));
         }
     }
 }

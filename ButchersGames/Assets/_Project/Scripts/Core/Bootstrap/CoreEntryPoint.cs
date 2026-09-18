@@ -1,9 +1,7 @@
 using System;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthPointsModifier;
-using Core.Input.ResultScreen;
 using Core.Input.RunnerMovement;
-using Core.Input.StartScreen;
 using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
@@ -18,8 +16,6 @@ namespace Core.Bootstrap
           IDisposable
     {
         private readonly RunnerMovementInputHandler _runnerMovementInputHandler;
-        private readonly StartScreenInputHandler _startScreenInputHandler;
-        private readonly ResultScreenInputHandler _resultScreenInputHandler;
         private readonly WealthPointsModifierService _wealthPointsModifierService;
         private readonly GameFlowService _gameFlowService;
         private readonly CharacterAppearancePresenter _characterAppearancePresenter;
@@ -30,8 +26,6 @@ namespace Core.Bootstrap
 
         public CoreEntryPoint(
             RunnerMovementInputHandler runnerMovementInputHandler,
-            StartScreenInputHandler startScreenInputHandler,
-            ResultScreenInputHandler resultScreenInputHandler,
             WealthPointsModifierService wealthPointsModifierService,
             GameFlowService gameFlowService,
             CharacterAppearancePresenter characterAppearancePresenter,
@@ -41,8 +35,6 @@ namespace Core.Bootstrap
             ResultScreenPresenter resultScreenPresenter)
         {
             _runnerMovementInputHandler = runnerMovementInputHandler;
-            _startScreenInputHandler = startScreenInputHandler;
-            _resultScreenInputHandler = resultScreenInputHandler;
             _wealthPointsModifierService = wealthPointsModifierService;
             _gameFlowService = gameFlowService;
             _characterAppearancePresenter = characterAppearancePresenter;
@@ -55,8 +47,6 @@ namespace Core.Bootstrap
         void IStartable.Start()
         {
             _runnerMovementInputHandler.StartListening();
-            _startScreenInputHandler.StartListening();
-            _resultScreenInputHandler.StartListening();
             _wealthPointsModifierService.StartListening();
             _characterAppearancePresenter.StartListening();
             _runnerMovementPresenter.StartListening();
@@ -69,8 +59,6 @@ namespace Core.Bootstrap
         void IDisposable.Dispose()
         {
             _runnerMovementInputHandler.StopListening();
-            _startScreenInputHandler.StopListening();
-            _resultScreenInputHandler.StopListening();
             _wealthPointsModifierService.StopListening();
             _gameFlowService.StopListening();
             _characterAppearancePresenter.StopListening();

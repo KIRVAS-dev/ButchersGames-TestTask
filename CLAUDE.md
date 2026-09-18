@@ -90,7 +90,7 @@ VContainer (DI), UniTask (async), R3 (реактивное связывание 
 ### Decision tree
 
 ```
-Пользовательский ввод? → InputHandler → I*Service
+Пользовательский ввод? → InputHandler → I*Service (UI-экран: клик View → Presenter → I*Service)
 Gameplay state / правила? → Model + Service (Core)
 Отображение / анимация / VFX? → ViewComponents View
 Данные сцены для Core? → Provider (ViewComponents → Api)

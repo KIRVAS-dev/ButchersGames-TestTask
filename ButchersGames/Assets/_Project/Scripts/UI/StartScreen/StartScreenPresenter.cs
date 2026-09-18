@@ -7,24 +7,36 @@ namespace UI.StartScreen
     public sealed class StartScreenPresenter
     {
         private readonly IStartScreenView _view;
+        private readonly IGameFlowService _gameFlowService;
         private readonly GameFlowModel _gameFlowModel;
 
         private IDisposable _stateSubscription;
 
-        public StartScreenPresenter(IStartScreenView view, GameFlowModel gameFlowModel)
+        public StartScreenPresenter(
+            IStartScreenView view,
+            IGameFlowService gameFlowService,
+            GameFlowModel gameFlowModel)
         {
             _view = view;
+            _gameFlowService = gameFlowService;
             _gameFlowModel = gameFlowModel;
         }
 
         public void StartListening()
         {
+            _view.StartClicked += OnStartClicked;
             _stateSubscription = _gameFlowModel.State.Subscribe(OnStateChanged);
         }
 
         public void StopListening()
         {
+            _view.StartClicked -= OnStartClicked;
             _stateSubscription?.Dispose();
+        }
+
+        private void OnStartClicked()
+        {
+            _gameFlowService.StartGame();
         }
 
         private void OnStateChanged(GameFlowState state)

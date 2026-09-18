@@ -54,7 +54,7 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 |---|---|
 | `Core` → `ViewComponents` | Core не знает сцену |
 | `Core.Input` → `ViewComponents` | Handler зависит только от портов Core и низкого Input |
-| View вызывает `I*Service` напрямую | Обход входного адаптера |
+| View вызывает `I*Service` напрямую | Обход входного адаптера (InputHandler; для UI-экрана — Presenter) |
 | Model использует `UnityEngine.*` | State должен быть pure C# |
 | View принимает gameplay-решения / меняет Model | Логика только в Service |
 | View напрямую держит ссылку на конкретный `Model`-класс | Между View и Model — Presenter, см. **Model → View через Presenter** |
@@ -175,7 +175,7 @@ private void RegisterFeature(IContainerBuilder builder)
 1. `Core/Gameplay/{Feature}/Api/` — `I{Feature}Service`, порты View/Provider/Settings, DTO, `Exceptions.cs`
 2. `Core/Gameplay/{Feature}/` — Model, Service, Registry при необходимости
 3. `ViewComponents/{Feature}/` — View, Providers, `{Feature}Config` SO; `Api/Exceptions.cs` для view-ошибок
-4. `Core/Input/{Feature}/` — InputHandler, если есть пользовательский ввод
+4. `Core/Input/{Feature}/` — InputHandler, если есть низкоуровневый ввод без экрана (drag, клавиши). Ввод UI-экрана (клики кнопок) — через Presenter, см. **UI-экраны (GameUI, MVP)**
 5. `CoreScope` — `Register{Feature}`, SerializeField для config/providers
 6. `CoreEntryPoint` — Start/Dispose для handler (ввод) или `StartListening()`/`StopListening()` (сервис-наблюдатель без потребителя через ctor)
 7. Сцена Core — View, Providers; ссылки на CoreScope
@@ -225,7 +225,7 @@ Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `Core
 ```
 UI/{Screen}/
 ├── Api/
-│   ├── I{Screen}View.cs        — пассивный контракт: Show()/Hide()/SetX(value), без R3, без условий
+│   ├── I{Screen}View.cs        — пассивный контракт: Show()/Hide()/SetX(value) + `event Action {Action}Clicked` для кнопок, без R3, без условий
 │   └── Exceptions.cs           — view/Inspector-ошибки, как у обычного View
 ├── {Screen}View.cs             — : MonoBehaviour, I{Screen}View — только применяет вызовы, ничего не решает
 └── {Screen}Presenter.cs        — plain C# (не MonoBehaviour)
@@ -235,8 +235,10 @@ UI/{Screen}/
 
 | Роль | Где | Обязанности |
 |---|---|---|
-| **Presenter** | `UI/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`) |
-| **View** | `UI/{Screen}/` | Реализует `I{Screen}View`. Только `SetActive`/`Set*` на UI-элементах — без чтения Core, без R3, без условий |
+| **Presenter** | `UI/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`); подписан на `{Action}Clicked` View и вызывает `I*Service` — единственная точка ввода экрана |
+| **View** | `UI/{Screen}/` | Реализует `I{Screen}View`. `SetActive`/`Set*` на UI-элементах; клик uGUI `Button` пробрасывает как `event Action` — без чтения Core, без R3, без условий, без вызова Service |
+
+**Ввод UI-экрана.** Клик кнопки: `Button.onClick` → View поднимает `{Action}Clicked` → Presenter вызывает `I*Service` (например `IGameFlowService.StartGame()`). Отдельный `InputHandler`, порт ввода в `Input/Api` и `ITrigger`-обёртка для кнопок экрана не нужны. Presenter только передаёт намерение в Service и **не принимает gameplay-решений** — валидация допустимости (`Guard`, переходы состояний) остаётся в Service. `InputHandler` (`Core/Input/{Feature}/`) остаётся для низкоуровневого ввода без экрана (drag, клавиши).
 
 Регистрация и лайфцикл Presenter — как описано в **Model → View через Presenter** выше.
 
@@ -249,3 +251,4 @@ UI/{Screen}/
 - Core **не** ссылается на ViewComponents; View реализует интерфейсы из Core
 - Core.Input **не** ссылается на ViewComponents
 - ViewComponents **не** вызывает Service напрямую — только через InputHandler; Providers отдают данные, не команды
+- UI-экран (`UI/{Screen}/`): View Service не вызывает, клики уходят `event Action` → Presenter → `I*Service`

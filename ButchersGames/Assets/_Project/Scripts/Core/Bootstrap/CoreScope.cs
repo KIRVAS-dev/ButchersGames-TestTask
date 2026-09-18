@@ -6,9 +6,7 @@ using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
-using Core.Input.ResultScreen;
 using Core.Input.RunnerMovement;
-using Core.Input.StartScreen;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
@@ -128,9 +126,8 @@ namespace Core.Bootstrap
 
         private static void RegisterStartScreen(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>().As<IStartScreenInput>();
+            builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>();
             builder.Register<StartScreenPresenter>(Lifetime.Singleton);
-            builder.Register<StartScreenInputHandler>(Lifetime.Singleton);
         }
 
         private static void RegisterHud(IContainerBuilder builder)
@@ -141,9 +138,8 @@ namespace Core.Bootstrap
 
         private static void RegisterResultScreen(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>().As<IResultScreenInput>();
+            builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>();
             builder.Register<ResultScreenPresenter>(Lifetime.Singleton);
-            builder.Register<ResultScreenInputHandler>(Lifetime.Singleton);
         }
     }
 }

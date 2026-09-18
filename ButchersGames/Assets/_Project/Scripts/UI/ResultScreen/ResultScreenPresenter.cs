@@ -9,6 +9,7 @@ namespace UI.ResultScreen
     public sealed class ResultScreenPresenter
     {
         private readonly IResultScreenView _view;
+        private readonly IGameFlowService _gameFlowService;
         private readonly GameFlowModel _gameFlowModel;
         private readonly WealthMeterModel _wealthMeterModel;
 
@@ -16,22 +17,38 @@ namespace UI.ResultScreen
 
         public ResultScreenPresenter(
             IResultScreenView view,
+            IGameFlowService gameFlowService,
             GameFlowModel gameFlowModel,
             WealthMeterModel wealthMeterModel)
         {
             _view = view;
+            _gameFlowService = gameFlowService;
             _gameFlowModel = gameFlowModel;
             _wealthMeterModel = wealthMeterModel;
         }
 
         public void StartListening()
         {
+            _view.RetryClicked += OnRetryClicked;
+            _view.NextClicked += OnNextClicked;
             _stateSubscription = _gameFlowModel.State.Subscribe(OnStateChanged);
         }
 
         public void StopListening()
         {
+            _view.RetryClicked -= OnRetryClicked;
+            _view.NextClicked -= OnNextClicked;
             _stateSubscription?.Dispose();
+        }
+
+        private void OnRetryClicked()
+        {
+            _gameFlowService.RetryLevel();
+        }
+
+        private void OnNextClicked()
+        {
+            _gameFlowService.ProceedToNextLevel();
         }
 
         private void OnStateChanged(GameFlowState state)
