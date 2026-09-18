@@ -214,7 +214,7 @@ View **никогда** не держит прямую ссылку на кон�
 
 Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `CoreScope`, без своего `I*Service` в Core Api (на него не ссылается никто, кроме `CoreEntryPoint`). Лайфцикл — `StartListening()`/`StopListening()` через параметр `CoreEntryPoint` (форсирует eager-резолв — Presenter это plain C# класс без другого потребителя, см. **Entry points**).
 
-Частный случай — UI-экран без собственной модели вообще: там Presenter/View дополнительно разносятся по отдельным файлам с фиксированной структурой `ViewComponents/{Screen}/`, см. ниже.
+Частный случай — UI-экран без собственной модели вообще: там Presenter/View дополнительно разносятся по отдельным файлам с фиксированной структурой `UI/{Screen}/`, см. ниже.
 
 ## UI-экраны (GameUI, MVP)
 
@@ -223,7 +223,7 @@ Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `Core
 ### Структура файлов
 
 ```
-ViewComponents/{Screen}/
+UI/{Screen}/
 ├── Api/
 │   ├── I{Screen}View.cs        — пассивный контракт: Show()/Hide()/SetX(value), без R3, без условий
 │   └── Exceptions.cs           — view/Inspector-ошибки, как у обычного View
@@ -235,12 +235,12 @@ ViewComponents/{Screen}/
 
 | Роль | Где | Обязанности |
 |---|---|---|
-| **Presenter** | `ViewComponents/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`) |
-| **View** | `ViewComponents/{Screen}/` | Реализует `I{Screen}View`. Только `SetActive`/`Set*` на UI-элементах — без чтения Core, без R3, без условий |
+| **Presenter** | `UI/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`) |
+| **View** | `UI/{Screen}/` | Реализует `I{Screen}View`. Только `SetActive`/`Set*` на UI-элементах — без чтения Core, без R3, без условий |
 
 Регистрация и лайфцикл Presenter — как описано в **Model → View через Presenter** выше.
 
-**Не размножать** структуру `ViewComponents/{Screen}/` (Presenter + `I{Screen}View` с фиксированным неймингом экрана) на геймплей-сущности, которые уже общаются через event-порты, а не `Model` (пикапы, препятствия — `WealthPointsModifierCollider`, `Obstacle`) — там остаётся обычная пара Model+Service (Core) / View (ViewComponents), см. **Model / View** выше и **Эталон фичи**. Presenter из-за прямого чтения `Model` (не привязанный к структуре экрана) — см. **Model → View через Presenter** выше; пример вне UI-экранов — `CharacterAppearanceView`/`RunnerTrackFollower`.
+**Не размножать** структуру `UI/{Screen}/` (Presenter + `I{Screen}View` с фиксированным неймингом экрана) на геймплей-сущности, которые уже общаются через event-порты, а не `Model` (пикапы, препятствия — `WealthPointsModifierCollider`, `Obstacle`) — там остаётся обычная пара Model+Service (Core) / View (ViewComponents), см. **Model / View** выше и **Эталон фичи**. Presenter из-за прямого чтения `Model` (не привязанный к структуре экрана) — см. **Model → View через Presenter** выше; пример вне UI-экранов — `CharacterAppearanceView`/`RunnerTrackFollower`.
 
 ## Architectural constraints
 
