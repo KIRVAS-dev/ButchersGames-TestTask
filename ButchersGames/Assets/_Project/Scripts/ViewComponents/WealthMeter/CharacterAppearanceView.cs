@@ -1,13 +1,13 @@
 using System;
 using Core.Gameplay.WealthMeter;
 using ExtendedExceptions;
-using R3;
 using UnityEngine;
-using VContainer;
 
 namespace ViewComponents.WealthMeter
 {
-    public sealed class CharacterAppearanceView : MonoBehaviour
+    public sealed class CharacterAppearanceView
+        : MonoBehaviour,
+          ICharacterAppearanceView
     {
         [SerializeField] private GameObject _poor;
         [SerializeField] private GameObject _descent;
@@ -15,28 +15,12 @@ namespace ViewComponents.WealthMeter
         [SerializeField] private GameObject _rich;
         [SerializeField] private GameObject _millionaire;
 
-        private IDisposable _stageSubscription;
-        private WealthMeterModel _model;
-
-        [Inject]
-        private void Construct(WealthMeterModel model)
-        {
-            _model = model;
-        }
-
         private void Awake()
         {
             Validate();
-
-            _stageSubscription = _model.Stage.Subscribe(ApplyStage);
         }
 
-        private void OnDestroy()
-        {
-            _stageSubscription?.Dispose();
-        }
-
-        private void ApplyStage(WealthStage stage)
+        public void SetActiveStage(WealthStage stage)
         {
             _poor.SetActive(stage == WealthStage.Poor);
             _descent.SetActive(stage == WealthStage.Descent);
@@ -47,8 +31,8 @@ namespace ViewComponents.WealthMeter
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing =
-                fieldName => new MissingCharacterAppearanceViewFieldException(fieldName, gameObject.name);
+            Func<string, ExtendedException> missing = fieldName =>
+                new MissingCharacterAppearanceViewFieldException(fieldName, gameObject.name);
 
             Guard.AgainstNull(_poor, () => missing(nameof(_poor)));
             Guard.AgainstNull(_descent, () => missing(nameof(_descent)));
