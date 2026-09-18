@@ -68,7 +68,8 @@ namespace Core.Bootstrap
             builder.RegisterInstance<IWealthMeterSettings>(_wealthMeterConfig);
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>();
-            builder.RegisterComponentInHierarchy<CharacterAppearanceView>().AsSelf();
+            builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>();
+            builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton);
         }
 
         private static void RegisterWealthPointsModifier(IContainerBuilder builder)
@@ -104,10 +105,11 @@ namespace Core.Bootstrap
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
             builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().AsSelf();
-            builder.RegisterComponentInHierarchy<RunnerTrackFollower>().AsSelf();
+            builder.RegisterComponentInHierarchy<RunnerTrackFollower>().As<IRunnerTrackFollowerView>();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
             builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>();
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
+            builder.Register<RunnerMovementPresenter>(Lifetime.Singleton);
         }
 
         private static void RegisterGameFlow(IContainerBuilder builder)

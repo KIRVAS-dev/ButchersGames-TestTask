@@ -57,6 +57,7 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | View вызывает `I*Service` напрямую | Обход входного адаптера |
 | Model использует `UnityEngine.*` | State должен быть pure C# |
 | View принимает gameplay-решения / меняет Model | Логика только в Service |
+| View напрямую держит ссылку на конкретный `Model`-класс | Между View и Model — Presenter, см. **Model → View через Presenter** |
 
 Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
 
@@ -203,11 +204,21 @@ UX-гейты во InputHandler (например busy → игнор клика
 | **InputHandler** | Тонкий адаптер. Guard только на UX-гейты (busy и т.п.) |
 | **Provider** | Читает сцену, отдаёт данные в Core. Конфиг-ошибки → view-исключения |
 
-**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую геймплей-сущность (Model/Service/View — умолчание). Исключение — UI-экраны, см. **UI-экраны (GameUI, MVP)** ниже.
+**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую геймплей-сущность, которая уже общается через event-порты (`I*Provider`/`ITriggerReaction` и т.п.), а не через `Model` (Model/Service/View — умолчание для таких сущностей: пикапы, препятствия, `WealthPointsModifierCollider`, `Obstacle`). Presenter обязателен только там, где View иначе пришлось бы напрямую держать ссылку на конкретный `Model`-класс — см. **Model → View через Presenter** ниже.
+
+## Model → View через Presenter
+
+View **никогда** не держит прямую ссылку на конкретный `Model`-класс — ни своей фичи, ни тем более чужой. Если View должен реагировать на изменение `Model` (не Provider/Service-порта, а именно `*Model`), между ними обязателен **Presenter** (plain C#, не `MonoBehaviour`): ctor DI на нужный `*Model` + узкий пассивный `I*View`-порт, реализуемый View. Presenter R3-подпиской транслирует изменения `Model` в вызовы `I*View` (`Show`/`Hide`/`SetX(value)`); View только применяет вызов, сам не подписывается и не решает.
+
+Это не ограничено UI-экранами — тот же паттерн для любого View, у которого нет своей `Model`, но есть чужая (примеры: `CharacterAppearanceView` реагирует на `WealthMeterModel.Stage` через `CharacterAppearancePresenter`; `RunnerTrackFollower` — на `RunnerMovementModel.LateralOffset`/`State` через `RunnerMovementPresenter`). Легитимные Core-порты (`I*Service`/`I*Provider`), не относящиеся к `Model`, остаются в самом View/InputHandler как обычно — через Presenter выносится только то, что иначе стало бы прямой ссылкой на `Model`.
+
+Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `CoreScope`, без своего `I*Service` в Core Api (на него не ссылается никто, кроме `CoreEntryPoint`). Лайфцикл — `StartListening()`/`StopListening()` через параметр `CoreEntryPoint` (форсирует eager-резолв — Presenter это plain C# класс без другого потребителя, см. **Entry points**).
+
+Частный случай — UI-экран без собственной модели вообще: там Presenter/View дополнительно разносятся по отдельным файлам с фиксированной структурой `ViewComponents/{Screen}/`, см. ниже.
 
 ## UI-экраны (GameUI, MVP)
 
-Экран UI (старт/HUD/результат и т.п.) не имеет собственной игровой модели — он только отображает уже существующее Core-состояние (`GameFlowModel`, `WealthMeterModel` и т.п. других фич). Обычная пара Model/View здесь не подходит: View обязан оставаться пассивным (без R3-подписок, без условий видимости), а трансляция Core-состояния в show/hide — презентационная развязка, не бизнес-правило самого экрана. Для UI-экранов (и только для них) единственное исключение из запрета на Presenter выше — MVP.
+Экран UI (старт/HUD/результат и т.п.) — частный случай **Model → View через Presenter** выше: своей игровой модели нет, только отображение уже существующего Core-состояния (`GameFlowModel`, `WealthMeterModel` и т.п. других фич). Для экранов конкретно — фиксированная структура файлов и контракт `Show`/`Hide`/`SetX` ниже.
 
 ### Структура файлов
 
@@ -227,9 +238,9 @@ ViewComponents/{Screen}/
 | **Presenter** | `ViewComponents/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`) |
 | **View** | `ViewComponents/{Screen}/` | Реализует `I{Screen}View`. Только `SetActive`/`Set*` на UI-элементах — без чтения Core, без R3, без условий |
 
-Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `CoreScope`, без своего `I*Service` в Core Api (на него не ссылается никто, кроме `CoreEntryPoint`). Лайфцикл — `StartListening()`/`StopListening()` через параметр `CoreEntryPoint` (форсирует eager-резолв, тот же паттерн, что у сервиса-наблюдателя без потребителя через ctor — см. **Entry points**).
+Регистрация и лайфцикл Presenter — как описано в **Model → View через Presenter** выше.
 
-**Не размножать** MVP на геймплей-сущности (пикапы, препятствия, персонаж и т.п.) — там остаётся обычная пара Model+Service (Core) / View (ViewComponents), см. **Model / View** выше и **Эталон фичи**.
+**Не размножать** структуру `ViewComponents/{Screen}/` (Presenter + `I{Screen}View` с фиксированным неймингом экрана) на геймплей-сущности, которые уже общаются через event-порты, а не `Model` (пикапы, препятствия — `WealthPointsModifierCollider`, `Obstacle`) — там остаётся обычная пара Model+Service (Core) / View (ViewComponents), см. **Model / View** выше и **Эталон фичи**. Presenter из-за прямого чтения `Model` (не привязанный к структуре экрана) — см. **Model → View через Presenter** выше; пример вне UI-экранов — `CharacterAppearanceView`/`RunnerTrackFollower`.
 
 ## Architectural constraints
 

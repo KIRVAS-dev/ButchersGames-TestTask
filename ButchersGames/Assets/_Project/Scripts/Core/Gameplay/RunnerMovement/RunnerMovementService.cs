@@ -7,9 +7,6 @@ using UnityEngine;
 
 namespace Core.Gameplay.RunnerMovement
 {
-
-
-
     public sealed class RunnerMovementService
         : IRunnerMovementService,
           IDisposable
@@ -146,7 +143,7 @@ namespace Core.Gameplay.RunnerMovement
                 offset = ApplyClamp(offset, clamp);
             }
 
-            _model.LateralOffset = offset;
+            _model.LateralOffset.Value = offset;
         }
 
         public void AdvanceLateralCorrections(float deltaTime)
@@ -157,9 +154,9 @@ namespace Core.Gameplay.RunnerMovement
             }
 
             float maxStep = _settings.LateralCorrectionSpeed * deltaTime;
-            _model.LateralOffset = MoveTowards(_model.LateralOffset, _lateralCorrectionTarget, maxStep);
+            _model.LateralOffset.Value = MoveTowards(_model.LateralOffset.Value, _lateralCorrectionTarget, maxStep);
 
-            if (Mathf.Approximately(_model.LateralOffset, _lateralCorrectionTarget))
+            if (Mathf.Approximately(_model.LateralOffset.Value, _lateralCorrectionTarget))
             {
                 _correctingLaneBarrier = null;
             }
@@ -167,7 +164,7 @@ namespace Core.Gameplay.RunnerMovement
 
         private void OnLevelLoaded()
         {
-            _model.LateralOffset = CenteredLateralOffset;
+            _model.LateralOffset.Value = CenteredLateralOffset;
             _activeObstacleCount = NoActiveObstacles;
             _model.State.Value = RunnerMovementState.Moving;
 
@@ -196,7 +193,7 @@ namespace Core.Gameplay.RunnerMovement
 
         private void OnLaneBarrierEntered(ILaneBarrier barrier)
         {
-            float currentOffset = _model.LateralOffset;
+            float currentOffset = _model.LateralOffset.Value;
 
             if (currentOffset <= barrier.MinLateralOffset)
             {
