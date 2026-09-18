@@ -4,11 +4,11 @@ using Core.Gameplay.WealthPointsModifier;
 using Core.Input.ResultScreen;
 using Core.Input.RunnerMovement;
 using Core.Input.StartScreen;
-using VContainer.Unity;
 using UI.Hud;
 using UI.ResultScreen;
-using ViewComponents.RunnerMovement;
 using UI.StartScreen;
+using VContainer.Unity;
+using ViewComponents.RunnerMovement;
 using ViewComponents.WealthMeter;
 
 namespace Core.Bootstrap

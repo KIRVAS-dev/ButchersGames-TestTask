@@ -2,6 +2,7 @@ using System;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthMeter;
 using R3;
+using UnityEngine;
 
 namespace UI.ResultScreen
 {
@@ -59,7 +60,9 @@ namespace UI.ResultScreen
 
         private void ShowResult()
         {
-            _view.SetMoneyAmount(_wealthMeterModel.Value.CurrentValue);
+            int moneyAmount = Mathf.Max(0, _wealthMeterModel.Value.CurrentValue);
+
+            _view.SetMoneyAmount(moneyAmount);
             _view.Show();
         }
     }
