@@ -1,5 +1,5 @@
 using Core.Gameplay.GameFlow;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 
 namespace UI.ResultScreen
 {

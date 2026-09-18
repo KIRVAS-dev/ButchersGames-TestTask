@@ -1,4 +1,4 @@
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using UnityEngine.Serialization;
 

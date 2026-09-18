@@ -1,5 +1,5 @@
 using System;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using Input;
 using TMPro;
 using UnityEngine;

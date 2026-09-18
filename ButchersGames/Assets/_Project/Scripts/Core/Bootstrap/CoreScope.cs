@@ -9,7 +9,7 @@ using Core.Gameplay.WealthPointsModifier;
 using Core.Input.ResultScreen;
 using Core.Input.RunnerMovement;
 using Core.Input.StartScreen;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
 using ViewComponents.Finish;

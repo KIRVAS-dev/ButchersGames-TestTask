@@ -1,5 +1,5 @@
+using Infrastructure.ExtendedExceptions;
 using System;
-using ExtendedExceptions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,8 +32,7 @@ namespace Input
 
         private void Validate()
         {
-            Guard.AgainstNull(_button, () =>
-                new MissingButtonClickTriggerFieldException(nameof(_button), gameObject.name));
+            Guard.AgainstNull(_button, () => new MissingButtonClickTriggerFieldException(nameof(_button), gameObject.name));
         }
     }
 }

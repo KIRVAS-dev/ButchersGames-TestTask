@@ -2,7 +2,7 @@ using System;
 using Core.Gameplay.Finish;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.WealthMeter;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 
 namespace Core.Gameplay.GameFlow
 {

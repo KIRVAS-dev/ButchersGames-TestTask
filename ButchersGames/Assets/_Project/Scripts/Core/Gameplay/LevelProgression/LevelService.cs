@@ -1,5 +1,5 @@
+using Infrastructure.ExtendedExceptions;
 using System;
-using ExtendedExceptions;
 
 namespace Core.Gameplay.LevelProgression
 {

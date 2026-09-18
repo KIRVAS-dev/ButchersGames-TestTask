@@ -1,5 +1,5 @@
 using Core.Gameplay.WealthMeter;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.WealthMeter

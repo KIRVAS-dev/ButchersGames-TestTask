@@ -1,7 +1,7 @@
 using System;
 using Core.Gameplay.Finish;
 using Core.Gameplay.LevelProgression;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using VContainer;
 

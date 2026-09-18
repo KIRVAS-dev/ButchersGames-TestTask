@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using Core.Gameplay.Obstacle;
 using Cysharp.Threading.Tasks;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.Obstacles

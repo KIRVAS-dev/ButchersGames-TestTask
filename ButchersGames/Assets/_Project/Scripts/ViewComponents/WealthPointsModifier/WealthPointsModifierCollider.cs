@@ -1,6 +1,6 @@
 using System;
 using Core.Gameplay.WealthPointsModifier;
-using ExtendedExceptions;
+using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using ViewComponents;
 
