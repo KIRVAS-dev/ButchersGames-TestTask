@@ -2,7 +2,7 @@ using System;
 using Core.Gameplay.WealthPointsModifier;
 using ExtendedExceptions;
 using UnityEngine;
-using ViewComponents.Collectables;
+using ViewComponents;
 
 namespace ViewComponents.WealthPointsModifier
 {
@@ -33,9 +33,9 @@ namespace ViewComponents.WealthPointsModifier
 
             Triggered?.Invoke(_config.Type, _config.Amount);
 
-            if (TryGetComponent(out Collectable collectable))
+            if (TryGetComponent(out ITriggerReaction reaction))
             {
-                collectable.Collect();
+                reaction.React();
             }
         }
 

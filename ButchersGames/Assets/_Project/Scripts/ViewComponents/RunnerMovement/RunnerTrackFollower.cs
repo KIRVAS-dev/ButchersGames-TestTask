@@ -19,6 +19,7 @@ namespace ViewComponents.RunnerMovement
         private IGameplayInputBlock _inputBlock;
         private IRunnerMovementSettings _settings;
         private IDisposable _inputBlockSubscription;
+        private IDisposable _movementStateSubscription;
         private RunnerMovementModel _model;
         private RunnerMovementView _view;
         private SplineContainer _splineContainer;
@@ -43,6 +44,7 @@ namespace ViewComponents.RunnerMovement
             _levelProvider.LevelLoaded += OnLevelLoaded;
 
             SubscribeToInputBlockChanges();
+            SubscribeToMovementStateChanges();
         }
 
         private void Awake()
@@ -77,6 +79,7 @@ namespace ViewComponents.RunnerMovement
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
             _inputBlockSubscription?.Dispose();
+            _movementStateSubscription?.Dispose();
         }
 
         private void OnLevelLoaded()
@@ -96,12 +99,21 @@ namespace ViewComponents.RunnerMovement
 
         private void RefreshTrackFollowing()
         {
-            enabled = _isLevelLoaded && !_inputBlock.IsBlocked.CurrentValue;
+            bool isReadyToFollowTrack = _isLevelLoaded
+             && !_inputBlock.IsBlocked.CurrentValue
+             && _model.State.CurrentValue == RunnerMovementState.Moving;
+
+            enabled = isReadyToFollowTrack;
         }
 
         private void SubscribeToInputBlockChanges()
         {
             _inputBlockSubscription = _inputBlock.IsBlocked.Skip(SkipInitialValue).Subscribe(_ => RefreshTrackFollowing());
+        }
+
+        private void SubscribeToMovementStateChanges()
+        {
+            _movementStateSubscription = _model.State.Skip(SkipInitialValue).Subscribe(_ => RefreshTrackFollowing());
         }
     }
 }

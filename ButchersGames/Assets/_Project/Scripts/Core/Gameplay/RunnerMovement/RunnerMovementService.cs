@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Core.Gameplay.LevelProgression;
+using Core.Gameplay.Obstacle;
 
 namespace Core.Gameplay.RunnerMovement
 {
@@ -10,23 +12,31 @@ namespace Core.Gameplay.RunnerMovement
         private const float NormalizedLateralOffsetMin = -1f;
         private const float NormalizedLateralOffsetMax = 1f;
         private const float CenteredLateralOffset = 0f;
+        private const int NoActiveObstacles = 0;
 
         private readonly ILevelProvider _levelProvider;
         private readonly IRunnerMovementSettings _settings;
+        private readonly IObstacleRegistry _obstacleRegistry;
         private readonly RunnerMovementModel _model;
+        private readonly List<IObstacle> _subscribedObstacles = new List<IObstacle>();
+        private int _activeObstacleCount;
 
         public RunnerMovementService(
             ILevelProvider levelProvider,
             IRunnerMovementSettings settings,
+            IObstacleRegistry obstacleRegistry,
             RunnerMovementModel model)
         {
             _levelProvider = levelProvider;
             _settings = settings;
+            _obstacleRegistry = obstacleRegistry;
             _model = model;
 
-            _levelProvider.LevelLoaded += ResetLateralOffset;
+            _levelProvider.LevelLoaded += OnLevelLoaded;
+            _obstacleRegistry.ObstaclesChanged += ResubscribeToObstacles;
 
-            ResetLateralOffset();
+            OnLevelLoaded();
+            ResubscribeToObstacles();
         }
 
         public void SetNormalizedLateralOffset(float normalizedOffset)
@@ -37,12 +47,58 @@ namespace Core.Gameplay.RunnerMovement
 
         void IDisposable.Dispose()
         {
-            _levelProvider.LevelLoaded -= ResetLateralOffset;
+            _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _obstacleRegistry.ObstaclesChanged -= ResubscribeToObstacles;
+
+            UnsubscribeAllObstacles();
         }
 
-        private void ResetLateralOffset()
+        private void OnLevelLoaded()
         {
             _model.LateralOffset = CenteredLateralOffset;
+            _activeObstacleCount = NoActiveObstacles;
+            _model.State.Value = RunnerMovementState.Moving;
+        }
+
+        private void ResubscribeToObstacles()
+        {
+            UnsubscribeAllObstacles();
+
+            _subscribedObstacles.AddRange(_obstacleRegistry.Obstacles);
+
+            foreach (IObstacle obstacle in _subscribedObstacles)
+            {
+                obstacle.Hit += OnObstacleHit;
+                obstacle.Released += OnObstacleReleased;
+            }
+        }
+
+        private void UnsubscribeAllObstacles()
+        {
+            foreach (IObstacle obstacle in _subscribedObstacles)
+            {
+                obstacle.Hit -= OnObstacleHit;
+                obstacle.Released -= OnObstacleReleased;
+            }
+
+            _subscribedObstacles.Clear();
+        }
+
+        private void OnObstacleHit()
+        {
+            _activeObstacleCount++;
+            _model.State.Value = RunnerMovementState.Stopped;
+        }
+
+        private void OnObstacleReleased()
+        {
+            _activeObstacleCount--;
+
+            if (_activeObstacleCount <= NoActiveObstacles)
+            {
+                _activeObstacleCount = NoActiveObstacles;
+                _model.State.Value = RunnerMovementState.Moving;
+            }
         }
     }
 }
