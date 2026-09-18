@@ -1,4 +1,5 @@
 using System;
+using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthMeter;
 using R3;
@@ -10,6 +11,7 @@ namespace UI.ResultScreen
     {
         private readonly IResultScreenView _view;
         private readonly IGameFlowService _gameFlowService;
+        private readonly IFeedbackPerformer _feedbackPerformer;
         private readonly GameFlowModel _gameFlowModel;
         private readonly WealthMeterModel _wealthMeterModel;
 
@@ -18,11 +20,13 @@ namespace UI.ResultScreen
         public ResultScreenPresenter(
             IResultScreenView view,
             IGameFlowService gameFlowService,
+            IFeedbackPerformer feedbackPerformer,
             GameFlowModel gameFlowModel,
             WealthMeterModel wealthMeterModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
+            _feedbackPerformer = feedbackPerformer;
             _gameFlowModel = gameFlowModel;
             _wealthMeterModel = wealthMeterModel;
         }
@@ -43,11 +47,13 @@ namespace UI.ResultScreen
 
         private void OnRetryClicked()
         {
+            _feedbackPerformer.Play(FeedbackType.ButtonClick);
             _gameFlowService.RetryLevel();
         }
 
         private void OnNextClicked()
         {
+            _feedbackPerformer.Play(FeedbackType.ButtonClick);
             _gameFlowService.ProceedToNextLevel();
         }
 

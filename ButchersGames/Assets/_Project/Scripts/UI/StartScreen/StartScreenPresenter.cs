@@ -1,4 +1,5 @@
 using System;
+using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using R3;
 
@@ -8,6 +9,7 @@ namespace UI.StartScreen
     {
         private readonly IStartScreenView _view;
         private readonly IGameFlowService _gameFlowService;
+        private readonly IFeedbackPerformer _feedbackPerformer;
         private readonly GameFlowModel _gameFlowModel;
 
         private IDisposable _stateSubscription;
@@ -15,10 +17,12 @@ namespace UI.StartScreen
         public StartScreenPresenter(
             IStartScreenView view,
             IGameFlowService gameFlowService,
+            IFeedbackPerformer feedbackPerformer,
             GameFlowModel gameFlowModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
+            _feedbackPerformer = feedbackPerformer;
             _gameFlowModel = gameFlowModel;
         }
 
@@ -36,6 +40,7 @@ namespace UI.StartScreen
 
         private void OnStartClicked()
         {
+            _feedbackPerformer.Play(FeedbackType.ButtonClick);
             _gameFlowService.StartGame();
         }
 
