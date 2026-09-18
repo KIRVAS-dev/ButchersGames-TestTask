@@ -3,7 +3,6 @@ using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthPointsModifier;
 using Core.Input.RunnerMovement;
 using VContainer.Unity;
-using ViewComponents.RunnerMovement;
 
 namespace Core.Bootstrap
 {
@@ -11,25 +10,16 @@ namespace Core.Bootstrap
         : IStartable,
           IDisposable
     {
-        private readonly IGameplayInputBlock _gameplayInputBlock;
-        private readonly CoreCancellationSource _coreCancellation;
         private readonly RunnerMovementInputHandler _runnerMovementInputHandler;
-        private readonly RunnerTrackFollower _runnerTrackFollower;
         private readonly WealthPointsModifierService _wealthPointsModifierService;
         private readonly GameFlowService _gameFlowService;
 
         public CoreEntryPoint(
-            IGameplayInputBlock gameplayInputBlock,
-            CoreCancellationSource coreCancellation,
             RunnerMovementInputHandler runnerMovementInputHandler,
-            RunnerTrackFollower runnerTrackFollower,
             WealthPointsModifierService wealthPointsModifierService,
             GameFlowService gameFlowService)
         {
-            _gameplayInputBlock = gameplayInputBlock;
-            _coreCancellation = coreCancellation;
             _runnerMovementInputHandler = runnerMovementInputHandler;
-            _runnerTrackFollower = runnerTrackFollower;
             _wealthPointsModifierService = wealthPointsModifierService;
             _gameFlowService = gameFlowService;
         }

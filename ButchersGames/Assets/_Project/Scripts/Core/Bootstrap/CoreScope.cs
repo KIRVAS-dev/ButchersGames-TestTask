@@ -45,7 +45,6 @@ namespace Core.Bootstrap
         {
             builder.RegisterEntryPoint<CoreEntryPoint>();
             builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
-            builder.Register<CoreCancellationSource>(Lifetime.Singleton);
         }
 
         private void RegisterLevelProgression(IContainerBuilder builder)
@@ -69,6 +68,7 @@ namespace Core.Bootstrap
             builder.RegisterInstance<IWealthMeterSettings>(_wealthMeterConfig);
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>();
+            builder.RegisterComponentInHierarchy<CharacterAppearanceView>().AsSelf();
         }
 
         private static void RegisterWealthPointsModifier(IContainerBuilder builder)
