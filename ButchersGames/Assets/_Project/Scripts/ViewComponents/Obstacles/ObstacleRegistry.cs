@@ -1,20 +1,18 @@
-using System;
 using System.Collections.Generic;
 using Core.Gameplay.Obstacle;
+using ViewComponents.Level;
 
 namespace ViewComponents.Obstacles
 {
-    public sealed class ObstacleRegistry
-        : SceneRegistry<Obstacle, IObstacle>,
-          IObstacleRegistry
+    public sealed class ObstacleRegistry : IObstacleRegistry
     {
-        public event Action ObstaclesChanged;
+        private readonly LevelProvider _levelProvider;
 
-        public IReadOnlyList<IObstacle> Obstacles => Items;
-
-        protected override void NotifyItemsChanged()
+        public ObstacleRegistry(LevelProvider levelProvider)
         {
-            ObstaclesChanged?.Invoke();
+            _levelProvider = levelProvider;
         }
+
+        public IReadOnlyCollection<IObstacle> Obstacles => _levelProvider.CurrentLevel.Obstacles;
     }
 }

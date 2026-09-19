@@ -44,16 +44,16 @@ namespace ViewComponents.Level
 #if UNITY_EDITOR
             if (Application.isPlaying)
             {
-                Instantiate(levelPrefab, transform);
-                _levelProvider.NotifyLevelLoaded();
+                Level level = Instantiate(levelPrefab, transform);
+                _levelProvider.NotifyLevelLoaded(level);
             }
             else
             {
                 UnityEditor.PrefabUtility.InstantiatePrefab(levelPrefab, transform);
             }
 #else
-            Instantiate(levelPrefab, transform);
-            _levelProvider.NotifyLevelLoaded();
+            Level level = Instantiate(levelPrefab, transform);
+            _levelProvider.NotifyLevelLoaded(level);
 #endif
         }
     }

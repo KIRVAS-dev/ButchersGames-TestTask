@@ -1,20 +1,18 @@
-using System;
 using System.Collections.Generic;
 using Core.Gameplay.WealthPointsModifier;
+using ViewComponents.Level;
 
 namespace ViewComponents.WealthPointsModifier
 {
-    public sealed class WealthPointsModifierRegistry
-        : SceneRegistry<WealthPointsModifierCollider, IWealthPointsModifier>,
-          IWealthPointsModifierRegistry
+    public sealed class WealthPointsModifierRegistry : IWealthPointsModifierRegistry
     {
-        public event Action ModifiersChanged;
+        private readonly LevelProvider _levelProvider;
 
-        public IReadOnlyList<IWealthPointsModifier> Modifiers => Items;
-
-        protected override void NotifyItemsChanged()
+        public WealthPointsModifierRegistry(LevelProvider levelProvider)
         {
-            ModifiersChanged?.Invoke();
+            _levelProvider = levelProvider;
         }
+
+        public IReadOnlyCollection<IWealthPointsModifier> Modifiers => _levelProvider.CurrentLevel.Modifiers;
     }
 }

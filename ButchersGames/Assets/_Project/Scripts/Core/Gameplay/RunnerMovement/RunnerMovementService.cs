@@ -63,19 +63,11 @@ namespace Core.Gameplay.RunnerMovement
         public void StartListening()
         {
             _levelProvider.LevelLoaded += OnLevelLoaded;
-            _obstacleRegistry.ObstaclesChanged += ResubscribeToObstacles;
-            _laneBarrierRegistry.BarriersChanged += ResubscribeToLaneBarriers;
-
-            OnLevelLoaded();
-            ResubscribeToObstacles();
-            ResubscribeToLaneBarriers();
         }
 
         public void StopListening()
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
-            _obstacleRegistry.ObstaclesChanged -= ResubscribeToObstacles;
-            _laneBarrierRegistry.BarriersChanged -= ResubscribeToLaneBarriers;
 
             UnsubscribeAllObstacles();
             UnsubscribeAllLaneBarriers();
@@ -173,6 +165,9 @@ namespace Core.Gameplay.RunnerMovement
 
             _activeLaneBarrierClamps.Clear();
             _correctingLaneBarrier = null;
+
+            ResubscribeToObstacles();
+            ResubscribeToLaneBarriers();
         }
 
         private void OnObstacleHit()
