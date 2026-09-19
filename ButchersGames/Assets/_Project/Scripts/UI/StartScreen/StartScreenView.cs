@@ -52,12 +52,13 @@ namespace UI.StartScreen
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing = fieldName =>
-                new MissingStartScreenFieldException(fieldName, gameObject.name);
+            Guard.AgainstNull(_root, () => Missing(nameof(_root)));
+            Guard.AgainstNull(_levelNumberText, () => Missing(nameof(_levelNumberText)));
+            Guard.AgainstNull(_startButton, () => Missing(nameof(_startButton)));
 
-            Guard.AgainstNull(_root, () => missing(nameof(_root)));
-            Guard.AgainstNull(_levelNumberText, () => missing(nameof(_levelNumberText)));
-            Guard.AgainstNull(_startButton, () => missing(nameof(_startButton)));
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingStartScreenFieldException(fieldName, gameObject.name);
         }
     }
 }

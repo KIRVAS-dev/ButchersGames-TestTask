@@ -73,15 +73,16 @@ namespace UI.ResultScreen
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing = fieldName =>
-                new MissingResultScreenFieldException(fieldName, gameObject.name);
+            Guard.AgainstNull(_root, () => Missing(nameof(_root)));
+            Guard.AgainstNull(_winVisualRoot, () => Missing(nameof(_winVisualRoot)));
+            Guard.AgainstNull(_loseVisualRoot, () => Missing(nameof(_loseVisualRoot)));
+            Guard.AgainstNull(_moneyAmountText, () => Missing(nameof(_moneyAmountText)));
+            Guard.AgainstNull(_retryButton, () => Missing(nameof(_retryButton)));
+            Guard.AgainstNull(_nextButton, () => Missing(nameof(_nextButton)));
 
-            Guard.AgainstNull(_root, () => missing(nameof(_root)));
-            Guard.AgainstNull(_winVisualRoot, () => missing(nameof(_winVisualRoot)));
-            Guard.AgainstNull(_loseVisualRoot, () => missing(nameof(_loseVisualRoot)));
-            Guard.AgainstNull(_moneyAmountText, () => missing(nameof(_moneyAmountText)));
-            Guard.AgainstNull(_retryButton, () => missing(nameof(_retryButton)));
-            Guard.AgainstNull(_nextButton, () => missing(nameof(_nextButton)));
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingResultScreenFieldException(fieldName, gameObject.name);
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
 using TMPro;
@@ -63,14 +62,16 @@ namespace UI.Hud
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing = fieldName => new MissingHudFieldException(fieldName, gameObject.name);
+            Guard.AgainstNull(_root, () => Missing(nameof(_root)));
+            Guard.AgainstNull(_levelNumberText, () => Missing(nameof(_levelNumberText)));
+            Guard.AgainstNull(_moneyAmountText, () => Missing(nameof(_moneyAmountText)));
+            Guard.AgainstNull(_wealthStageNameText, () => Missing(nameof(_wealthStageNameText)));
+            Guard.AgainstNull(_wealthFillBarImage, () => Missing(nameof(_wealthFillBarImage)));
+            Guard.AgainstNull(_config, () => Missing(nameof(_config)));
 
-            Guard.AgainstNull(_root, () => missing(nameof(_root)));
-            Guard.AgainstNull(_levelNumberText, () => missing(nameof(_levelNumberText)));
-            Guard.AgainstNull(_moneyAmountText, () => missing(nameof(_moneyAmountText)));
-            Guard.AgainstNull(_wealthStageNameText, () => missing(nameof(_wealthStageNameText)));
-            Guard.AgainstNull(_wealthFillBarImage, () => missing(nameof(_wealthFillBarImage)));
-            Guard.AgainstNull(_config, () => missing(nameof(_config)));
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingHudFieldException(fieldName, gameObject.name);
         }
     }
 }

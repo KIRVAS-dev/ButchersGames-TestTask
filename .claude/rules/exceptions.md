@@ -64,18 +64,19 @@ Model, Service, ScriptableObject-config без привязки к сцене.
 
 ## Локальная фабрика (call site)
 
-При **≥2** проверках с **одним** типом исключения и одной формой аргументов — вынести factory:
+При **≥2** проверках с **одним** типом исключения и одной формой аргументов — вынести factory в **локальную функцию** (не в `Func<…>`-переменную):
 
 ```csharp
-Func<string, string, ExtendedException> missing =
-    (fieldName, objectName) => new MissingFooFieldException(fieldName, objectName);
+Guard.AgainstNull(_a, () => Missing(nameof(_a)));
+Guard.AgainstNull(_b, () => Missing(nameof(_b)));
 
-string objectName = gameObject.name;
+return;
 
-Guard.AgainstNull(_a, () => missing(nameof(_a), objectName));
-Guard.AgainstNull(_b, () => missing(nameof(_b), objectName));
+ExtendedException Missing(string fieldName) => new MissingFooFieldException(fieldName, gameObject.name);
 ```
 
-- Одиночный `Guard` — inline `() => new …`, без локальной фабрики
-- Разные типы в одном методе — отдельная фабрика на тип или inline
+- Локальная функция — в **конце** метода, после явного `return;`; имя в `PascalCase` (`Missing`, `Invalid`) — так требуют инспекции Rider («Use local function», «Local functions» naming, «Separate local function with explicit return»)
+- `Func<string, ExtendedException> missing = …` не использовать
+- Одиночный `Guard` — inline `() => new …`, без локальной функции
+- Разные типы в одном методе — отдельная локальная функция на тип или inline
 - `nameof` обязателен; `CallerArgumentExpression` в этот rule не входит

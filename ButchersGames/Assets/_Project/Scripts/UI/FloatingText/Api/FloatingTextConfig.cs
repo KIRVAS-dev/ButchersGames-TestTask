@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -41,22 +40,23 @@ namespace UI.FloatingText
 
         public void Validate()
         {
-            Func<string, float, ExtendedException> invalid =
-                (fieldName, value) => new InvalidFloatingTextValueException(fieldName, value);
-
-            Guard.AgainstNegative(_sideOffset, () => invalid(nameof(_sideOffset), _sideOffset));
-            Guard.AgainstNegative(_prewarmCount, () => invalid(nameof(_prewarmCount), _prewarmCount));
-            Guard.AgainstNonPositive(_lifetime, () => invalid(nameof(_lifetime), _lifetime));
-            Guard.AgainstNonPositive(_riseDistance, () => invalid(nameof(_riseDistance), _riseDistance));
-            Guard.AgainstNegative(_appearDuration, () => invalid(nameof(_appearDuration), _appearDuration));
-            Guard.AgainstNegative(_appearStartScale, () => invalid(nameof(_appearStartScale), _appearStartScale));
-            Guard.AgainstNegative(_disappearDuration, () => invalid(nameof(_disappearDuration), _disappearDuration));
+            Guard.AgainstNegative(_sideOffset, () => Invalid(nameof(_sideOffset), _sideOffset));
+            Guard.AgainstNegative(_prewarmCount, () => Invalid(nameof(_prewarmCount), _prewarmCount));
+            Guard.AgainstNonPositive(_lifetime, () => Invalid(nameof(_lifetime), _lifetime));
+            Guard.AgainstNonPositive(_riseDistance, () => Invalid(nameof(_riseDistance), _riseDistance));
+            Guard.AgainstNegative(_appearDuration, () => Invalid(nameof(_appearDuration), _appearDuration));
+            Guard.AgainstNegative(_appearStartScale, () => Invalid(nameof(_appearStartScale), _appearStartScale));
+            Guard.AgainstNegative(_disappearDuration, () => Invalid(nameof(_disappearDuration), _disappearDuration));
 
             Guard.AgainstGreaterThan(
                 _appearDuration + _disappearDuration,
                 _lifetime,
                 () => new InvalidFloatingTextTimingException(_lifetime, _appearDuration, _disappearDuration)
             );
+
+            return;
+
+            ExtendedException Invalid(string fieldName, float value) => new InvalidFloatingTextValueException(fieldName, value);
         }
     }
 }
