@@ -68,7 +68,14 @@ namespace Core.Gameplay.RunnerMovement
             AdvanceLateralCorrection(deltaTime);
         }
 
-        public void SetNormalizedLateralOffset(float normalizedOffset)
+        public void AddNormalizedLateralOffsetDelta(float normalizedDelta)
+        {
+            float currentNormalizedOffset = _model.LateralOffset.Value / _settings.TrackHalfWidth;
+
+            SetNormalizedLateralOffset(currentNormalizedOffset + normalizedDelta);
+        }
+
+        private void SetNormalizedLateralOffset(float normalizedOffset)
         {
             if (_correctingLaneBarrier != null)
             {
