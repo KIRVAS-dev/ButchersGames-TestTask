@@ -13,7 +13,10 @@ namespace ViewComponents.RunnerMovement
     {
         private const float ScreenHalfFactor = 0.5f;
 
-        public event Action<float> DragNormalizedOffsetChanged;
+        private bool _wasPressed;
+        private float _previousPointerX;
+
+        public event Action<float> DragNormalizedDeltaChanged;
 
         void IInputTickable.Tick()
         {
@@ -22,13 +25,28 @@ namespace ViewComponents.RunnerMovement
 
             if (!isPointerPressed)
             {
+                _wasPressed = false;
+                return;
+            }
+
+            float pointerX = pointer.position.ReadValue().x;
+
+            if (!_wasPressed)
+            {
+                _wasPressed = true;
+                _previousPointerX = pointerX;
                 return;
             }
 
             float screenHalfWidth = Screen.width * ScreenHalfFactor;
-            float normalizedOffset = (pointer.position.ReadValue().x - screenHalfWidth) / screenHalfWidth;
+            float normalizedDelta = (pointerX - _previousPointerX) / screenHalfWidth;
 
-            DragNormalizedOffsetChanged?.Invoke(normalizedOffset);
+            _previousPointerX = pointerX;
+
+            if (normalizedDelta != 0f)
+            {
+                DragNormalizedDeltaChanged?.Invoke(normalizedDelta);
+            }
         }
     }
 }

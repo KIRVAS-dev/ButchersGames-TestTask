@@ -22,22 +22,22 @@ namespace Core.Input.RunnerMovement
 
         public void StartListening()
         {
-            _dragInput.DragNormalizedOffsetChanged += OnDragNormalizedOffsetChanged;
+            _dragInput.DragNormalizedDeltaChanged += OnDragNormalizedDeltaChanged;
         }
 
         public void StopListening()
         {
-            _dragInput.DragNormalizedOffsetChanged -= OnDragNormalizedOffsetChanged;
+            _dragInput.DragNormalizedDeltaChanged -= OnDragNormalizedDeltaChanged;
         }
 
-        private void OnDragNormalizedOffsetChanged(float normalizedOffset)
+        private void OnDragNormalizedDeltaChanged(float normalizedDelta)
         {
             if (_inputBlock.IsBlocked.CurrentValue)
             {
                 return;
             }
 
-            _service.SetNormalizedLateralOffset(normalizedOffset);
+            _service.AddNormalizedLateralOffsetDelta(normalizedDelta);
         }
     }
 }

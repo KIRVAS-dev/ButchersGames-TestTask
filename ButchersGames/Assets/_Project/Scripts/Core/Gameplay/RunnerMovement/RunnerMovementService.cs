@@ -60,9 +60,9 @@ namespace Core.Gameplay.RunnerMovement
             UnsubscribeAllLaneBarriers();
         }
 
-        public void SetNormalizedLateralOffset(float normalizedOffset)
+        public void AddNormalizedLateralOffsetDelta(float normalizedDelta)
         {
-            _simulator.SetNormalizedLateralOffset(normalizedOffset);
+            _simulator.AddNormalizedLateralOffsetDelta(normalizedDelta);
         }
 
         private void OnLevelLoaded()

@@ -4,6 +4,6 @@ namespace Input
 {
     public interface IDragInput
     {
-        event Action<float> DragNormalizedOffsetChanged;
+        event Action<float> DragNormalizedDeltaChanged;
     }
 }
