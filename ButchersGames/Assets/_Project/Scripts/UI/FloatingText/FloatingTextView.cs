@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace UI.FloatingText
 
         private ObjectPool<FloatingTextPopup> _gainPool;
         private ObjectPool<FloatingTextPopup> _lossPool;
+        private Action<FloatingTextPopup> _releaseGain;
+        private Action<FloatingTextPopup> _releaseLoss;
 
         private void Awake()
         {
@@ -32,22 +35,38 @@ namespace UI.FloatingText
             _gainPool = CreatePool(_gainPrefab);
             _lossPool = CreatePool(_lossPrefab);
 
+            _releaseGain = _gainPool.Release;
+            _releaseLoss = _lossPool.Release;
+
             Prewarm(_gainPool);
             Prewarm(_lossPool);
         }
 
         public void ShowGain(int amount)
         {
-            Show(_gainPool, GainAmountTextFormat, amount, _config.SideOffset);
+            Show(
+                _gainPool,
+                _releaseGain,
+                GainAmountTextFormat,
+                amount,
+                _config.SideOffset
+            );
         }
 
         public void ShowLoss(int amount)
         {
-            Show(_lossPool, LossAmountTextFormat, amount, -_config.SideOffset);
+            Show(
+                _lossPool,
+                _releaseLoss,
+                LossAmountTextFormat,
+                amount,
+                -_config.SideOffset
+            );
         }
 
         private void Show(
             ObjectPool<FloatingTextPopup> pool,
+            Action<FloatingTextPopup> release,
             string textFormat,
             int amount,
             float sideOffset)
@@ -62,7 +81,7 @@ namespace UI.FloatingText
                 amount,
                 position,
                 _config,
-                pool.Release
+                release
             );
         }
 

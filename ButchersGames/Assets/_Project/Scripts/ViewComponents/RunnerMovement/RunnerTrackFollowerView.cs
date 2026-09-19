@@ -11,7 +11,7 @@ using VContainer;
 
 namespace ViewComponents.RunnerMovement
 {
-    public sealed class RunnerTrackFollower
+    public sealed class RunnerTrackFollowerView
         : MonoBehaviour,
           IRunnerTrackFollowerView
     {
@@ -21,7 +21,6 @@ namespace ViewComponents.RunnerMovement
         private ILevelProvider _levelProvider;
         private IGameplayInputBlock _inputBlock;
         private IRunnerMovementSettings _settings;
-        private IRunnerMovementService _runnerMovementService;
         private IDisposable _inputBlockSubscription;
         private RunnerMovementView _view;
         private SplineContainer _splineContainer;
@@ -35,13 +34,11 @@ namespace ViewComponents.RunnerMovement
             ILevelProvider levelProvider,
             IGameplayInputBlock inputBlock,
             IRunnerMovementSettings settings,
-            IRunnerMovementService runnerMovementService,
             RunnerMovementView view)
         {
             _levelProvider = levelProvider;
             _inputBlock = inputBlock;
             _settings = settings;
-            _runnerMovementService = runnerMovementService;
             _view = view;
 
             _levelProvider.LevelLoaded += OnLevelLoaded;
@@ -59,18 +56,25 @@ namespace ViewComponents.RunnerMovement
 
         private void Update()
         {
-            _runnerMovementService.AdvanceLateralCorrections(Time.deltaTime);
-
             _distanceTraveled += _settings.ForwardSpeed * Time.deltaTime;
 
-            float normalizedSplineProgress = Mathf.Clamp01(_distanceTraveled / _splineLength);
+            float distanceFraction = Mathf.Clamp01(_distanceTraveled / _splineLength);
 
-            _splineContainer.Evaluate(normalizedSplineProgress, out float3 position, out float3 tangent, out _);
+            float splineParameter = SplineUtility.GetNormalizedInterpolation(
+                _splineContainer.Spline,
+                distanceFraction * _splineContainer.Spline.GetLength(),
+                PathIndexUnit.Distance
+            );
+
+            _splineContainer.Evaluate(splineParameter, out float3 position, out float3 tangent, out _);
 
             Vector3 forward = ((Vector3)tangent).normalized;
             bool hasMovementDirection = forward.sqrMagnitude > Mathf.Epsilon;
 
-            Guard.AgainstTrue(!hasMovementDirection, () => new InvalidSplineTangentException(gameObject.name));
+            if (!hasMovementDirection)
+            {
+                throw new InvalidSplineTangentException(gameObject.name);
+            }
 
             Vector3 lateralAxis = Vector3.Cross(forward, Vector3.up).normalized;
             Vector3 worldPosition = (Vector3)position + lateralAxis * _lateralOffset;
@@ -82,18 +86,6 @@ namespace ViewComponents.RunnerMovement
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
             _inputBlockSubscription?.Dispose();
-        }
-
-        public void SetLateralOffset(float value)
-        {
-            _lateralOffset = value;
-        }
-
-        public void SetMovementState(RunnerMovementState state)
-        {
-            _movementState = state;
-
-            RefreshTrackFollowing();
         }
 
         private void OnLevelLoaded()
@@ -123,6 +115,18 @@ namespace ViewComponents.RunnerMovement
              && _movementState == RunnerMovementState.Moving;
 
             enabled = isReadyToFollowTrack;
+        }
+
+        public void SetMovementState(RunnerMovementState state)
+        {
+            _movementState = state;
+
+            RefreshTrackFollowing();
+        }
+
+        public void SetLateralOffset(float value)
+        {
+            _lateralOffset = value;
         }
     }
 }

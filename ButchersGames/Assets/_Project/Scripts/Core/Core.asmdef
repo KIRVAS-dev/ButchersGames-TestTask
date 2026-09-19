@@ -3,7 +3,6 @@
     "rootNamespace": "Core",
     "references": [
         "ExtendedExceptions",
-        "Input",
         "VContainer",
         "UniTask"
     ],

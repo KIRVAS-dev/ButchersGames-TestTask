@@ -25,7 +25,7 @@ namespace ViewComponents.WealthMeter
 
         public void Validate()
         {
-            Guard.AgainstNegative(_startValue, () => Invalid(nameof(_startValue), _startValue));
+            Guard.AgainstNonPositive(_startValue, () => Invalid(nameof(_startValue), _startValue));
             Guard.AgainstNegative(_poorThreshold, () => Invalid(nameof(_poorThreshold), _poorThreshold));
             Guard.AgainstGreaterThan(_poorThreshold, _descentThreshold - 1, () => Invalid(nameof(_poorThreshold), _poorThreshold));
             Guard.AgainstGreaterThan(_descentThreshold, _casualThreshold - 1, () => Invalid(nameof(_descentThreshold), _descentThreshold));

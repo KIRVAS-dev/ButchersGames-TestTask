@@ -26,6 +26,18 @@ namespace Core.Gameplay.LevelProgression
 
             _model.CompletedLevelCount = _progressStore.LoadCompletedLevelCount();
             _model.CurrentLevelIndex = _progressStore.LoadCurrentLevelIndex();
+
+            Guard.AgainstLessThan(
+                _model.CurrentLevelIndex,
+                0,
+                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelProvider.LevelCount)
+            );
+
+            Guard.AgainstGreaterThan(
+                _model.CurrentLevelIndex,
+                _levelProvider.LevelCount - 1,
+                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelProvider.LevelCount)
+            );
         }
 
         public int CurrentLevelNumber => _model.CompletedLevelCount + 1;

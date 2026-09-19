@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace ViewComponents.RunnerMovement
 {
+    [DefaultExecutionOrder(-200)]
     public sealed class DragInput : MonoBehaviour, IDragInput
     {
         private const float ScreenHalfFactor = 0.5f;

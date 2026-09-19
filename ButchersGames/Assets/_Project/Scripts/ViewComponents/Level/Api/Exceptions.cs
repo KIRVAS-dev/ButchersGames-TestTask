@@ -14,6 +14,12 @@ namespace ViewComponents.Level
             : base("level-2", $"Level prefab at index {index} is not assigned on {objectName}") { }
     }
 
+    public sealed class EmptyLevelListException : ExtendedException
+    {
+        public EmptyLevelListException(string configName)
+            : base("level-4", $"Level list {configName} is empty") { }
+    }
+
     public sealed class MissingLevelProviderReferenceException : ExtendedException
     {
         public MissingLevelProviderReferenceException(string fieldName, string objectName)

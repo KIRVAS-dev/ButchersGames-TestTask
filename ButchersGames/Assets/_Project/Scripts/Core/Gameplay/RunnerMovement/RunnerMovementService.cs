@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
-using UnityEngine;
 
 namespace Core.Gameplay.RunnerMovement
 {
-    public sealed class RunnerMovementService
-        : IRunnerMovementService,
-          IDisposable
+    public sealed class RunnerMovementService : IRunnerMovementService
     {
         private const float NormalizedLateralOffsetMin = -1f;
         private const float NormalizedLateralOffsetMax = 1f;
         private const float CenteredLateralOffset = 0f;
         private const int NoActiveObstacles = 0;
+        private const float LateralOffsetEpsilon = 0.0001f;
 
         private readonly ILevelProvider _levelProvider;
         private readonly IRunnerMovementSettings _settings;
@@ -60,7 +58,10 @@ namespace Core.Gameplay.RunnerMovement
             _obstacleRegistry = obstacleRegistry;
             _laneBarrierRegistry = laneBarrierRegistry;
             _model = model;
+        }
 
+        public void StartListening()
+        {
             _levelProvider.LevelLoaded += OnLevelLoaded;
             _obstacleRegistry.ObstaclesChanged += ResubscribeToObstacles;
             _laneBarrierRegistry.BarriersChanged += ResubscribeToLaneBarriers;
@@ -70,7 +71,7 @@ namespace Core.Gameplay.RunnerMovement
             ResubscribeToLaneBarriers();
         }
 
-        void IDisposable.Dispose()
+        public void StopListening()
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
             _obstacleRegistry.ObstaclesChanged -= ResubscribeToObstacles;
@@ -148,7 +149,9 @@ namespace Core.Gameplay.RunnerMovement
 
         public void AdvanceLateralCorrections(float deltaTime)
         {
-            if (_correctingLaneBarrier == null)
+            bool isLateralCorrectionActive = _correctingLaneBarrier != null && _model.State.Value == RunnerMovementState.Moving;
+
+            if (!isLateralCorrectionActive)
             {
                 return;
             }
@@ -156,7 +159,7 @@ namespace Core.Gameplay.RunnerMovement
             float maxStep = _settings.LateralCorrectionSpeed * deltaTime;
             _model.LateralOffset.Value = MoveTowards(_model.LateralOffset.Value, _lateralCorrectionTarget, maxStep);
 
-            if (Mathf.Approximately(_model.LateralOffset.Value, _lateralCorrectionTarget))
+            if (Math.Abs(_model.LateralOffset.Value - _lateralCorrectionTarget) < LateralOffsetEpsilon)
             {
                 _correctingLaneBarrier = null;
             }

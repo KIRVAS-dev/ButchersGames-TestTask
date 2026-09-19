@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Core.Gameplay.Feedback;
 using FMODUnity;
 using UnityEngine;
@@ -14,6 +15,6 @@ namespace ViewComponents.Feedback
 
         public FeedbackType Type => _type;
         public EventReference Sound => _sound;
-        public ParticleSystem[] Particles => _particles;
+        public IReadOnlyList<ParticleSystem> Particles => _particles;
     }
 }

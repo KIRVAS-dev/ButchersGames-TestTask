@@ -7,7 +7,7 @@ namespace Infrastructure.Bootstrap
 {
     public sealed class EntryPoint : IStartable
     {
-        private const string CORE_SCENE_NAME = "Core";
+        private const string CoreSceneName = "Core";
 
         private readonly ISceneLoader _sceneLoader;
 
@@ -23,7 +23,7 @@ namespace Infrastructure.Bootstrap
 
         private async UniTaskVoid LoadCoreAsync()
         {
-            await _sceneLoader.LoadSceneAsync(CORE_SCENE_NAME, LoadSceneMode.Additive, CancellationToken.None);
+            await _sceneLoader.LoadSceneAsync(CoreSceneName, LoadSceneMode.Additive, CancellationToken.None);
         }
     }
 }

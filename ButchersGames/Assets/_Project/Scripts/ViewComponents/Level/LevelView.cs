@@ -8,7 +8,6 @@ namespace ViewComponents.Level
         : MonoBehaviour,
           ILevelView
     {
-        [SerializeField] private LevelListConfig _levelListConfig;
         [SerializeField] private LevelProvider _levelProvider;
 
         private void Awake()
@@ -18,8 +17,7 @@ namespace ViewComponents.Level
 
         public void LoadLevel(int levelIndex)
         {
-            Level levelPrefab = _levelListConfig.Levels[levelIndex];
-            Guard.AgainstNull(levelPrefab, () => new MissingLevelPrefabException(levelIndex, gameObject.name));
+            Level levelPrefab = _levelProvider.LevelAt(levelIndex);
 
             ClearChildren();
             SpawnLevel(levelPrefab);
@@ -27,11 +25,6 @@ namespace ViewComponents.Level
 
         private void Validate()
         {
-            Guard.AgainstNull(
-                _levelListConfig,
-                () => new MissingLevelListConfigException(nameof(_levelListConfig), gameObject.name)
-            );
-
             Guard.AgainstNull(
                 _levelProvider,
                 () => new MissingLevelProviderReferenceException(nameof(_levelProvider), gameObject.name)
