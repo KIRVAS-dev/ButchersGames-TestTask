@@ -8,5 +8,6 @@ namespace UI.StartScreen
 
         void Show();
         void Hide();
+        void SetLevelNumber(int levelNumber);
     }
 }

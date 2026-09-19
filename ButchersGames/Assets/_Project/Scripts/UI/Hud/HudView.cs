@@ -1,4 +1,5 @@
 using System;
+using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
 using TMPro;
 using UnityEngine;
@@ -10,13 +11,20 @@ namespace UI.Hud
         : MonoBehaviour,
           IHudView
     {
+        private const string LevelNumberTextFormat = "Уровень {0}";
+
         [SerializeField] private RectTransform _root;
+        [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private TextMeshProUGUI _moneyAmountText;
+        [SerializeField] private TextMeshProUGUI _wealthStageNameText;
         [SerializeField] private Image _wealthFillBarImage;
+        [SerializeField] private HudConfig _config;
 
         private void Awake()
         {
             Validate();
+
+            _config.Validate();
         }
 
         public void Show()
@@ -29,6 +37,11 @@ namespace UI.Hud
             _root.gameObject.SetActive(false);
         }
 
+        public void SetLevelNumber(int levelNumber)
+        {
+            _levelNumberText.text = string.Format(LevelNumberTextFormat, levelNumber);
+        }
+
         public void SetMoneyAmount(int amount)
         {
             _moneyAmountText.text = amount.ToString();
@@ -39,13 +52,25 @@ namespace UI.Hud
             _wealthFillBarImage.fillAmount = normalizedFill;
         }
 
+        public void SetWealthStage(WealthStage stage)
+        {
+            WealthStageAppearance appearance = _config.AppearanceOf(stage);
+
+            _wealthStageNameText.text = appearance.DisplayName;
+            _wealthStageNameText.color = appearance.Color;
+            _wealthFillBarImage.color = appearance.Color;
+        }
+
         private void Validate()
         {
             Func<string, ExtendedException> missing = fieldName => new MissingHudFieldException(fieldName, gameObject.name);
 
             Guard.AgainstNull(_root, () => missing(nameof(_root)));
+            Guard.AgainstNull(_levelNumberText, () => missing(nameof(_levelNumberText)));
             Guard.AgainstNull(_moneyAmountText, () => missing(nameof(_moneyAmountText)));
+            Guard.AgainstNull(_wealthStageNameText, () => missing(nameof(_wealthStageNameText)));
             Guard.AgainstNull(_wealthFillBarImage, () => missing(nameof(_wealthFillBarImage)));
+            Guard.AgainstNull(_config, () => missing(nameof(_config)));
         }
     }
 }
