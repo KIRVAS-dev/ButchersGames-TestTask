@@ -67,12 +67,13 @@ namespace UI.FloatingText
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing = fieldName =>
-                new MissingFloatingTextFieldException(fieldName, gameObject.name);
+            Guard.AgainstNull(_rectTransform, () => Missing(nameof(_rectTransform)));
+            Guard.AgainstNull(_canvasGroup, () => Missing(nameof(_canvasGroup)));
+            Guard.AgainstNull(_text, () => Missing(nameof(_text)));
 
-            Guard.AgainstNull(_rectTransform, () => missing(nameof(_rectTransform)));
-            Guard.AgainstNull(_canvasGroup, () => missing(nameof(_canvasGroup)));
-            Guard.AgainstNull(_text, () => missing(nameof(_text)));
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingFloatingTextFieldException(fieldName, gameObject.name);
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -31,14 +30,16 @@ namespace ViewComponents.WealthMeter
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing = fieldName =>
-                new MissingCharacterAppearanceViewFieldException(fieldName, gameObject.name);
+            Guard.AgainstNull(_poor, () => Missing(nameof(_poor)));
+            Guard.AgainstNull(_descent, () => Missing(nameof(_descent)));
+            Guard.AgainstNull(_casual, () => Missing(nameof(_casual)));
+            Guard.AgainstNull(_rich, () => Missing(nameof(_rich)));
+            Guard.AgainstNull(_millionaire, () => Missing(nameof(_millionaire)));
 
-            Guard.AgainstNull(_poor, () => missing(nameof(_poor)));
-            Guard.AgainstNull(_descent, () => missing(nameof(_descent)));
-            Guard.AgainstNull(_casual, () => missing(nameof(_casual)));
-            Guard.AgainstNull(_rich, () => missing(nameof(_rich)));
-            Guard.AgainstNull(_millionaire, () => missing(nameof(_millionaire)));
+            return;
+
+            ExtendedException Missing(string fieldName) =>
+                new MissingCharacterAppearanceViewFieldException(fieldName, gameObject.name);
         }
     }
 }

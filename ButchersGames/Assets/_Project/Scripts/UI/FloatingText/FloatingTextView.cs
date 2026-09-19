@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -107,16 +106,17 @@ namespace UI.FloatingText
 
         private void Validate()
         {
-            Func<string, ExtendedException> missing = fieldName =>
-                new MissingFloatingTextFieldException(fieldName, gameObject.name);
+            Guard.AgainstNull(_canvas, () => Missing(nameof(_canvas)));
+            Guard.AgainstNull(_container, () => Missing(nameof(_container)));
+            Guard.AgainstNull(_worldCamera, () => Missing(nameof(_worldCamera)));
+            Guard.AgainstNull(_anchor, () => Missing(nameof(_anchor)));
+            Guard.AgainstNull(_gainPrefab, () => Missing(nameof(_gainPrefab)));
+            Guard.AgainstNull(_lossPrefab, () => Missing(nameof(_lossPrefab)));
+            Guard.AgainstNull(_config, () => Missing(nameof(_config)));
 
-            Guard.AgainstNull(_canvas, () => missing(nameof(_canvas)));
-            Guard.AgainstNull(_container, () => missing(nameof(_container)));
-            Guard.AgainstNull(_worldCamera, () => missing(nameof(_worldCamera)));
-            Guard.AgainstNull(_anchor, () => missing(nameof(_anchor)));
-            Guard.AgainstNull(_gainPrefab, () => missing(nameof(_gainPrefab)));
-            Guard.AgainstNull(_lossPrefab, () => missing(nameof(_lossPrefab)));
-            Guard.AgainstNull(_config, () => missing(nameof(_config)));
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingFloatingTextFieldException(fieldName, gameObject.name);
         }
     }
 }
