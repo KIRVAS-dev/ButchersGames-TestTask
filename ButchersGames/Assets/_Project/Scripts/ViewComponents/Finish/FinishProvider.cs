@@ -1,43 +1,38 @@
 using System;
 using Core.Gameplay.Finish;
-using Core.Gameplay.LevelProgression;
-using Infrastructure.ExtendedExceptions;
-using UnityEngine;
-using VContainer;
+using ViewComponents.Level;
 
 namespace ViewComponents.Finish
 {
     public sealed class FinishProvider
-        : MonoBehaviour,
-          IFinishProvider
+        : IFinishProvider,
+          IDisposable
     {
-        private ILevelProvider _levelProvider;
+        private readonly LevelProvider _levelProvider;
+
         private FinishCollider _current;
 
-        public event Action Reached;
-
-        [Inject]
-        private void Construct(ILevelProvider levelProvider)
+        public FinishProvider(LevelProvider levelProvider)
         {
             _levelProvider = levelProvider;
 
-            _levelProvider.LevelLoaded += Rescan;
+            _levelProvider.LevelLoaded += OnLevelLoaded;
         }
 
-        private void OnDestroy()
+        public event Action Reached;
+
+        void IDisposable.Dispose()
         {
-            _levelProvider.LevelLoaded -= Rescan;
+            _levelProvider.LevelLoaded -= OnLevelLoaded;
+
             UnsubscribeCurrent();
         }
 
-        private void Rescan()
+        private void OnLevelLoaded()
         {
             UnsubscribeCurrent();
 
-            _current = FindAnyObjectByType<FinishCollider>();
-
-            Guard.AgainstNull(_current, () => new MissingFinishColliderException(gameObject.name));
-
+            _current = _levelProvider.CurrentLevel.Finish;
             _current.Reached += OnCurrentReached;
         }
 

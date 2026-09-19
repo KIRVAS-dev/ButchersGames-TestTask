@@ -2165,10 +2165,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1219698803}
   - component: {fileID: 1219698802}
-  - component: {fileID: 1219698801}
-  - component: {fileID: 1219698800}
-  - component: {fileID: 1219698804}
-  - component: {fileID: 1219698805}
   - component: {fileID: 1219698807}
   - component: {fileID: 1219698806}
   m_Layer: 0
@@ -2178,30 +2174,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1219698800
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219698799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2307aa7eec339c84d930e333499ac850, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthPointsModifier.WealthPointsModifierRegistry
---- !u!114 &1219698801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219698799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6d68e3b5fe3bc24c99187b6eba4fc23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.Finish.FinishProvider
 --- !u!114 &1219698802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2229,30 +2201,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1219698804
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219698799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 094c8f05c51c62e4da381c20d9cc0b4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.Obstacles.ObstacleRegistry
---- !u!114 &1219698805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219698799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70276e8a3d50fd543a12543e399c7a70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.LaneBarriers.LaneBarrierRegistry
 --- !u!114 &1219698806
 MonoBehaviour:
   m_ObjectHideFlags: 0

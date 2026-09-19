@@ -11,7 +11,19 @@ namespace ViewComponents.Level
     {
         [SerializeField] private LevelListConfig _levelListConfig;
 
+        private Level _currentLevel;
+
         public event Action LevelLoaded;
+
+        public Level CurrentLevel
+        {
+            get
+            {
+                Guard.AgainstNull(_currentLevel, () => new LevelNotLoadedException(gameObject.name));
+
+                return _currentLevel;
+            }
+        }
 
         public int LevelCount => _levelListConfig.Levels.Count;
         public bool IsRandomized => _levelListConfig.IsRandomized;
@@ -21,8 +33,10 @@ namespace ViewComponents.Level
             return _levelListConfig.Levels[levelIndex];
         }
 
-        public void NotifyLevelLoaded()
+        public void NotifyLevelLoaded(Level level)
         {
+            _currentLevel = level;
+
             LevelLoaded?.Invoke();
         }
 

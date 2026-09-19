@@ -1,20 +1,18 @@
-using System;
 using System.Collections.Generic;
 using Core.Gameplay.LaneBarrier;
+using ViewComponents.Level;
 
 namespace ViewComponents.LaneBarriers
 {
-    public sealed class LaneBarrierRegistry
-        : SceneRegistry<LaneBarrierZone, ILaneBarrier>,
-          ILaneBarrierRegistry
+    public sealed class LaneBarrierRegistry : ILaneBarrierRegistry
     {
-        public event Action BarriersChanged;
+        private readonly LevelProvider _levelProvider;
 
-        public IReadOnlyList<ILaneBarrier> Barriers => Items;
-
-        protected override void NotifyItemsChanged()
+        public LaneBarrierRegistry(LevelProvider levelProvider)
         {
-            BarriersChanged?.Invoke();
+            _levelProvider = levelProvider;
         }
+
+        public IReadOnlyCollection<ILaneBarrier> Barriers => _levelProvider.CurrentLevel.Barriers;
     }
 }

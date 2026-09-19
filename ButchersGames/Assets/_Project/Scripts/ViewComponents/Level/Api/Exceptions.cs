@@ -20,6 +20,12 @@ namespace ViewComponents.Level
             : base("level-4", $"Level list {configName} is empty") { }
     }
 
+    public sealed class LevelNotLoadedException : ExtendedException
+    {
+        public LevelNotLoadedException(string objectName)
+            : base("level-5", $"Current level is requested before any level is loaded on {objectName}") { }
+    }
+
     public sealed class MissingLevelProviderReferenceException : ExtendedException
     {
         public MissingLevelProviderReferenceException(string fieldName, string objectName)

@@ -37,19 +37,12 @@ namespace Core.Bootstrap
         protected override void Configure(IContainerBuilder builder)
         {
             RegisterEntryPoint(builder);
-            RegisterLevelProgression(builder);
+            RegisterLevel(builder);
             RegisterWealthMeter(builder);
-            RegisterWealthPointsModifier(builder);
-            RegisterObstacle(builder);
-            RegisterLaneBarrier(builder);
-            RegisterFinish(builder);
             RegisterRunnerMovement(builder);
             RegisterGameFlow(builder);
-            RegisterStartScreen(builder);
-            RegisterHud(builder);
-            RegisterResultScreen(builder);
             RegisterFeedback(builder);
-            RegisterFloatingText(builder);
+            RegisterUi(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
@@ -58,13 +51,18 @@ namespace Core.Bootstrap
             builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
         }
 
-        private void RegisterLevelProgression(IContainerBuilder builder)
+        private static void RegisterLevel(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<LevelProvider>().As<ILevelProvider>();
+            builder.RegisterComponentInHierarchy<LevelProvider>().As<ILevelProvider>().AsSelf();
             builder.RegisterComponentInHierarchy<LevelView>().As<ILevelView>();
             builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
             builder.Register<LevelModel>(Lifetime.Singleton);
             builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
+            builder.Register<WealthPointsModifierRegistry>(Lifetime.Singleton).As<IWealthPointsModifierRegistry>();
+            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
+            builder.Register<ObstacleRegistry>(Lifetime.Singleton).As<IObstacleRegistry>();
+            builder.Register<LaneBarrierRegistry>(Lifetime.Singleton).As<ILaneBarrierRegistry>();
+            builder.Register<FinishProvider>(Lifetime.Singleton).As<IFinishProvider>();
         }
 
         private void RegisterWealthMeter(IContainerBuilder builder)
@@ -81,27 +79,6 @@ namespace Core.Bootstrap
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>();
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton);
-        }
-
-        private static void RegisterWealthPointsModifier(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<WealthPointsModifierRegistry>().As<IWealthPointsModifierRegistry>();
-            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
-        }
-
-        private static void RegisterObstacle(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<ObstacleRegistry>().As<IObstacleRegistry>();
-        }
-
-        private static void RegisterLaneBarrier(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<LaneBarrierRegistry>().As<ILaneBarrierRegistry>();
-        }
-
-        private static void RegisterFinish(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<FinishProvider>().As<IFinishProvider>();
         }
 
         private void RegisterRunnerMovement(IContainerBuilder builder)
@@ -130,32 +107,20 @@ namespace Core.Bootstrap
             builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
         }
 
-        private static void RegisterStartScreen(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>();
-            builder.Register<StartScreenPresenter>(Lifetime.Singleton);
-        }
-
-        private static void RegisterHud(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<HudView>().As<IHudView>();
-            builder.Register<HudPresenter>(Lifetime.Singleton);
-        }
-
-        private static void RegisterResultScreen(IContainerBuilder builder)
-        {
-            builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>();
-            builder.Register<ResultScreenPresenter>(Lifetime.Singleton);
-        }
-
         private static void RegisterFeedback(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<FeedbackPerformer>().As<IFeedbackPerformer>();
             builder.Register<FeedbackPresenter>(Lifetime.Singleton);
         }
 
-        private static void RegisterFloatingText(IContainerBuilder builder)
+        private static void RegisterUi(IContainerBuilder builder)
         {
+            builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>();
+            builder.Register<StartScreenPresenter>(Lifetime.Singleton);
+            builder.RegisterComponentInHierarchy<HudView>().As<IHudView>();
+            builder.Register<HudPresenter>(Lifetime.Singleton);
+            builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>();
+            builder.Register<ResultScreenPresenter>(Lifetime.Singleton);
             builder.RegisterComponentInHierarchy<FloatingTextView>().As<IFloatingTextView>();
             builder.Register<FloatingTextPresenter>(Lifetime.Singleton);
         }
