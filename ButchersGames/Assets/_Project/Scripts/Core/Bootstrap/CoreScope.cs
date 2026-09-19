@@ -1,6 +1,4 @@
-using Core.Gameplay;
 using Core.Gameplay.Feedback;
-using Core.Gameplay.Finish;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
@@ -9,7 +7,6 @@ using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
-using Core.Input;
 using Core.Input.RunnerMovement;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
@@ -19,14 +16,9 @@ using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
 using ViewComponents.Feedback;
-using ViewComponents.Finish;
-using ViewComponents.LaneBarriers;
 using ViewComponents.Level;
-using ViewComponents.Obstacles;
 using ViewComponents.RunnerMovement;
-using ViewComponents.Track;
 using ViewComponents.WealthMeter;
-using ViewComponents.WealthPointsModifier;
 using VContainer;
 using VContainer.Unity;
 using UnityEngine;
@@ -53,21 +45,24 @@ namespace Core.Bootstrap
         {
             builder.RegisterEntryPoint<CoreEntryPoint>();
             builder.RegisterEntryPoint<GameLoop>();
-            builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
         }
 
         private static void RegisterLevel(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<LevelProvider>().As<ILevelProvider>().AsSelf();
-            builder.RegisterComponentInHierarchy<LevelView>().As<ILevelView>();
+            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().AsSelf();
+
+            builder
+               .Register<CurrentLevel>(Lifetime.Singleton)
+               .As<IObstacleRegistry>()
+               .As<ILaneBarrierRegistry>()
+               .As<IWealthPointsModifierRegistry>()
+               .As<ITrackProvider>()
+               .AsSelf();
+
             builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
             builder.Register<LevelModel>(Lifetime.Singleton);
             builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
-            builder.Register<WealthPointsModifierRegistry>(Lifetime.Singleton).As<IWealthPointsModifierRegistry>();
             builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
-            builder.Register<ObstacleRegistry>(Lifetime.Singleton).As<IObstacleRegistry>();
-            builder.Register<LaneBarrierRegistry>(Lifetime.Singleton).As<ILaneBarrierRegistry>();
-            builder.Register<FinishProvider>(Lifetime.Singleton).As<IFinishProvider>().AsSelf();
         }
 
         private void RegisterWealthMeter(IContainerBuilder builder)
@@ -98,20 +93,24 @@ namespace Core.Bootstrap
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
             builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>().As<IInputTickable>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().As<IRunnerMovementView>().As<IPresentationTickable>();
-            builder.Register<TrackProvider>(Lifetime.Singleton).As<ITrackProvider>().AsSelf();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
 
-            builder.Register<RunnerMovementService>(Lifetime.Singleton)
-                .As<IRunnerMovementService>()
-                .As<IGameplayTickable>()
-                .AsSelf();
+            builder
+               .Register<RunnerMovementService>(Lifetime.Singleton)
+               .As<IRunnerMovementService>()
+               .As<IGameplayTickable>()
+               .AsSelf();
+
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
             builder.Register<RunnerMovementPresenter>(Lifetime.Singleton);
         }
 
         private static void RegisterGameFlow(IContainerBuilder builder)
         {
-            builder.Register<GameFlowModel>(Lifetime.Singleton);
+            builder.Register<GameStateModel>(Lifetime.Singleton);
+            builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
+            builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
+            builder.Register<GameResultDetector>(Lifetime.Singleton);
             builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
         }
 

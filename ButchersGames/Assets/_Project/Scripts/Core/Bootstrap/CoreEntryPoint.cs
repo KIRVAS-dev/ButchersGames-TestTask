@@ -10,7 +10,6 @@ using UI.ResultScreen;
 using UI.StartScreen;
 using VContainer.Unity;
 using ViewComponents.Feedback;
-using ViewComponents.Finish;
 using ViewComponents.RunnerMovement;
 using ViewComponents.WealthMeter;
 
@@ -24,7 +23,7 @@ namespace Core.Bootstrap
         private readonly RunnerMovementService _runnerMovementService;
         private readonly WealthMeterService _wealthMeterService;
         private readonly WealthPointsModifierService _wealthPointsModifierService;
-        private readonly FinishProvider _finishProvider;
+        private readonly GameResultDetector _gameResultDetector;
         private readonly GameFlowService _gameFlowService;
         private readonly CharacterAppearancePresenter _characterAppearancePresenter;
         private readonly RunnerMovementPresenter _runnerMovementPresenter;
@@ -39,7 +38,7 @@ namespace Core.Bootstrap
             RunnerMovementService runnerMovementService,
             WealthMeterService wealthMeterService,
             WealthPointsModifierService wealthPointsModifierService,
-            FinishProvider finishProvider,
+            GameResultDetector gameResultDetector,
             GameFlowService gameFlowService,
             CharacterAppearancePresenter characterAppearancePresenter,
             RunnerMovementPresenter runnerMovementPresenter,
@@ -53,7 +52,7 @@ namespace Core.Bootstrap
             _runnerMovementService = runnerMovementService;
             _wealthMeterService = wealthMeterService;
             _wealthPointsModifierService = wealthPointsModifierService;
-            _finishProvider = finishProvider;
+            _gameResultDetector = gameResultDetector;
             _gameFlowService = gameFlowService;
             _characterAppearancePresenter = characterAppearancePresenter;
             _runnerMovementPresenter = runnerMovementPresenter;
@@ -68,12 +67,10 @@ namespace Core.Bootstrap
         {
             _runnerMovementInputHandler.StartListening();
 
-            _gameFlowService.StartListening();
+            _gameResultDetector.StartListening();
             _runnerMovementService.StartListening();
             _wealthMeterService.StartListening();
             _wealthPointsModifierService.StartListening();
-
-            _finishProvider.StartListening();
 
             _characterAppearancePresenter.StartListening();
             _runnerMovementPresenter.StartListening();
@@ -82,18 +79,18 @@ namespace Core.Bootstrap
             _resultScreenPresenter.StartListening();
             _feedbackPresenter.StartListening();
             _floatingTextPresenter.StartListening();
+
+            _gameFlowService.PrepareGame();
         }
 
         void IDisposable.Dispose()
         {
             _runnerMovementInputHandler.StopListening();
 
-            _gameFlowService.StopListening();
+            _gameResultDetector.StopListening();
             _runnerMovementService.StopListening();
             _wealthMeterService.StopListening();
             _wealthPointsModifierService.StopListening();
-
-            _finishProvider.StopListening();
 
             _characterAppearancePresenter.StopListening();
             _runnerMovementPresenter.StopListening();

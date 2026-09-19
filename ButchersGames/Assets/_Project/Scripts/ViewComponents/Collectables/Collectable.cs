@@ -1,4 +1,3 @@
-using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using ViewComponents.WealthPointsModifier;
 
@@ -9,24 +8,11 @@ namespace ViewComponents.Collectables
         : MonoBehaviour,
           ITriggerReaction
     {
-        private void Awake()
-        {
-            Validate();
-        }
-
         void ITriggerReaction.React() => Collect();
 
         private void Collect()
         {
             gameObject.SetActive(false);
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(
-                GetComponent<WealthPointsModifierCollider>(),
-                () => new MissingCollectableModifierColliderException(gameObject.name)
-            );
         }
     }
 }

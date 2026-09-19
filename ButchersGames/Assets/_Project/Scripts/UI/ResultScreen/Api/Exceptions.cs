@@ -11,7 +11,7 @@ namespace UI.ResultScreen
 
     public sealed class UnhandledResultScreenStateException : ExtendedException
     {
-        public UnhandledResultScreenStateException(GameFlowState state)
-            : base("result-screen-2", $"GameFlowState '{state}' is not handled by the result screen") { }
+        public UnhandledResultScreenStateException(GameState state)
+            : base("result-screen-2", $"GameState '{state}' is not handled by the result screen") { }
     }
 }

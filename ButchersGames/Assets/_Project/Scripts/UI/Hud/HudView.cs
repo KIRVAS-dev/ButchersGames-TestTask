@@ -10,8 +10,6 @@ namespace UI.Hud
         : MonoBehaviour,
           IHudView
     {
-        private const string LevelNumberTextFormat = "Уровень {0}";
-
         [SerializeField] private RectTransform _root;
         [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private TextMeshProUGUI _moneyAmountText;
@@ -38,7 +36,7 @@ namespace UI.Hud
 
         public void SetLevelNumber(int levelNumber)
         {
-            _levelNumberText.text = string.Format(LevelNumberTextFormat, levelNumber);
+            _levelNumberText.text = LevelNumberTextHelper.Format(levelNumber);
         }
 
         public void SetMoneyAmount(int amount)

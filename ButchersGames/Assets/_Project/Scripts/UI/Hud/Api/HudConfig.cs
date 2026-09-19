@@ -20,7 +20,7 @@ namespace UI.Hud
                 }
             }
 
-            throw new InvalidHudStageAppearanceCountException(stage, 0);
+            throw new InvalidHudStageAppearanceCountException(stage, CountOf(stage));
         }
 
         public void Validate()

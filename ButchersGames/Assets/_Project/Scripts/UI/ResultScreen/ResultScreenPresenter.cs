@@ -12,7 +12,7 @@ namespace UI.ResultScreen
         private readonly IResultScreenView _view;
         private readonly IGameFlowService _gameFlowService;
         private readonly IFeedbackPerformer _feedbackPerformer;
-        private readonly GameFlowModel _gameFlowModel;
+        private readonly GameStateModel _gameStateModel;
         private readonly WealthMeterModel _wealthMeterModel;
 
         private IDisposable _stateSubscription;
@@ -21,13 +21,13 @@ namespace UI.ResultScreen
             IResultScreenView view,
             IGameFlowService gameFlowService,
             IFeedbackPerformer feedbackPerformer,
-            GameFlowModel gameFlowModel,
+            GameStateModel gameStateModel,
             WealthMeterModel wealthMeterModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
             _feedbackPerformer = feedbackPerformer;
-            _gameFlowModel = gameFlowModel;
+            _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
         }
 
@@ -35,7 +35,7 @@ namespace UI.ResultScreen
         {
             _view.RetryClicked += OnRetryClicked;
             _view.NextClicked += OnNextClicked;
-            _stateSubscription = _gameFlowModel.State.Subscribe(OnStateChanged);
+            _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
         }
 
         public void StopListening()
@@ -48,31 +48,31 @@ namespace UI.ResultScreen
         private void OnRetryClicked()
         {
             _feedbackPerformer.Play(FeedbackType.ButtonClick);
-            _gameFlowService.RetryLevel();
+            _gameFlowService.PrepareGame();
         }
 
         private void OnNextClicked()
         {
             _feedbackPerformer.Play(FeedbackType.ButtonClick);
-            _gameFlowService.ProceedToNextLevel();
+            _gameFlowService.GoToNextGame();
         }
 
-        private void OnStateChanged(GameFlowState state)
+        private void OnStateChanged(GameState state)
         {
             switch (state)
             {
-                case GameFlowState.Win:
+                case GameState.Win:
                     _view.SetWinResult();
                     ShowResult();
                     break;
 
-                case GameFlowState.Lose:
+                case GameState.Lose:
                     _view.SetLoseResult();
                     ShowResult();
                     break;
 
-                case GameFlowState.WaitingToStart:
-                case GameFlowState.Playing:
+                case GameState.Tutorial:
+                case GameState.Run:
                     _view.Hide();
                     break;
 
@@ -83,7 +83,7 @@ namespace UI.ResultScreen
 
         private void ShowResult()
         {
-            int moneyAmount = Mathf.Max(0, _wealthMeterModel.Value.CurrentValue);
+            int moneyAmount = Mathf.Max(0, _wealthMeterModel.WealthPoints.CurrentValue);
 
             _view.SetMoneyAmount(moneyAmount);
             _view.Show();

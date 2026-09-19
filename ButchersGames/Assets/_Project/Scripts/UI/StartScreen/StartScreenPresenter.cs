@@ -11,9 +11,9 @@ namespace UI.StartScreen
         private readonly IStartScreenView _view;
         private readonly IGameFlowService _gameFlowService;
         private readonly IFeedbackPerformer _feedbackPerformer;
-        private readonly ILevelProvider _levelProvider;
+        private readonly ILevelLoader _levelLoader;
         private readonly ILevelService _levelService;
-        private readonly GameFlowModel _gameFlowModel;
+        private readonly GameStateModel _gameStateModel;
 
         private IDisposable _stateSubscription;
 
@@ -21,29 +21,29 @@ namespace UI.StartScreen
             IStartScreenView view,
             IGameFlowService gameFlowService,
             IFeedbackPerformer feedbackPerformer,
-            ILevelProvider levelProvider,
+            ILevelLoader levelLoader,
             ILevelService levelService,
-            GameFlowModel gameFlowModel)
+            GameStateModel gameStateModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
             _feedbackPerformer = feedbackPerformer;
-            _levelProvider = levelProvider;
+            _levelLoader = levelLoader;
             _levelService = levelService;
-            _gameFlowModel = gameFlowModel;
+            _gameStateModel = gameStateModel;
         }
 
         public void StartListening()
         {
             _view.StartClicked += OnStartClicked;
-            _levelProvider.LevelLoaded += OnLevelLoaded;
-            _stateSubscription = _gameFlowModel.State.Subscribe(OnStateChanged);
+            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
         }
 
         public void StopListening()
         {
             _view.StartClicked -= OnStartClicked;
-            _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _levelLoader.LevelLoaded -= OnLevelLoaded;
             _stateSubscription?.Dispose();
         }
 
@@ -58,9 +58,9 @@ namespace UI.StartScreen
             _view.SetLevelNumber(_levelService.CurrentLevelNumber);
         }
 
-        private void OnStateChanged(GameFlowState state)
+        private void OnStateChanged(GameState state)
         {
-            if (state == GameFlowState.WaitingToStart)
+            if (state == GameState.Tutorial)
             {
                 _view.Show();
             }

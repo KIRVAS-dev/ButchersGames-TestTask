@@ -5,22 +5,19 @@ namespace Core.Gameplay.LevelProgression
 {
     public sealed class LevelService : ILevelService
     {
-        private readonly ILevelProvider _levelProvider;
-        private readonly ILevelView _levelView;
+        private readonly ILevelLoader _levelLoader;
         private readonly ILevelProgressStore _progressStore;
         private readonly LevelModel _model;
-        private readonly Random _random = new();
+        private readonly Random _random = new Random();
 
         public LevelService(
-            ILevelProvider levelProvider,
-            ILevelView levelView,
+            ILevelLoader levelLoader,
             ILevelProgressStore progressStore,
             LevelModel model)
         {
-            Guard.AgainstNonPositive(levelProvider.LevelCount, () => new InvalidLevelCountException(levelProvider.LevelCount));
+            Guard.AgainstNonPositive(levelLoader.LevelCount, () => new InvalidLevelCountException(levelLoader.LevelCount));
 
-            _levelProvider = levelProvider;
-            _levelView = levelView;
+            _levelLoader = levelLoader;
             _progressStore = progressStore;
             _model = model;
 
@@ -30,48 +27,42 @@ namespace Core.Gameplay.LevelProgression
             Guard.AgainstLessThan(
                 _model.CurrentLevelIndex,
                 0,
-                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelProvider.LevelCount)
+                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelLoader.LevelCount)
             );
 
             Guard.AgainstGreaterThan(
                 _model.CurrentLevelIndex,
-                _levelProvider.LevelCount - 1,
-                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelProvider.LevelCount)
+                _levelLoader.LevelCount - 1,
+                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelLoader.LevelCount)
             );
         }
 
         public int CurrentLevelNumber => _model.CompletedLevelCount + 1;
-        public int CompletedLevelCount => _model.CompletedLevelCount;
 
-        public void SelectCurrentLevel()
+        public void LoadCurrentLevel()
         {
-            _levelView.LoadLevel(_model.CurrentLevelIndex);
+            _levelLoader.LoadLevel(_model.CurrentLevelIndex);
         }
 
-        public void RestartLevel()
-        {
-            SelectCurrentLevel();
-        }
-
-        public void ProceedToNextLevel()
+        public void LoadNextLevel()
         {
             _model.CompletedLevelCount++;
             _model.CurrentLevelIndex = NextLevelIndex();
 
             _progressStore.SaveProgress(_model.CompletedLevelCount, _model.CurrentLevelIndex);
-            _levelView.LoadLevel(_model.CurrentLevelIndex);
+            _levelLoader.LoadLevel(_model.CurrentLevelIndex);
         }
 
         private int NextLevelIndex()
         {
-            int levelCount = _levelProvider.LevelCount;
+            int levelCount = _levelLoader.LevelCount;
 
             if (_model.CompletedLevelCount < levelCount)
             {
                 return _model.CompletedLevelCount;
             }
 
-            bool canPickRandomLevel = _levelProvider.IsRandomized && levelCount > 1;
+            bool canPickRandomLevel = _levelLoader.IsRandomized && levelCount > 1;
 
             if (canPickRandomLevel)
             {

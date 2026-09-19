@@ -1,0 +1,73 @@
+using System;
+using Core.Gameplay.RunnerMovement;
+using Core.Gameplay.Track;
+using Core.Gameplay.WealthMeter;
+using R3;
+
+namespace Core.Gameplay.GameFlow
+{
+    public sealed class GameResultDetector
+    {
+        private readonly IGameFlowService _gameFlowService;
+        private readonly IGameStateMachine _gameStateMachine;
+        private readonly IWealthMeterService _wealthMeter;
+        private readonly ITrackProvider _trackProvider;
+        private readonly RunnerMovementModel _runnerMovementModel;
+
+        private IDisposable _distanceSubscription;
+
+        public GameResultDetector(
+            IGameFlowService gameFlowService,
+            IGameStateMachine gameStateMachine,
+            IWealthMeterService wealthMeter,
+            ITrackProvider trackProvider,
+            RunnerMovementModel runnerMovementModel)
+        {
+            _gameFlowService = gameFlowService;
+            _gameStateMachine = gameStateMachine;
+            _wealthMeter = wealthMeter;
+            _trackProvider = trackProvider;
+            _runnerMovementModel = runnerMovementModel;
+        }
+
+        public void StartListening()
+        {
+            _wealthMeter.Depleted += OnWealthDepleted;
+            _distanceSubscription = _runnerMovementModel.DistanceTraveled.Subscribe(OnDistanceTraveled);
+        }
+
+        public void StopListening()
+        {
+            _wealthMeter.Depleted -= OnWealthDepleted;
+            _distanceSubscription?.Dispose();
+        }
+
+        private void OnWealthDepleted()
+        {
+            FinishRun(GameState.Lose);
+        }
+
+        private void OnDistanceTraveled(float distance)
+        {
+            if (_gameStateMachine.State != GameState.Run)
+            {
+                return;
+            }
+
+            if (distance >= _trackProvider.FinishDistance)
+            {
+                FinishRun(GameState.Win);
+            }
+        }
+
+        private void FinishRun(GameState result)
+        {
+            if (_gameStateMachine.State != GameState.Run)
+            {
+                return;
+            }
+
+            _gameFlowService.FinishGame(result);
+        }
+    }
+}

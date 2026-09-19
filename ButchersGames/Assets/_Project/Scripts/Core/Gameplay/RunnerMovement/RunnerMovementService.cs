@@ -11,8 +11,8 @@ namespace Core.Gameplay.RunnerMovement
         : IRunnerMovementService,
           IGameplayTickable
     {
-        private readonly ILevelProvider _levelProvider;
-        private readonly IGameFlowService _gameFlowService;
+        private readonly ILevelLoader _levelLoader;
+        private readonly IGameStateMachine _gameStateMachine;
         private readonly ITrackProvider _trackProvider;
         private readonly IObstacleRegistry _obstacleRegistry;
         private readonly ILaneBarrierRegistry _laneBarrierRegistry;
@@ -21,16 +21,16 @@ namespace Core.Gameplay.RunnerMovement
         private readonly List<ILaneBarrier> _subscribedLaneBarriers = new List<ILaneBarrier>();
 
         public RunnerMovementService(
-            ILevelProvider levelProvider,
-            IGameFlowService gameFlowService,
+            ILevelLoader levelLoader,
+            IGameStateMachine gameStateMachine,
             IRunnerMovementSettings settings,
             ITrackProvider trackProvider,
             IObstacleRegistry obstacleRegistry,
             ILaneBarrierRegistry laneBarrierRegistry,
             RunnerMovementModel model)
         {
-            _levelProvider = levelProvider;
-            _gameFlowService = gameFlowService;
+            _levelLoader = levelLoader;
+            _gameStateMachine = gameStateMachine;
             _trackProvider = trackProvider;
             _obstacleRegistry = obstacleRegistry;
             _laneBarrierRegistry = laneBarrierRegistry;
@@ -39,7 +39,7 @@ namespace Core.Gameplay.RunnerMovement
 
         void IGameplayTickable.Tick(float deltaTime)
         {
-            if (_gameFlowService.State != GameFlowState.Playing)
+            if (_gameStateMachine.State != GameState.Run)
             {
                 return;
             }
@@ -49,12 +49,12 @@ namespace Core.Gameplay.RunnerMovement
 
         public void StartListening()
         {
-            _levelProvider.LevelLoaded += OnLevelLoaded;
+            _levelLoader.LevelLoaded += OnLevelLoaded;
         }
 
         public void StopListening()
         {
-            _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _levelLoader.LevelLoaded -= OnLevelLoaded;
 
             UnsubscribeAllObstacles();
             UnsubscribeAllLaneBarriers();
