@@ -48,7 +48,7 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 - `camelCase` — локальные переменные, параметры
 - `_camelCase` — private поля
 - `PascalCase` — public/protected поля, свойства, методы, **локальные функции**, типы
-- `UPPER_SNAKE_CASE` — `const`
+- `PascalCase` — `const` (как и остальные члены типа)
 - `static readonly` / `readonly` — по правилам полей, не как const
 - Bool-методы: `IsX` / `CanX` / `HasX`; `TryX` для try-паттерна
 - События — прошедшее время (`Killed`); хендлеры — `OnX`

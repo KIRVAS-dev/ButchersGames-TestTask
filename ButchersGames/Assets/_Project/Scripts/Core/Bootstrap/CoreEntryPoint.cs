@@ -1,5 +1,6 @@
 using System;
 using Core.Gameplay.GameFlow;
+using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthPointsModifier;
 using Core.Input.RunnerMovement;
 using UI.FloatingText;
@@ -18,6 +19,7 @@ namespace Core.Bootstrap
           IDisposable
     {
         private readonly RunnerMovementInputHandler _runnerMovementInputHandler;
+        private readonly RunnerMovementService _runnerMovementService;
         private readonly WealthPointsModifierService _wealthPointsModifierService;
         private readonly GameFlowService _gameFlowService;
         private readonly CharacterAppearancePresenter _characterAppearancePresenter;
@@ -30,6 +32,7 @@ namespace Core.Bootstrap
 
         public CoreEntryPoint(
             RunnerMovementInputHandler runnerMovementInputHandler,
+            RunnerMovementService runnerMovementService,
             WealthPointsModifierService wealthPointsModifierService,
             GameFlowService gameFlowService,
             CharacterAppearancePresenter characterAppearancePresenter,
@@ -41,6 +44,7 @@ namespace Core.Bootstrap
             FloatingTextPresenter floatingTextPresenter)
         {
             _runnerMovementInputHandler = runnerMovementInputHandler;
+            _runnerMovementService = runnerMovementService;
             _wealthPointsModifierService = wealthPointsModifierService;
             _gameFlowService = gameFlowService;
             _characterAppearancePresenter = characterAppearancePresenter;
@@ -55,6 +59,7 @@ namespace Core.Bootstrap
         void IStartable.Start()
         {
             _runnerMovementInputHandler.StartListening();
+            _runnerMovementService.StartListening();
             _wealthPointsModifierService.StartListening();
             _characterAppearancePresenter.StartListening();
             _runnerMovementPresenter.StartListening();
@@ -69,6 +74,7 @@ namespace Core.Bootstrap
         void IDisposable.Dispose()
         {
             _runnerMovementInputHandler.StopListening();
+            _runnerMovementService.StopListening();
             _wealthPointsModifierService.StopListening();
             _gameFlowService.StopListening();
             _characterAppearancePresenter.StopListening();

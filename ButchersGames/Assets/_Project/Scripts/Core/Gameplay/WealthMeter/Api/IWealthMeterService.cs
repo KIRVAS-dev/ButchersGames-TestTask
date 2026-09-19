@@ -12,6 +12,5 @@ namespace Core.Gameplay.WealthMeter
 
         void Increase(int amount);
         void Decrease(int amount);
-        void Reset();
     }
 }

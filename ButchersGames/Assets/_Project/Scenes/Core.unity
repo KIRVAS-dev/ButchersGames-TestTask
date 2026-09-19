@@ -487,10 +487,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 581031786}
-  - component: {fileID: 581031788}
   - component: {fileID: 581031787}
   m_Layer: 0
-  m_Name: LevelCatalog
+  m_Name: LevelView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -523,21 +522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a13ac66523199254a86e194f2632c9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelView
-  _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
-  _levelProvider: {fileID: 581031788}
---- !u!114 &581031788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 581031784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b95e29bdef1724880a56122692e00e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelProvider
-  _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
+  _levelProvider: {fileID: 1219698807}
 --- !u!1 &614447803
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,7 +1308,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1877,7 +1862,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2184,6 +2169,7 @@ GameObject:
   - component: {fileID: 1219698800}
   - component: {fileID: 1219698804}
   - component: {fileID: 1219698805}
+  - component: {fileID: 1219698807}
   - component: {fileID: 1219698806}
   m_Layer: 0
   m_Name: GameplayProviders
@@ -2280,6 +2266,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Feedback.FeedbackView
   _entries: []
+--- !u!114 &1219698807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219698799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38b95e29bdef1724880a56122692e00e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelProvider
+  _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
 --- !u!1 &1288197447
 GameObject:
   m_ObjectHideFlags: 0
@@ -2744,7 +2743,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2

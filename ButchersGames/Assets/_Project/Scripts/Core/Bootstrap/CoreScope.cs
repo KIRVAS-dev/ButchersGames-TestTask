@@ -115,10 +115,11 @@ namespace Core.Bootstrap
 
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
             builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>();
+            builder.RegisterComponentOnNewGameObject<TickInput>(Lifetime.Singleton, nameof(TickInput)).As<ITickInput>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().AsSelf();
-            builder.RegisterComponentInHierarchy<RunnerTrackFollower>().As<IRunnerTrackFollowerView>();
+            builder.RegisterComponentInHierarchy<RunnerTrackFollowerView>().As<IRunnerTrackFollowerView>();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
-            builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>();
+            builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>().AsSelf();
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
             builder.Register<RunnerMovementPresenter>(Lifetime.Singleton);
         }

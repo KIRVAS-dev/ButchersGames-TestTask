@@ -94,12 +94,22 @@ namespace Core.Gameplay.GameFlow
 
         private void OnWealthDepleted()
         {
+            if (State != GameFlowState.Playing)
+            {
+                return;
+            }
+
             _model.State.Value = GameFlowState.Lose;
             _inputBlock.Block();
         }
 
         private void OnFinishReached()
         {
+            if (State != GameFlowState.Playing)
+            {
+                return;
+            }
+
             _model.State.Value = GameFlowState.Win;
             _inputBlock.Block();
         }

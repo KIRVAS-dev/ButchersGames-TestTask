@@ -16,6 +16,11 @@ namespace ViewComponents.Level
         public int LevelCount => _levelListConfig.Levels.Count;
         public bool IsRandomized => _levelListConfig.IsRandomized;
 
+        public Level LevelAt(int levelIndex)
+        {
+            return _levelListConfig.Levels[levelIndex];
+        }
+
         public void NotifyLevelLoaded()
         {
             LevelLoaded?.Invoke();
@@ -32,6 +37,8 @@ namespace ViewComponents.Level
                 _levelListConfig,
                 () => new MissingLevelListConfigException(nameof(_levelListConfig), gameObject.name)
             );
+
+            _levelListConfig.Validate();
         }
     }
 }

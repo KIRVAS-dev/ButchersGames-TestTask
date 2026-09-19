@@ -49,14 +49,9 @@ namespace Core.Gameplay.WealthMeter
             Decreased?.Invoke(amount);
         }
 
-        public void Reset()
-        {
-            SetValue(_settings.StartValue);
-        }
-
         private void OnLevelLoaded()
         {
-            Reset();
+            SetValue(_settings.StartValue);
         }
 
         private void SetValue(int value)
