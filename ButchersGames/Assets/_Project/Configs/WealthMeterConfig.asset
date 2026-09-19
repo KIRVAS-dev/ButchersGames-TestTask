@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: WealthMeterConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthMeter.WealthMeterConfig
   _startValue: 20
+  _poorThreshold: 0
   _descentThreshold: 100
   _casualThreshold: 500
   _richThreshold: 2500
