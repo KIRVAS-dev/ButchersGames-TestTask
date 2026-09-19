@@ -1,5 +1,6 @@
 using System;
 using Infrastructure.ExtendedExceptions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,10 @@ namespace UI.StartScreen
         : MonoBehaviour,
           IStartScreenView
     {
+        private const string LevelNumberTextFormat = "Уровень {0}";
+
         [SerializeField] private RectTransform _root;
+        [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private Button _startButton;
 
         public event Action StartClicked;
@@ -36,6 +40,11 @@ namespace UI.StartScreen
             _root.gameObject.SetActive(false);
         }
 
+        public void SetLevelNumber(int levelNumber)
+        {
+            _levelNumberText.text = string.Format(LevelNumberTextFormat, levelNumber);
+        }
+
         private void OnStartButtonClicked()
         {
             StartClicked?.Invoke();
@@ -47,6 +56,7 @@ namespace UI.StartScreen
                 new MissingStartScreenFieldException(fieldName, gameObject.name);
 
             Guard.AgainstNull(_root, () => missing(nameof(_root)));
+            Guard.AgainstNull(_levelNumberText, () => missing(nameof(_levelNumberText)));
             Guard.AgainstNull(_startButton, () => missing(nameof(_startButton)));
         }
     }
