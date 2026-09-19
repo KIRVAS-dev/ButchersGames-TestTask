@@ -9,7 +9,6 @@
         "Core.Input",
         "Input",
         "UI",
-        "Unity.InputSystem",
         "ViewComponents",
         "Infrastructure.Persistence"
     ],

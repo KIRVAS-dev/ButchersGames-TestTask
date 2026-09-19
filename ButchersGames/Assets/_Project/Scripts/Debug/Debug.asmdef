@@ -2,11 +2,7 @@
     "name": "Debug",
     "rootNamespace": "ProjectDebug",
     "references": [
-        "Core",
-        "Bootstrap",
-        "Unity.InputSystem",
-        "VContainer",
-        "ViewComponents"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

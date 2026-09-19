@@ -1,9 +1,8 @@
 using System;
 using Core.Gameplay.LaneBarrier;
 using Infrastructure.ExtendedExceptions;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Splines;
+using ViewComponents.Track;
 
 namespace ViewComponents.LaneBarriers
 {
@@ -12,7 +11,6 @@ namespace ViewComponents.LaneBarriers
         : MonoBehaviour,
           ILaneBarrier
     {
-        private Collider _collider;
         private float _minLateralOffset;
         private float _maxLateralOffset;
 
@@ -22,16 +20,13 @@ namespace ViewComponents.LaneBarriers
         float ILaneBarrier.MinLateralOffset => _minLateralOffset;
         float ILaneBarrier.MaxLateralOffset => _maxLateralOffset;
 
-        private void Awake()
+        public void Initialize(TrackPath track)
         {
-            _collider = GetComponent<Collider>();
+            Collider zoneCollider = GetComponent<Collider>();
 
-            Validate();
+            Guard.AgainstTrue(!zoneCollider.isTrigger, () => new InvalidLaneBarrierColliderException(gameObject.name));
 
-            SplineContainer splineContainer = FindAnyObjectByType<SplineContainer>();
-            Guard.AgainstNull(splineContainer, () => new MissingLaneBarrierSplineContainerException(gameObject.name));
-
-            (_minLateralOffset, _maxLateralOffset) = CalculateLateralRange(splineContainer);
+            (_minLateralOffset, _maxLateralOffset) = CalculateLateralRange(zoneCollider, track);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -44,36 +39,20 @@ namespace ViewComponents.LaneBarriers
             Exited?.Invoke(this);
         }
 
-        private (float min, float max) CalculateLateralRange(SplineContainer splineContainer)
+        private (float min, float max) CalculateLateralRange(Collider zoneCollider, TrackPath track)
         {
-            Vector3 lateralAxis = CalculateLateralAxis(splineContainer, out Vector3 nearestTrackPoint);
+            Bounds bounds = zoneCollider.bounds;
 
-            Bounds bounds = _collider.bounds;
-            float centerProjection = Vector3.Dot(bounds.center - nearestTrackPoint, lateralAxis);
+            TrackPoint nearestPoint = track.NearestPointTo(bounds.center);
+            Vector3 lateralAxis = Vector3.Cross(nearestPoint.Forward, Vector3.up).normalized;
+
+            float centerProjection = Vector3.Dot(bounds.center - nearestPoint.Position, lateralAxis);
 
             float extentProjection = Mathf.Abs(bounds.extents.x * lateralAxis.x)
               + Mathf.Abs(bounds.extents.y * lateralAxis.y)
               + Mathf.Abs(bounds.extents.z * lateralAxis.z);
 
             return (centerProjection - extentProjection, centerProjection + extentProjection);
-        }
-
-        private Vector3 CalculateLateralAxis(SplineContainer splineContainer, out Vector3 nearestTrackPoint)
-        {
-            float3 worldCenter = _collider.bounds.center;
-
-            SplineUtility.GetNearestPoint(splineContainer.Spline, worldCenter, out _, out float t);
-            splineContainer.Evaluate(t, out float3 position, out float3 tangent, out _);
-
-            nearestTrackPoint = position;
-
-            Vector3 forward = ((Vector3)tangent).normalized;
-            return Vector3.Cross(forward, Vector3.up).normalized;
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstTrue(!_collider.isTrigger, () => new InvalidLaneBarrierColliderException(gameObject.name));
         }
     }
 }

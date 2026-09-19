@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06df7ff4c2ca8a4da53efbd47e704e1, type: 3}
   m_Name: WealthMeterConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthMeter.WealthMeterConfig
-  _startValue: 20
-  _poorThreshold: 0
-  _descentThreshold: 100
-  _casualThreshold: 500
-  _richThreshold: 2500
-  _millionaireThreshold: 15000
+  _startValue: 200
+  _poorThreshold: 100
+  _descentThreshold: 500
+  _casualThreshold: 2500
+  _richThreshold: 10000
+  _millionaireThreshold: 20000

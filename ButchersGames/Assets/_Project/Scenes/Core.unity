@@ -487,9 +487,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 581031786}
+  - component: {fileID: 581031788}
   - component: {fileID: 581031787}
   m_Layer: 0
-  m_Name: LevelView
+  m_Name: LevelRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -522,7 +523,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a13ac66523199254a86e194f2632c9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelView
-  _levelProvider: {fileID: 1219698807}
+  _levelProvider: {fileID: 581031788}
+--- !u!114 &581031788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581031784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38b95e29bdef1724880a56122692e00e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelProvider
+  _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
 --- !u!1 &614447803
 GameObject:
   m_ObjectHideFlags: 0
@@ -1083,6 +1097,7 @@ GameObject:
   - component: {fileID: 663580181}
   - component: {fileID: 663580180}
   - component: {fileID: 663580179}
+  - component: {fileID: 663580182}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -1151,6 +1166,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &663580182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663580178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599d9f2b1fa644546b5adb1195d30e1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.DragInput
 --- !u!1 &713030047
 GameObject:
   m_ObjectHideFlags: 0
@@ -2164,28 +2191,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1219698803}
-  - component: {fileID: 1219698802}
-  - component: {fileID: 1219698807}
   - component: {fileID: 1219698806}
   m_Layer: 0
-  m_Name: GameplayProviders
+  m_Name: FeedbackPerformer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1219698802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219698799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 599d9f2b1fa644546b5adb1195d30e1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.DragInput
 --- !u!4 &1219698803
 Transform:
   m_ObjectHideFlags: 0
@@ -2214,19 +2227,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Feedback.FeedbackView
   _entries: []
---- !u!114 &1219698807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219698799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b95e29bdef1724880a56122692e00e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelProvider
-  _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
 --- !u!1 &1288197447
 GameObject:
   m_ObjectHideFlags: 0
@@ -3603,7 +3603,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2028415063}
   - component: {fileID: 2028415062}
-  - component: {fileID: 2028415061}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -3611,18 +3610,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2028415061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028415060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a30388699516cb64e8ed85fe6c867f7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.RunnerTrackFollower
 --- !u!114 &2028415062
 MonoBehaviour:
   m_ObjectHideFlags: 0

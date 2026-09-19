@@ -13,11 +13,14 @@ Assets/_Project/Scripts/
 │   ├── ExtendedExceptions/  ExtendedExceptions        — ExtendedException, Guard
 │   └── Persistence/         Infrastructure.Persistence — PlayerPrefs и пр. адаптеры хранения
 ├── Core/
-│   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, scene loader API
+│   ├── Api/                 Core                      — порты цикла: IInputTickable, IGameplayTickable, IPresentationTickable, IGameplayInputBlock
+│   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, GameLoop, scene loader API
 │   ├── Gameplay/{Feature}/  Core                      — Model, Service, Api (в т.ч. I*Settings)
 │   └── Input/{Feature}/     Core.Input                — InputHandler → Service
 ├── Input/                   Input                     — feature-agnostic низкоуровневый ввод
+├── UI/{Screen}/             UI                        — View, Presenter, Config экрана (MVP), см. «UI-экраны»
 ├── ViewComponents/{Feature}/ ViewComponents           — View, Providers, SO Config, scene MonoBehaviour
+├── Debug/                   Debug                     — Editor-only утилиты (`#if UNITY_EDITOR`), без ссылок на gameplay
 └── Rendering/               Rendering                 — URP Renderer Features
 ```
 
@@ -38,11 +41,13 @@ Rendering  — изолирован от gameplay (URP only)
 |---|---|---|
 | **ExtendedExceptions** | — | `ExtendedException`, `Guard` |
 | **Infrastructure.Persistence** | Core | Адаптеры persistence (PlayerPrefs и т.п.) |
-| **Core** | ExtendedExceptions, VContainer, UniTask, R3 | Gameplay, порты `Api/` (без SO Config) |
-| **Input** | (минимально, напр. uGUI) | Низкоуровневый ввод **без** знания фич |
-| **ViewComponents** | Core, Input, ExtendedExceptions, UniTask, DOTween | View, Providers, SO Config |
-| **Core.Input** | Core, Input, ExtendedExceptions, UniTask | `{Feature}InputHandler` |
-| **Bootstrap** | Core, Core.Input, ViewComponents, Infrastructure.Persistence, VContainer, UniTask | CoreScope, CoreEntryPoint |
+| **Core** | ExtendedExceptions, R3 | Gameplay, порты `Api/` (без SO Config), фазы цикла |
+| **Input** | Unity.InputSystem | Низкоуровневый ввод **без** знания фич |
+| **ViewComponents** | Core, Input, ExtendedExceptions, UniTask, VContainer, FMOD, Splines, R3 | View, Providers, SO Config |
+| **UI** | Core, ExtendedExceptions, DOTween, TMP, uGUI, R3 | Экраны UI: View, Presenter, Config |
+| **Core.Input** | Core, Input | `{Feature}InputHandler` |
+| **Bootstrap** | Core, Core.Input, Input, UI, ViewComponents, Infrastructure.Persistence, ExtendedExceptions, VContainer, UniTask | CoreScope, CoreEntryPoint, GameLoop |
+| **Debug** | Unity.InputSystem | Editor-only отладка |
 | **Infrastructure.Bootstrap** | Bootstrap, VContainer, UniTask | ProjectScope, загрузка Core |
 | **Rendering** | URP | Пост-эффекты |
 
@@ -84,8 +89,14 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 |---|---|---|---|
 | Infrastructure Bootstrap EntryPoint | Project | additive load Core | — |
 | `CoreEntryPoint` | Core | `StartListening()` у InputHandler'ов и у сервисов-наблюдателей без потребителя через ctor | `StopListening()` |
+| `GameLoop` | Core | — (только `ITickable`) | — |
 
-`CoreEntryPoint` — единственная точка входа VContainer в Core-scope (`RegisterEntryPoint<CoreEntryPoint>()`), общий стартер Core-геймплея, не только InputHandler'ов. Новая фича с вводом: подключить handler в `CoreEntryPoint` (Start/Dispose). Новая фича-«наблюдатель» без потребителя через ctor (сервис, который должен начать подписки на чужие события сразу при старте сцены, но которого никто не резолвит из другого конструктора и который не View на сцене — как `GameFlowService`, `WealthPointsModifierService`) — **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`; вместо этого получает обычные публичные методы `StartListening()`/`StopListening()`, которые вызывает `CoreEntryPoint.Start()`/`Dispose()`. Единый паттерн на все такие сервисы, без ветвления по способу инициализации.
+`RegisterEntryPoint<T>()` в VContainer — это способ получить колбэки жизненного цикла (`IStartable`, `ITickable`, `IDisposable`), а не отдельное архитектурное понятие. В Core-scope их две:
+
+- `CoreEntryPoint` (`RegisterEntryPoint<CoreEntryPoint>()`) — **единственный стартер** Core-геймплея: запускает подписки фич и сервисов, не только InputHandler'ов.
+- `GameLoop` (`RegisterEntryPoint<GameLoop>()`) — только тик кадра. Через DI получает списки всех реализаций `IInputTickable` (чтение ввода), `IGameplayTickable` (симуляция, `Tick(deltaTime)`) и `IPresentationTickable` (применение итога кадра к сцене) и на каждом кадре обходит их в этом порядке: «ввод → геймплей → отображение». Отдельных классов-фаз нет: реализация регистрируется как `.As<I*Tickable>()` (например, `DragInput` — `IInputTickable`, `RunnerMovementService` — `IGameplayTickable`, `RunnerMovementView` — `IPresentationTickable`). Для View, которому дорого применять каждое изменение, `Set*` от Presenter только запоминают значения, а `IPresentationTickable.Tick()` применяет их один раз за кадр. GameLoop не запускает фичи и не содержит логики. `IGameplayInputBlock` — флаг блокировки геймплейного ввода, его выставляет `GameFlowService`, читает InputHandler.
+
+Новый участник цикла реализует `I*Tickable` и регистрируется через `.As<I*Tickable>()`, а не отдельными `ITickable`/`RegisterEntryPoint`. Новая фича с вводом: подключить handler в `CoreEntryPoint` (Start/Dispose). Новая фича-«наблюдатель» без потребителя через ctor (сервис, который должен начать подписки на чужие события сразу при старте сцены, но которого никто не резолвит из другого конструктора и который не View на сцене — как `GameFlowService`, `WealthPointsModifierService`) — **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`; вместо этого получает обычные публичные методы `StartListening()`/`StopListening()`, которые вызывает `CoreEntryPoint.Start()`/`Dispose()`. Единый паттерн на все такие сервисы, без ветвления по способу инициализации.
 
 ## Эталон фичи `{Feature}`
 

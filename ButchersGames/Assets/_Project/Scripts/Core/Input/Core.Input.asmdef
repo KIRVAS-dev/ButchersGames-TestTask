@@ -3,9 +3,7 @@
     "rootNamespace": "Core.Input",
     "references": [
         "Core",
-        "Input",
-        "ExtendedExceptions",
-        "UniTask"
+        "Input"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -13,6 +13,6 @@ namespace ViewComponents.Obstacles
             _levelProvider = levelProvider;
         }
 
-        public IReadOnlyCollection<IObstacle> Obstacles => _levelProvider.CurrentLevel.Obstacles;
+        public IReadOnlyCollection<IObstacle> Obstacles => _levelProvider.Obstacles;
     }
 }

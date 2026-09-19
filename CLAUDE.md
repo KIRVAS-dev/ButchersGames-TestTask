@@ -105,10 +105,10 @@ URP / post-effects? → Rendering
 ```
 Bootstrap (ProjectScope) → additive load Core.unity
   → CoreScope → CoreEntryPoint.Start() (InputHandlers + сервисы-наблюдатели без потребителя через ctor)
-  → gameplay → CoreEntryPoint.Dispose()
+  → gameplay (GameLoop.Tick: IInputTickable → IGameplayTickable → IPresentationTickable каждый кадр) → CoreEntryPoint.Dispose()
 ```
 
-`CoreEntryPoint` — единственная точка входа VContainer в Core-scope: общий стартер Core-геймплея, не только ввода. Ключевые типы: Infrastructure `EntryPoint`, `CoreScope`, `CoreEntryPoint`, scene loader API.
+`CoreEntryPoint` — единственный стартер Core-геймплея: запускает подписки фич и сервисов, не только ввода. `GameLoop` — второй `RegisterEntryPoint` в Core-scope, но только ради `ITickable` (порядок «ввод → геймплей»), фичи он не запускает. Ключевые типы: Infrastructure `EntryPoint`, `CoreScope`, `CoreEntryPoint`, `GameLoop`, scene loader API.
 
 ### Soft-checks
 

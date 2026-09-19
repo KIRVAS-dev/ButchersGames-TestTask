@@ -1,3 +1,4 @@
+using Core.Gameplay;
 using Core.Gameplay.Feedback;
 using Core.Gameplay.Finish;
 using Core.Gameplay.GameFlow;
@@ -5,8 +6,10 @@ using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
+using Core.Gameplay.Track;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
+using Core.Input;
 using Core.Input.RunnerMovement;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
@@ -21,6 +24,7 @@ using ViewComponents.LaneBarriers;
 using ViewComponents.Level;
 using ViewComponents.Obstacles;
 using ViewComponents.RunnerMovement;
+using ViewComponents.Track;
 using ViewComponents.WealthMeter;
 using ViewComponents.WealthPointsModifier;
 using VContainer;
@@ -48,6 +52,7 @@ namespace Core.Bootstrap
         private static void RegisterEntryPoint(IContainerBuilder builder)
         {
             builder.RegisterEntryPoint<CoreEntryPoint>();
+            builder.RegisterEntryPoint<GameLoop>();
             builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
         }
 
@@ -62,7 +67,7 @@ namespace Core.Bootstrap
             builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
             builder.Register<ObstacleRegistry>(Lifetime.Singleton).As<IObstacleRegistry>();
             builder.Register<LaneBarrierRegistry>(Lifetime.Singleton).As<ILaneBarrierRegistry>();
-            builder.Register<FinishProvider>(Lifetime.Singleton).As<IFinishProvider>();
+            builder.Register<FinishProvider>(Lifetime.Singleton).As<IFinishProvider>().AsSelf();
         }
 
         private void RegisterWealthMeter(IContainerBuilder builder)
@@ -76,7 +81,7 @@ namespace Core.Bootstrap
 
             builder.RegisterInstance<IWealthMeterSettings>(_wealthMeterConfig);
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
-            builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>();
+            builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>().AsSelf();
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton);
         }
@@ -91,12 +96,15 @@ namespace Core.Bootstrap
             _runnerMovementConfig.Validate();
 
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
-            builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>();
-            builder.RegisterComponentOnNewGameObject<TickInput>(Lifetime.Singleton, nameof(TickInput)).As<ITickInput>();
-            builder.RegisterComponentInHierarchy<RunnerMovementView>().AsSelf();
-            builder.RegisterComponentInHierarchy<RunnerTrackFollowerView>().As<IRunnerTrackFollowerView>();
+            builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>().As<IInputTickable>();
+            builder.RegisterComponentInHierarchy<RunnerMovementView>().As<IRunnerMovementView>().As<IPresentationTickable>();
+            builder.Register<TrackProvider>(Lifetime.Singleton).As<ITrackProvider>().AsSelf();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
-            builder.Register<RunnerMovementService>(Lifetime.Singleton).As<IRunnerMovementService>().AsSelf();
+
+            builder.Register<RunnerMovementService>(Lifetime.Singleton)
+                .As<IRunnerMovementService>()
+                .As<IGameplayTickable>()
+                .AsSelf();
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
             builder.Register<RunnerMovementPresenter>(Lifetime.Singleton);
         }
