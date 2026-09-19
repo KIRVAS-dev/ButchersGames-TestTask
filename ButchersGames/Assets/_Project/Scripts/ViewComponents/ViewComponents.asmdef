@@ -6,7 +6,6 @@
         "Input",
         "ExtendedExceptions",
         "UniTask",
-        "DOTween.Modules",
         "FMODUnity",
         "VContainer",
         "Unity.InputSystem",
@@ -17,7 +16,6 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "DOTween.dll",
         "R3.dll"
     ],
     "autoReferenced": true,

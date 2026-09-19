@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Infrastructure.ExtendedExceptions;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,29 +10,28 @@ namespace Core.Bootstrap
 {
     public sealed class CoreLoader : ISceneLoader
     {
-        public async UniTask LoadSceneAsync(string sceneName, CoreLoadSceneMode loadSceneMode,
+        public async UniTask LoadSceneAsync(
+            string sceneName,
+            CoreLoadSceneMode loadSceneMode,
             CancellationToken cancellationToken)
         {
             UnityLoadSceneMode unityLoadSceneMode = ConvertLoadSceneMode(loadSceneMode);
 
             AsyncOperation loadOperation = SceneManager.LoadSceneAsync(sceneName, unityLoadSceneMode);
 
+            Guard.AgainstNull(loadOperation, () => new SceneNotFoundException(sceneName));
+
             await loadOperation.ToUniTask(cancellationToken: cancellationToken);
         }
 
         private UnityLoadSceneMode ConvertLoadSceneMode(CoreLoadSceneMode loadSceneMode)
         {
-            switch (loadSceneMode)
+            return loadSceneMode switch
             {
-                case CoreLoadSceneMode.Single:
-                    return UnityLoadSceneMode.Single;
-
-                case CoreLoadSceneMode.Additive:
-                    return UnityLoadSceneMode.Additive;
-
-                default:
-                    throw new UnhandledLoadSceneModeException(loadSceneMode);
-            }
+                CoreLoadSceneMode.Single => UnityLoadSceneMode.Single,
+                CoreLoadSceneMode.Additive => UnityLoadSceneMode.Additive,
+                _ => throw new UnhandledLoadSceneModeException(loadSceneMode)
+            };
         }
     }
 }

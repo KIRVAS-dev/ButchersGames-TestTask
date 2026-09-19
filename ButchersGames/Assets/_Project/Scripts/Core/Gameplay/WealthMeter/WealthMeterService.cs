@@ -3,9 +3,7 @@ using Core.Gameplay.LevelProgression;
 
 namespace Core.Gameplay.WealthMeter
 {
-    public sealed class WealthMeterService
-        : IWealthMeterService,
-          IDisposable
+    public sealed class WealthMeterService : IWealthMeterService
     {
         private readonly ILevelProvider _levelProvider;
         private readonly IWealthMeterSettings _settings;
@@ -23,14 +21,17 @@ namespace Core.Gameplay.WealthMeter
             _levelProvider = levelProvider;
             _settings = settings;
             _model = model;
-
-            _levelProvider.LevelLoaded += OnLevelLoaded;
         }
 
         public int Value => _model.Value.Value;
         public WealthStage Stage => _model.Stage.Value;
 
-        void IDisposable.Dispose()
+        public void StartListening()
+        {
+            _levelProvider.LevelLoaded += OnLevelLoaded;
+        }
+
+        public void StopListening()
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
         }
@@ -74,11 +75,11 @@ namespace Core.Gameplay.WealthMeter
         {
             return value switch
             {
-                _ when value >= _settings.MillionaireThreshold => WealthStage.Millionaire,
-                _ when value >= _settings.RichThreshold => WealthStage.Rich,
-                _ when value >= _settings.CasualThreshold => WealthStage.Casual,
-                _ when value >= _settings.DescentThreshold => WealthStage.Descent,
-                _ => WealthStage.Poor
+                _ when value <= _settings.PoorThreshold => WealthStage.Poor,
+                _ when value <= _settings.DescentThreshold => WealthStage.Descent,
+                _ when value <= _settings.CasualThreshold => WealthStage.Casual,
+                _ when value <= _settings.RichThreshold => WealthStage.Rich,
+                _ => WealthStage.Millionaire
             };
         }
     }

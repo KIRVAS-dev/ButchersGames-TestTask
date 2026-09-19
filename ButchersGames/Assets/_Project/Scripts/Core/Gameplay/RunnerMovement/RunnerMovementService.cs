@@ -1,63 +1,50 @@
-using System;
 using System.Collections.Generic;
+using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
+using Core.Gameplay.Track;
 
 namespace Core.Gameplay.RunnerMovement
 {
-    public sealed class RunnerMovementService : IRunnerMovementService
+    public sealed class RunnerMovementService
+        : IRunnerMovementService,
+          IGameplayTickable
     {
-        private const float NormalizedLateralOffsetMin = -1f;
-        private const float NormalizedLateralOffsetMax = 1f;
-        private const float CenteredLateralOffset = 0f;
-        private const int NoActiveObstacles = 0;
-        private const float LateralOffsetEpsilon = 0.0001f;
-
         private readonly ILevelProvider _levelProvider;
-        private readonly IRunnerMovementSettings _settings;
+        private readonly IGameFlowService _gameFlowService;
+        private readonly ITrackProvider _trackProvider;
         private readonly IObstacleRegistry _obstacleRegistry;
         private readonly ILaneBarrierRegistry _laneBarrierRegistry;
-        private readonly RunnerMovementModel _model;
+        private readonly RunnerMovementSimulator _simulator;
         private readonly List<IObstacle> _subscribedObstacles = new List<IObstacle>();
         private readonly List<ILaneBarrier> _subscribedLaneBarriers = new List<ILaneBarrier>();
-        private readonly Dictionary<ILaneBarrier, LateralClamp> _activeLaneBarrierClamps =
-            new Dictionary<ILaneBarrier, LateralClamp>();
-
-        private ILaneBarrier _correctingLaneBarrier;
-        private int _activeObstacleCount;
-        private float _lateralCorrectionTarget;
-
-        private enum LateralClampDirection
-        {
-            UpperBound = 0,
-            LowerBound = 1
-        }
-
-        private readonly struct LateralClamp
-        {
-            public LateralClamp(LateralClampDirection direction, float boundary)
-            {
-                Direction = direction;
-                Boundary = boundary;
-            }
-
-            public LateralClampDirection Direction { get; }
-            public float Boundary { get; }
-        }
 
         public RunnerMovementService(
             ILevelProvider levelProvider,
+            IGameFlowService gameFlowService,
             IRunnerMovementSettings settings,
+            ITrackProvider trackProvider,
             IObstacleRegistry obstacleRegistry,
             ILaneBarrierRegistry laneBarrierRegistry,
             RunnerMovementModel model)
         {
             _levelProvider = levelProvider;
-            _settings = settings;
+            _gameFlowService = gameFlowService;
+            _trackProvider = trackProvider;
             _obstacleRegistry = obstacleRegistry;
             _laneBarrierRegistry = laneBarrierRegistry;
-            _model = model;
+            _simulator = new RunnerMovementSimulator(settings, model);
+        }
+
+        void IGameplayTickable.Tick(float deltaTime)
+        {
+            if (_gameFlowService.State != GameFlowState.Playing)
+            {
+                return;
+            }
+
+            _simulator.Tick(deltaTime, _trackProvider.Length);
         }
 
         public void StartListening()
@@ -71,6 +58,19 @@ namespace Core.Gameplay.RunnerMovement
 
             UnsubscribeAllObstacles();
             UnsubscribeAllLaneBarriers();
+        }
+
+        public void SetNormalizedLateralOffset(float normalizedOffset)
+        {
+            _simulator.SetNormalizedLateralOffset(normalizedOffset);
+        }
+
+        private void OnLevelLoaded()
+        {
+            _simulator.Reset();
+
+            ResubscribeToObstacles();
+            ResubscribeToLaneBarriers();
         }
 
         private void ResubscribeToObstacles()
@@ -121,131 +121,24 @@ namespace Core.Gameplay.RunnerMovement
             _subscribedLaneBarriers.Clear();
         }
 
-        public void SetNormalizedLateralOffset(float normalizedOffset)
-        {
-            if (_correctingLaneBarrier != null)
-            {
-                return;
-            }
-
-            float clampedNormalizedOffset = Math.Clamp(normalizedOffset, NormalizedLateralOffsetMin, NormalizedLateralOffsetMax);
-            float offset = clampedNormalizedOffset * _settings.TrackHalfWidth;
-
-            foreach (LateralClamp clamp in _activeLaneBarrierClamps.Values)
-            {
-                offset = ApplyClamp(offset, clamp);
-            }
-
-            _model.LateralOffset.Value = offset;
-        }
-
-        public void AdvanceLateralCorrections(float deltaTime)
-        {
-            bool isLateralCorrectionActive = _correctingLaneBarrier != null && _model.State.Value == RunnerMovementState.Moving;
-
-            if (!isLateralCorrectionActive)
-            {
-                return;
-            }
-
-            float maxStep = _settings.LateralCorrectionSpeed * deltaTime;
-            _model.LateralOffset.Value = MoveTowards(_model.LateralOffset.Value, _lateralCorrectionTarget, maxStep);
-
-            if (Math.Abs(_model.LateralOffset.Value - _lateralCorrectionTarget) < LateralOffsetEpsilon)
-            {
-                _correctingLaneBarrier = null;
-            }
-        }
-
-        private void OnLevelLoaded()
-        {
-            _model.LateralOffset.Value = CenteredLateralOffset;
-            _activeObstacleCount = NoActiveObstacles;
-            _model.State.Value = RunnerMovementState.Moving;
-
-            _activeLaneBarrierClamps.Clear();
-            _correctingLaneBarrier = null;
-
-            ResubscribeToObstacles();
-            ResubscribeToLaneBarriers();
-        }
-
         private void OnObstacleHit()
         {
-            _activeObstacleCount++;
-            _model.State.Value = RunnerMovementState.Stopped;
+            _simulator.HitObstacle();
         }
 
         private void OnObstacleReleased()
         {
-            _activeObstacleCount--;
-
-            if (_activeObstacleCount > NoActiveObstacles)
-            {
-                return;
-            }
-
-            _activeObstacleCount = NoActiveObstacles;
-            _model.State.Value = RunnerMovementState.Moving;
+            _simulator.ReleaseObstacle();
         }
 
         private void OnLaneBarrierEntered(ILaneBarrier barrier)
         {
-            float currentOffset = _model.LateralOffset.Value;
-
-            if (currentOffset <= barrier.MinLateralOffset)
-            {
-                _activeLaneBarrierClamps[barrier] = new LateralClamp(LateralClampDirection.UpperBound, barrier.MinLateralOffset);
-                return;
-            }
-
-            if (currentOffset >= barrier.MaxLateralOffset)
-            {
-                _activeLaneBarrierClamps[barrier] = new LateralClamp(LateralClampDirection.LowerBound, barrier.MaxLateralOffset);
-                return;
-            }
-
-            float distanceToMin = currentOffset - barrier.MinLateralOffset;
-            float distanceToMax = barrier.MaxLateralOffset - currentOffset;
-
-            LateralClamp clamp = distanceToMin <= distanceToMax
-                ? new LateralClamp(LateralClampDirection.UpperBound, barrier.MinLateralOffset)
-                : new LateralClamp(LateralClampDirection.LowerBound, barrier.MaxLateralOffset);
-
-            _activeLaneBarrierClamps[barrier] = clamp;
-
-            _correctingLaneBarrier = barrier;
-            _lateralCorrectionTarget = clamp.Boundary;
+            _simulator.EnterLaneBarrier(barrier);
         }
 
         private void OnLaneBarrierExited(ILaneBarrier barrier)
         {
-            _activeLaneBarrierClamps.Remove(barrier);
-
-            if (_correctingLaneBarrier == barrier)
-            {
-                _correctingLaneBarrier = null;
-            }
-        }
-
-        private float ApplyClamp(float offset, LateralClamp clamp)
-        {
-            return clamp.Direction == LateralClampDirection.UpperBound
-                ? Math.Min(offset, clamp.Boundary)
-                : Math.Max(offset, clamp.Boundary);
-        }
-
-        private float MoveTowards(
-            float current,
-            float target,
-            float maxDelta)
-        {
-            if (Math.Abs(target - current) <= maxDelta)
-            {
-                return target;
-            }
-
-            return current + Math.Sign(target - current) * maxDelta;
+            _simulator.ExitLaneBarrier(barrier);
         }
     }
 }

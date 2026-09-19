@@ -4,9 +4,7 @@ using ViewComponents.Level;
 
 namespace ViewComponents.Finish
 {
-    public sealed class FinishProvider
-        : IFinishProvider,
-          IDisposable
+    public sealed class FinishProvider : IFinishProvider
     {
         private readonly LevelProvider _levelProvider;
 
@@ -15,13 +13,16 @@ namespace ViewComponents.Finish
         public FinishProvider(LevelProvider levelProvider)
         {
             _levelProvider = levelProvider;
-
-            _levelProvider.LevelLoaded += OnLevelLoaded;
         }
 
         public event Action Reached;
 
-        void IDisposable.Dispose()
+        public void StartListening()
+        {
+            _levelProvider.LevelLoaded += OnLevelLoaded;
+        }
+
+        public void StopListening()
         {
             _levelProvider.LevelLoaded -= OnLevelLoaded;
 
@@ -32,7 +33,7 @@ namespace ViewComponents.Finish
         {
             UnsubscribeCurrent();
 
-            _current = _levelProvider.CurrentLevel.Finish;
+            _current = _levelProvider.Finish;
             _current.Reached += OnCurrentReached;
         }
 

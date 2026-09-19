@@ -2,9 +2,7 @@
     "name": "Core",
     "rootNamespace": "Core",
     "references": [
-        "ExtendedExceptions",
-        "VContainer",
-        "UniTask"
+        "ExtendedExceptions"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

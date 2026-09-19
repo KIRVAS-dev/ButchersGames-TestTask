@@ -1,4 +1,5 @@
 using System;
+using Core.Gameplay.LevelProgression;
 using Core.Gameplay.RunnerMovement;
 using R3;
 
@@ -6,28 +7,45 @@ namespace ViewComponents.RunnerMovement
 {
     public sealed class RunnerMovementPresenter
     {
+        private const int SkipInitialValue = 1;
+
+        private readonly ILevelProvider _levelProvider;
+        private readonly IRunnerMovementView _view;
         private readonly RunnerMovementModel _model;
-        private readonly IRunnerTrackFollowerView _view;
 
+        private IDisposable _distanceSubscription;
         private IDisposable _lateralOffsetSubscription;
-        private IDisposable _movementStateSubscription;
 
-        public RunnerMovementPresenter(RunnerMovementModel model, IRunnerTrackFollowerView view)
+        public RunnerMovementPresenter(
+            ILevelProvider levelProvider,
+            IRunnerMovementView view,
+            RunnerMovementModel model)
         {
-            _model = model;
+            _levelProvider = levelProvider;
             _view = view;
+            _model = model;
         }
 
         public void StartListening()
         {
-            _lateralOffsetSubscription = _model.LateralOffset.Subscribe(_view.SetLateralOffset);
-            _movementStateSubscription = _model.State.Subscribe(_view.SetMovementState);
+            _levelProvider.LevelLoaded += OnLevelLoaded;
+
+            _distanceSubscription = _model.DistanceTraveled.Skip(SkipInitialValue).Subscribe(_view.SetDistance);
+            _lateralOffsetSubscription = _model.LateralOffset.Skip(SkipInitialValue).Subscribe(_view.SetLateralOffset);
         }
 
         public void StopListening()
         {
+            _levelProvider.LevelLoaded -= OnLevelLoaded;
+
+            _distanceSubscription?.Dispose();
             _lateralOffsetSubscription?.Dispose();
-            _movementStateSubscription?.Dispose();
+        }
+
+        private void OnLevelLoaded()
+        {
+            _view.SetDistance(_model.DistanceTraveled.CurrentValue);
+            _view.SetLateralOffset(_model.LateralOffset.CurrentValue);
         }
     }
 }

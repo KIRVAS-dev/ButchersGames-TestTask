@@ -13,6 +13,6 @@ namespace ViewComponents.LaneBarriers
             _levelProvider = levelProvider;
         }
 
-        public IReadOnlyCollection<ILaneBarrier> Barriers => _levelProvider.CurrentLevel.Barriers;
+        public IReadOnlyCollection<ILaneBarrier> Barriers => _levelProvider.Barriers;
     }
 }

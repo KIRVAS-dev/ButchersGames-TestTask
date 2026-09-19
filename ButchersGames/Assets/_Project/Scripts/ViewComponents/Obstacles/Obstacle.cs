@@ -4,9 +4,11 @@ using Core.Gameplay.Obstacle;
 using Cysharp.Threading.Tasks;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
+using ViewComponents.WealthPointsModifier;
 
 namespace ViewComponents.Obstacles
 {
+    [RequireComponent(typeof(WealthPointsModifierCollider))]
     public sealed class Obstacle
         : MonoBehaviour,
           ITriggerReaction,
@@ -39,6 +41,11 @@ namespace ViewComponents.Obstacles
         private void Validate()
         {
             Guard.AgainstNull(_config, () => new MissingObstacleConfigException(nameof(_config), gameObject.name));
+
+            Guard.AgainstNull(
+                GetComponent<WealthPointsModifierCollider>(),
+                () => new MissingObstacleModifierColliderException(gameObject.name)
+            );
 
             _config.Validate();
         }

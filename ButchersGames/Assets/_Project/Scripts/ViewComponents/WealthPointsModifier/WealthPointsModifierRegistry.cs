@@ -13,6 +13,6 @@ namespace ViewComponents.WealthPointsModifier
             _levelProvider = levelProvider;
         }
 
-        public IReadOnlyCollection<IWealthPointsModifier> Modifiers => _levelProvider.CurrentLevel.Modifiers;
+        public IReadOnlyCollection<IWealthPointsModifier> Modifiers => _levelProvider.Modifiers;
     }
 }
