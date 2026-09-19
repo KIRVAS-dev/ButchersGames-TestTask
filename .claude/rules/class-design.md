@@ -1,6 +1,6 @@
 # Class design
 
-Когда читать: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`.
+Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
 
 Качество типа как абстракции. Слои — [architecture.md](architecture.md); SOLID — [../../CLAUDE.md](../../CLAUDE.md) §3; методы — [method-design.md](method-design.md); формат — [codestyle.md](codestyle.md).
 

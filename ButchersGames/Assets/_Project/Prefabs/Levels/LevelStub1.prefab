@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3992501640222971117}
   m_Layer: 0
-  m_Name: PlayerSpawnPoint
+  m_Name: Start
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -79,6 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.Level
   _playerSpawnPoint: {fileID: 3992501640222971117}
+  _finish: {fileID: 90816085385127047}
+  _splineContainer: {fileID: 4837793514484521957}
 --- !u!114 &4837793514484521957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,12 +170,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1157773683822154523}
-  - component: {fileID: 5042378057166500830}
   - component: {fileID: 90816085385127047}
   m_Layer: 0
   m_Name: Finish
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -192,27 +193,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1033682352318907942}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5042378057166500830
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8959767589709903439}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &90816085385127047
 MonoBehaviour:
   m_ObjectHideFlags: 0

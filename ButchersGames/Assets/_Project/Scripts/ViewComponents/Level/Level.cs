@@ -1,44 +1,33 @@
-using System.Collections.Generic;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using UnityEngine.Splines;
 using ViewComponents.Finish;
-using ViewComponents.LaneBarriers;
-using ViewComponents.Obstacles;
-using ViewComponents.Track;
-using ViewComponents.WealthPointsModifier;
 
 namespace ViewComponents.Level
 {
     public sealed class Level : MonoBehaviour
     {
         [SerializeField] private Transform _playerSpawnPoint;
+        [SerializeField] private FinishMarker _finish;
+        [SerializeField] private SplineContainer _splineContainer;
 
-        public IReadOnlyCollection<Obstacle> Obstacles { get; private set; }
-        public IReadOnlyCollection<LaneBarrierZone> Barriers { get; private set; }
-        public IReadOnlyCollection<WealthPointsModifierCollider> Modifiers { get; private set; }
-        public FinishCollider Finish { get; private set; }
-        public TrackPath Track { get; private set; }
+        public Vector3 FinishPosition => _finish.transform.position;
+        public SplineContainer SplineContainer => _splineContainer;
 
         private void Awake()
         {
-            Obstacles = GetComponentsInChildren<Obstacle>();
-            Barriers = GetComponentsInChildren<LaneBarrierZone>();
-            Modifiers = GetComponentsInChildren<WealthPointsModifierCollider>();
-            Finish = GetComponentInChildren<FinishCollider>();
-            SplineContainer splineContainer = GetComponentInChildren<SplineContainer>();
+            Validate();
+        }
 
-            Guard.AgainstNull(Finish, () => new MissingFinishColliderException(gameObject.name));
-            Guard.AgainstNull(splineContainer, () => new MissingSplineContainerException(gameObject.name));
+        private void Validate()
+        {
+            Guard.AgainstNull(_playerSpawnPoint, () => Missing(nameof(_playerSpawnPoint)));
+            Guard.AgainstNull(_finish, () => Missing(nameof(_finish)));
+            Guard.AgainstNull(_splineContainer, () => Missing(nameof(_splineContainer)));
 
-            Track = new TrackPath(splineContainer);
+            return;
 
-            Guard.AgainstNonPositive(Track.Length, () => new InvalidSplineLengthException(gameObject.name, Track.Length));
-
-            foreach (LaneBarrierZone barrier in Barriers)
-            {
-                barrier.Initialize(Track);
-            }
+            ExtendedException Missing(string fieldName) => new MissingLevelFieldException(fieldName, gameObject.name);
         }
 
 #if UNITY_EDITOR

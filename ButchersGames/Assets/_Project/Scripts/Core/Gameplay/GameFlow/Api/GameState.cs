@@ -1,9 +1,9 @@
 namespace Core.Gameplay.GameFlow
 {
-    public enum GameFlowState
+    public enum GameState
     {
-        WaitingToStart = 0,
-        Playing = 1,
+        Tutorial = 0,
+        Run = 1,
         Win = 2,
         Lose = 3
     }

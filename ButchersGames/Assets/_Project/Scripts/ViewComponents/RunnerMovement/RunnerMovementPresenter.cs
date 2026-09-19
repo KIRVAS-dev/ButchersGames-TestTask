@@ -9,7 +9,7 @@ namespace ViewComponents.RunnerMovement
     {
         private const int SkipInitialValue = 1;
 
-        private readonly ILevelProvider _levelProvider;
+        private readonly ILevelLoader _levelLoader;
         private readonly IRunnerMovementView _view;
         private readonly RunnerMovementModel _model;
 
@@ -17,18 +17,18 @@ namespace ViewComponents.RunnerMovement
         private IDisposable _lateralOffsetSubscription;
 
         public RunnerMovementPresenter(
-            ILevelProvider levelProvider,
+            ILevelLoader levelLoader,
             IRunnerMovementView view,
             RunnerMovementModel model)
         {
-            _levelProvider = levelProvider;
+            _levelLoader = levelLoader;
             _view = view;
             _model = model;
         }
 
         public void StartListening()
         {
-            _levelProvider.LevelLoaded += OnLevelLoaded;
+            _levelLoader.LevelLoaded += OnLevelLoaded;
 
             _distanceSubscription = _model.DistanceTraveled.Skip(SkipInitialValue).Subscribe(_view.SetDistance);
             _lateralOffsetSubscription = _model.LateralOffset.Skip(SkipInitialValue).Subscribe(_view.SetLateralOffset);
@@ -36,7 +36,7 @@ namespace ViewComponents.RunnerMovement
 
         public void StopListening()
         {
-            _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _levelLoader.LevelLoaded -= OnLevelLoaded;
 
             _distanceSubscription?.Dispose();
             _lateralOffsetSubscription?.Dispose();

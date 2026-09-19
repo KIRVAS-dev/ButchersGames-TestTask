@@ -1,6 +1,6 @@
 # Method design
 
-Когда читать: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`.
+Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
 
 Качество методов. Классы — [class-design.md](class-design.md); переменные/locals — [variable-design.md](variable-design.md); naming/async/формат — [codestyle.md](codestyle.md); ошибки — [exceptions.md](exceptions.md); SOLID — [../../CLAUDE.md](../../CLAUDE.md) §3.
 

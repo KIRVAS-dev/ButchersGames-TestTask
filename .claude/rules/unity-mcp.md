@@ -1,8 +1,8 @@
 # Unity MCP
 
-Когда читать: правки `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`, сцены, `**/*.prefab`.
+Когда читать: правки `ButchersGames/Assets/_Project/Scripts/**/*.cs`, сцены, `**/*.prefab`.
 
-Проект: `Template-UnityProject/`. Скрипты: `Assets/_Project/Scripts/`. Сцены: `Assets/_Project/Scenes/` (Bootstrap, Core).
+Проект: `ButchersGames/`. Скрипты: `Assets/_Project/Scripts/`. Сцены: `Assets/_Project/Scenes/` (Bootstrap, Core).
 
 Server: `unityMCP`, tools — `mcp__unityMCP__*`. Перед вызовом непривычного тула — свериться со схемой тула, не угадывать аргументы. C# rename/format — **не здесь**; см. [rider-mcp.md](rider-mcp.md). Архитектура — [architecture.md](architecture.md).
 

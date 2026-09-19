@@ -10,8 +10,6 @@ namespace UI.StartScreen
         : MonoBehaviour,
           IStartScreenView
     {
-        private const string LevelNumberTextFormat = "Уровень {0}";
-
         [SerializeField] private RectTransform _root;
         [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private Button _startButton;
@@ -42,7 +40,7 @@ namespace UI.StartScreen
 
         public void SetLevelNumber(int levelNumber)
         {
-            _levelNumberText.text = string.Format(LevelNumberTextFormat, levelNumber);
+            _levelNumberText.text = LevelNumberTextHelper.Format(levelNumber);
         }
 
         private void OnStartButtonClicked()

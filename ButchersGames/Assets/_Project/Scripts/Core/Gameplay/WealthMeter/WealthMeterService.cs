@@ -5,7 +5,7 @@ namespace Core.Gameplay.WealthMeter
 {
     public sealed class WealthMeterService : IWealthMeterService
     {
-        private readonly ILevelProvider _levelProvider;
+        private readonly ILevelLoader _levelLoader;
         private readonly IWealthMeterSettings _settings;
         private readonly WealthMeterModel _model;
 
@@ -14,61 +14,68 @@ namespace Core.Gameplay.WealthMeter
         public event Action<int> Decreased;
 
         public WealthMeterService(
-            ILevelProvider levelProvider,
+            ILevelLoader levelLoader,
             IWealthMeterSettings settings,
             WealthMeterModel model)
         {
-            _levelProvider = levelProvider;
+            _levelLoader = levelLoader;
             _settings = settings;
             _model = model;
         }
 
-        public int Value => _model.Value.Value;
+        public int Value => _model.WealthPoints.Value;
         public WealthStage Stage => _model.Stage.Value;
 
         public void StartListening()
         {
-            _levelProvider.LevelLoaded += OnLevelLoaded;
+            _levelLoader.LevelLoaded += OnLevelLoaded;
         }
 
         public void StopListening()
         {
-            _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _levelLoader.LevelLoaded -= OnLevelLoaded;
         }
 
         public void Increase(int amount)
         {
-            SetValue(_model.Value.Value + amount);
+            bool hasBecomeDepleted = SetValue(_model.WealthPoints.Value + amount);
 
             Increased?.Invoke(amount);
+
+            NotifyIfDepleted(hasBecomeDepleted);
         }
 
         public void Decrease(int amount)
         {
-            SetValue(_model.Value.Value - amount);
+            bool hasBecomeDepleted = SetValue(_model.WealthPoints.Value - amount);
 
             Decreased?.Invoke(amount);
+
+            NotifyIfDepleted(hasBecomeDepleted);
         }
 
         private void OnLevelLoaded()
         {
-            SetValue(_settings.StartValue);
+            NotifyIfDepleted(SetValue(_settings.StartValue));
         }
 
-        private void SetValue(int value)
+        private void NotifyIfDepleted(bool hasBecomeDepleted)
         {
-            bool wasDepleted = _model.Value.Value <= 0;
-            bool isDepleted = value <= 0;
-
-            _model.Value.Value = value;
-            _model.Stage.Value = StageFor(value);
-
-            bool hasBecomeDepleted = isDepleted && !wasDepleted;
-
             if (hasBecomeDepleted)
             {
                 Depleted?.Invoke();
             }
+        }
+
+        private bool SetValue(int value)
+        {
+            bool wasDepleted = _model.WealthPoints.Value <= 0;
+            bool isDepleted = value <= 0;
+
+            _model.WealthPoints.Value = value;
+            _model.Stage.Value = StageFor(value);
+
+            return isDepleted && !wasDepleted;
         }
 
         private WealthStage StageFor(int value)

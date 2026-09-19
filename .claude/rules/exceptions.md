@@ -1,6 +1,6 @@
 # Typed exceptions и Guard
 
-Когда читать: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`.
+Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
 
 Инфраструктура: `ExtendedException`, `Guard`, namespace `ExtendedExceptions`.
 

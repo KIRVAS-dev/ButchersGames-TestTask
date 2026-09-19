@@ -1,6 +1,6 @@
 # Rider MCP
 
-Когда читать: правки `.cs` в `Template-UnityProject/Assets/_Project/Scripts/**`.
+Когда читать: правки `.cs` в `ButchersGames/Assets/_Project/Scripts/**`.
 
 Rename **и** Format — один MCP-сервер `rider` (официальный JetBrains Rider MCP): rename — `mcp__rider__rename_refactoring`; format — **в этом rule только** `mcp__rider__reformat_file`; остальные tools сервера `rider` вне scope этого файла.
 

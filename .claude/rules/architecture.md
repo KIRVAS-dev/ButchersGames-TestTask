@@ -1,6 +1,6 @@
 # Architecture
 
-Когда читать: правки `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`; вопросы про слои, DI, эталон фичи.
+Когда читать: правки `ButchersGames/Assets/_Project/Scripts/**/*.cs`; вопросы про слои, DI, эталон фичи.
 
 Суть (Context, Stack, dependency rule топ, soft-checks) — [../../CLAUDE.md](../../CLAUDE.md), §2. Общие практики — §3 там же; стиль — [codestyle.md](codestyle.md); исключения и Guard — [exceptions.md](exceptions.md). Направление потока данных обязательно (см. **Поток данных** ниже).
 
@@ -13,7 +13,7 @@ Assets/_Project/Scripts/
 │   ├── ExtendedExceptions/  ExtendedExceptions        — ExtendedException, Guard
 │   └── Persistence/         Infrastructure.Persistence — PlayerPrefs и пр. адаптеры хранения
 ├── Core/
-│   ├── Api/                 Core                      — порты цикла: IInputTickable, IGameplayTickable, IPresentationTickable, IGameplayInputBlock
+│   ├── Api/                 Core                      — порты цикла: IInputTickable, IGameplayTickable, IPresentationTickable
 │   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, GameLoop, scene loader API
 │   ├── Gameplay/{Feature}/  Core                      — Model, Service, Api (в т.ч. I*Settings)
 │   └── Input/{Feature}/     Core.Input                — InputHandler → Service
@@ -64,7 +64,7 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | View принимает gameplay-решения / меняет Model | Логика только в Service |
 | View напрямую держит ссылку на конкретный `Model`-класс | Между View и Model — Presenter, см. **Model → View через Presenter** |
 
-Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Performer` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
+Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Performer` / `I*Loader` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
 
 ## DI scopes
 
@@ -88,15 +88,15 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | EntryPoint | Scope | Start | Dispose |
 |---|---|---|---|
 | Infrastructure Bootstrap EntryPoint | Project | additive load Core | — |
-| `CoreEntryPoint` | Core | `StartListening()` у InputHandler'ов и у сервисов-наблюдателей без потребителя через ctor | `StopListening()` |
+| `CoreEntryPoint` | Core | `StartListening()` у InputHandler'ов, сервисов-наблюдателей без потребителя через ctor и Presenter'ов (в любом порядке), затем `GameFlowService.PrepareGame()` — подготовка игры (загрузка первого уровня) после всех подписок | `StopListening()` |
 | `GameLoop` | Core | — (только `ITickable`) | — |
 
 `RegisterEntryPoint<T>()` в VContainer — это способ получить колбэки жизненного цикла (`IStartable`, `ITickable`, `IDisposable`), а не отдельное архитектурное понятие. В Core-scope их две:
 
 - `CoreEntryPoint` (`RegisterEntryPoint<CoreEntryPoint>()`) — **единственный стартер** Core-геймплея: запускает подписки фич и сервисов, не только InputHandler'ов.
-- `GameLoop` (`RegisterEntryPoint<GameLoop>()`) — только тик кадра. Через DI получает списки всех реализаций `IInputTickable` (чтение ввода), `IGameplayTickable` (симуляция, `Tick(deltaTime)`) и `IPresentationTickable` (применение итога кадра к сцене) и на каждом кадре обходит их в этом порядке: «ввод → геймплей → отображение». Отдельных классов-фаз нет: реализация регистрируется как `.As<I*Tickable>()` (например, `DragInput` — `IInputTickable`, `RunnerMovementService` — `IGameplayTickable`, `RunnerMovementView` — `IPresentationTickable`). Для View, которому дорого применять каждое изменение, `Set*` от Presenter только запоминают значения, а `IPresentationTickable.Tick()` применяет их один раз за кадр. GameLoop не запускает фичи и не содержит логики. `IGameplayInputBlock` — флаг блокировки геймплейного ввода, его выставляет `GameFlowService`, читает InputHandler.
+- `GameLoop` (`RegisterEntryPoint<GameLoop>()`) — только тик кадра. Через DI получает списки всех реализаций `IInputTickable` (чтение ввода), `IGameplayTickable` (симуляция, `Tick(deltaTime)`) и `IPresentationTickable` (применение итога кадра к сцене) и на каждом кадре обходит их в этом порядке: «ввод → геймплей → отображение». Отдельных классов-фаз нет: реализация регистрируется как `.As<I*Tickable>()` (например, `DragInput` — `IInputTickable`, `RunnerMovementService` — `IGameplayTickable`, `RunnerMovementView` — `IPresentationTickable`). Для View, которому дорого применять каждое изменение, `Set*` от Presenter только запоминают значения, а `IPresentationTickable.Tick()` применяет их один раз за кадр. GameLoop не запускает фичи и не содержит логики. `IGameplayInputBlock` — флаг блокировки геймплейного ввода, `GameplayInputBlock` вычисляет его из `GameStateModel.State` (заблокирован везде, кроме `Run`), читает InputHandler.
 
-Новый участник цикла реализует `I*Tickable` и регистрируется через `.As<I*Tickable>()`, а не отдельными `ITickable`/`RegisterEntryPoint`. Новая фича с вводом: подключить handler в `CoreEntryPoint` (Start/Dispose). Новая фича-«наблюдатель» без потребителя через ctor (сервис, который должен начать подписки на чужие события сразу при старте сцены, но которого никто не резолвит из другого конструктора и который не View на сцене — как `GameFlowService`, `WealthPointsModifierService`) — **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`; вместо этого получает обычные публичные методы `StartListening()`/`StopListening()`, которые вызывает `CoreEntryPoint.Start()`/`Dispose()`. Единый паттерн на все такие сервисы, без ветвления по способу инициализации.
+Новый участник цикла реализует `I*Tickable` и регистрируется через `.As<I*Tickable>()`, а не отдельными `ITickable`/`RegisterEntryPoint`. Новая фича с вводом: подключить handler в `CoreEntryPoint` (Start/Dispose). Новая фича-«наблюдатель» без потребителя через ctor (сервис, который должен начать подписки на чужие события сразу при старте сцены, но которого никто не резолвит из другого конструктора и который не View на сцене — как `GameResultDetector`, `WealthPointsModifierService`) — **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`; вместо этого получает обычные публичные методы `StartListening()`/`StopListening()`, которые вызывает `CoreEntryPoint.Start()`/`Dispose()`. Единый паттерн на все такие сервисы, без ветвления по способу инициализации.
 
 ## Эталон фичи `{Feature}`
 
@@ -140,6 +140,7 @@ ViewComponents/{Feature}/
 | **Api/** | `Core/Gameplay/{Feature}/Api/` | Интерфейсы, DTO, `Exceptions.cs` |
 | **View** | `ViewComponents/{Feature}/` | Отображает **одну конкретную сущность или экран** сцены (персонаж, уровень, HUD) и реализует `I{Feature}View`. DOTween, VFX, Animator. Не меняет game state |
 | **Performer** | `ViewComponents/{Feature}/` | Один на сцену, без своей сущности: принимает смысловой тип события (`enum`) и проигрывает эффекты по таблице записей (звук FMOD, VFX). Реализует `I{Feature}Performer` из Core Api. Не меняет game state. Пример: `FeedbackPerformer` |
+| **Loader** | `ViewComponents/{Feature}/` | Один на сцену: по команде Core (`Load{X}(index)`) создаёт в сцене экземпляр контента (спавн префаба из своего конфига), хранит его как текущий и сообщает о готовности событием `{X}Loaded`; отдаёт Core счётчик и настройки загружаемого списка. Реализует `I{Feature}Loader` из Core Api. Не меняет game state. Содержимое загруженного экземпляра он передаёт в постоянный класс `Current{X}` (обычный C#, Singleton в DI), который хранит его и сам реализует порты `I*Registry`/`I*Provider` для Core; читатели зависят от `Current{X}`, а не от Loader. Примеры: `LevelLoader` + `CurrentLevel` |
 | **Provider** | `ViewComponents/{Feature}/` | Сцена → DTO / данные для Core через порт |
 | **InputHandler** | `Core/Input/{Feature}/` | Низкий Input → `I{Feature}Service`. Без ссылок на ViewComponents |
 | **Scope** | `Core/Bootstrap/CoreScope` | `Register{Feature}(builder)` |
@@ -230,7 +231,7 @@ Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `Core
 
 ## UI-экраны (GameUI, MVP)
 
-Экран UI (старт/HUD/результат и т.п.) — частный случай **Model → View через Presenter** выше: своей игровой модели нет, только отображение уже существующего Core-состояния (`GameFlowModel`, `WealthMeterModel` и т.п. других фич). Для экранов конкретно — фиксированная структура файлов и контракт `Show`/`Hide`/`SetX` ниже.
+Экран UI (старт/HUD/результат и т.п.) — частный случай **Model → View через Presenter** выше: своей игровой модели нет, только отображение уже существующего Core-состояния (`GameStateModel`, `WealthMeterModel` и т.п. других фич). Для экранов конкретно — фиксированная структура файлов и контракт `Show`/`Hide`/`SetX` ниже.
 
 ### Структура файлов
 

@@ -90,7 +90,7 @@ return SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.SessionExport("{\"format\":
 
 ### Цикл
 
-1. Скопировать шаблон → `Template-UnityProject/Assets/Debug/PerfMark/PerfMarkDebugButton.cs` (папку создать при необходимости). Код не генерировать с нуля.
+1. Скопировать шаблон → `ButchersGames/Assets/Debug/PerfMark/PerfMarkDebugButton.cs` (папку создать при необходимости). Код не генерировать с нуля.
 2. Дождаться компиляции; `read_console` — без Errors ([unity-mcp.md](unity-mcp.md)).
 3. Собрать **Development Build** WebGL. Обычный release: кнопка и glue под `#if DEVELOPMENT_BUILD || UNITY_EDITOR || PERFMETER_RELEASE` в ноль; для сознательного release-профайла — define `PERFMETER_RELEASE` до билда.
 4. Запустить player. Скрипт сам создаёт overlay-кнопку (`RuntimeInitializeOnLoadMethod`) — сцену/префаб не трогать.

@@ -30,7 +30,7 @@ process.stdin.on("end", () => {
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       additionalContext:
-        "Перед правкой .cs в Template-UnityProject/Assets/_Project/Scripts проверь .claude/rules/codestyle.md, exceptions.md, architecture.md, class-design.md, method-design.md, variable-design.md, rider-mcp.md",
+        "Перед правкой .cs в ButchersGames/Assets/_Project/Scripts проверь .claude/rules/codestyle.md, exceptions.md, architecture.md, class-design.md, method-design.md, variable-design.md, rider-mcp.md",
     },
   }));
 });

@@ -41,12 +41,29 @@ namespace ViewComponents.Track
 
         public TrackPoint NearestPointTo(Vector3 worldPoint)
         {
+            return PointAtSplineParameter(_splineContainer.Spline, NearestSplineParameter(worldPoint));
+        }
+
+        public float NearestDistanceTo(Vector3 worldPoint)
+        {
             Spline spline = _splineContainer.Spline;
+
+            float localDistance = spline.ConvertIndexUnit(
+                NearestSplineParameter(worldPoint),
+                PathIndexUnit.Normalized,
+                PathIndexUnit.Distance
+            );
+
+            return localDistance / spline.GetLength() * Length;
+        }
+
+        private float NearestSplineParameter(Vector3 worldPoint)
+        {
             float3 localPoint = _splineContainer.transform.InverseTransformPoint(worldPoint);
 
-            SplineUtility.GetNearestPoint(spline, localPoint, out _, out float splineParameter);
+            SplineUtility.GetNearestPoint(_splineContainer.Spline, localPoint, out _, out float splineParameter);
 
-            return PointAtSplineParameter(spline, splineParameter);
+            return splineParameter;
         }
 
         private TrackPoint PointAtSplineParameter(Spline spline, float splineParameter)

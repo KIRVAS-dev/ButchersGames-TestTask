@@ -2,12 +2,6 @@ using Infrastructure.ExtendedExceptions;
 
 namespace ViewComponents.Track
 {
-    public sealed class MissingSplineContainerException : ExtendedException
-    {
-        public MissingSplineContainerException(string objectName)
-            : base("track-1", $"No active SplineContainer found in loaded level for {objectName}") { }
-    }
-
     public sealed class InvalidSplineLengthException : ExtendedException
     {
         public InvalidSplineLengthException(string objectName, float length)

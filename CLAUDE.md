@@ -59,7 +59,7 @@ Grill-цикл и структура плана — [planning.md](.claude/rules/
 ### Context
 
 - Платформа: **Unity 6.5**, WebGL playable ad
-- Скрипты: `Template-UnityProject/Assets/_Project/Scripts/`
+- Скрипты: `ButchersGames/Assets/_Project/Scripts/`
 - OOP, **не ECS**
 
 | Сцена | Назначение |
@@ -189,7 +189,7 @@ Rules: §2, §3, [class-design.md](.claude/rules/class-design.md), [method-desig
 
 ### Scope
 
-- По умолчанию — весь проект (`Template-UnityProject/Assets/_Project/Scripts/` по слоям)
+- По умолчанию — весь проект (`ButchersGames/Assets/_Project/Scripts/` по слоям)
 - Пользователь задал scope — ревью **только в нём**; не расширять самостоятельно
 
 ### Процедура

@@ -1,6 +1,6 @@
 # C# Code Style
 
-Когда читать: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`.
+Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
 
 Кодстайл WebGL-Template. Principles — [../../CLAUDE.md](../../CLAUDE.md) §3. Exceptions — [exceptions.md](exceptions.md). Слои — [architecture.md](architecture.md). Class / method / variable design — соответствующие файлы: [class-design.md](class-design.md), [method-design.md](method-design.md), [variable-design.md](variable-design.md).
 
@@ -27,7 +27,7 @@
 Model / Service / View / InputHandler — см. [architecture.md](architecture.md). Здесь только формат типов:
 
 - **Core:** Model pure C#; Service — ctor DI; Api-ports наружу
-- **ViewComponents:** MonoBehaviour + `[SerializeField]`; View реализует `I*View` (отображение одной сущности/экрана), Performer реализует `I*Performer` (эффекты по типу события)
+- **ViewComponents:** MonoBehaviour + `[SerializeField]`; View реализует `I*View` (отображение одной сущности/экрана), Performer реализует `I*Performer` (эффекты по типу события), Loader реализует `I*Loader` (спавн контента в сцене по команде Core, событие о готовности, счётчик и настройки списка)
 - **InputHandler:** тонкий адаптер, ctor DI на `I*Service`
 
 ## Структура класса
@@ -62,6 +62,7 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 | `I*Service` | Core Api | единственная точка вызова фичи |
 | `I*View` | Core Api | порт отображения **одной конкретной сущности или экрана** сцены |
 | `I*Performer` | Core Api | порт проигрывания эффектов (звук/VFX) по смысловому типу события; реализация без собственной сущности — `*Performer` во ViewComponents |
+| `I*Loader` | Core Api | порт загрузки контента в сцену по команде Core: `Load*`, событие `*Loaded`, счётчик и настройки списка; реализация — `*Loader` во ViewComponents |
 | `I*Provider` | Core Api | данные сцены для Core |
 | `*InputHandler` | Core.Input | адаптер ввода |
 | `*Helper` | Core / ViewComponents | `public static class`, stateless functions |

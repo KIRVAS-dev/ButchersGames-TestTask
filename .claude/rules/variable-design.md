@@ -1,6 +1,6 @@
 # Variable design
 
-Когда читать: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs`.
+Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
 
 Init, scope, lifetime, binding. Casing — [codestyle.md](codestyle.md); параметры — [method-design.md](method-design.md); поля — [class-design.md](class-design.md); конфиги/DI — [architecture.md](architecture.md).
 

@@ -10,10 +10,10 @@ namespace UI.Hud
     public sealed class HudPresenter
     {
         private readonly IHudView _view;
-        private readonly ILevelProvider _levelProvider;
+        private readonly ILevelLoader _levelLoader;
         private readonly ILevelService _levelService;
         private readonly IWealthMeterSettings _wealthMeterSettings;
-        private readonly GameFlowModel _gameFlowModel;
+        private readonly GameStateModel _gameStateModel;
         private readonly WealthMeterModel _wealthMeterModel;
 
         private IDisposable _stateSubscription;
@@ -22,31 +22,31 @@ namespace UI.Hud
 
         public HudPresenter(
             IHudView view,
-            ILevelProvider levelProvider,
+            ILevelLoader levelLoader,
             ILevelService levelService,
             IWealthMeterSettings wealthMeterSettings,
-            GameFlowModel gameFlowModel,
+            GameStateModel gameStateModel,
             WealthMeterModel wealthMeterModel)
         {
             _view = view;
-            _levelProvider = levelProvider;
+            _levelLoader = levelLoader;
             _levelService = levelService;
             _wealthMeterSettings = wealthMeterSettings;
-            _gameFlowModel = gameFlowModel;
+            _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
         }
 
         public void StartListening()
         {
-            _levelProvider.LevelLoaded += OnLevelLoaded;
-            _stateSubscription = _gameFlowModel.State.Subscribe(OnStateChanged);
-            _valueSubscription = _wealthMeterModel.Value.Subscribe(OnValueChanged);
+            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
+            _valueSubscription = _wealthMeterModel.WealthPoints.Subscribe(OnValueChanged);
             _stageSubscription = _wealthMeterModel.Stage.Subscribe(_view.SetWealthStage);
         }
 
         public void StopListening()
         {
-            _levelProvider.LevelLoaded -= OnLevelLoaded;
+            _levelLoader.LevelLoaded -= OnLevelLoaded;
             _stateSubscription?.Dispose();
             _valueSubscription?.Dispose();
             _stageSubscription?.Dispose();
@@ -57,9 +57,9 @@ namespace UI.Hud
             _view.SetLevelNumber(_levelService.CurrentLevelNumber);
         }
 
-        private void OnStateChanged(GameFlowState state)
+        private void OnStateChanged(GameState state)
         {
-            if (state == GameFlowState.Playing)
+            if (state == GameState.Run)
             {
                 _view.Show();
             }

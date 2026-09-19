@@ -1,5 +1,6 @@
 using Core;
 using UnityEngine;
+using ViewComponents.Level;
 using ViewComponents.Track;
 using VContainer;
 
@@ -10,15 +11,15 @@ namespace ViewComponents.RunnerMovement
           IRunnerMovementView,
           IPresentationTickable
     {
-        private TrackProvider _trackProvider;
+        private CurrentLevel _currentLevel;
         private float _distance;
         private float _lateralOffset;
         private bool _isTransformDirty;
 
         [Inject]
-        private void Construct(TrackProvider trackProvider)
+        private void Construct(CurrentLevel currentLevel)
         {
-            _trackProvider = trackProvider;
+            _currentLevel = currentLevel;
         }
 
         void IPresentationTickable.Tick()
@@ -30,9 +31,9 @@ namespace ViewComponents.RunnerMovement
 
             _isTransformDirty = false;
 
-            TrackPoint point = _trackProvider.PointAt(_distance);
+            TrackPoint point = _currentLevel.Track.PointAt(_distance);
 
-            Vector3 lateralAxis = Vector3.Cross(point.Forward, Vector3.up).normalized;
+            Vector3 lateralAxis = Vector3.Cross(Vector3.up, point.Forward).normalized;
             Vector3 position = point.Position + lateralAxis * _lateralOffset;
             Quaternion rotation = Quaternion.LookRotation(point.Forward, Vector3.up);
 
