@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace ViewComponents.WealthPointsModifier
 {
-    [RequireComponent(typeof(Collider))]
     public sealed class WealthPointsModifierCollider
         : MonoBehaviour,
           IWealthPointsModifier
     {
+        [SerializeField] private Collider _collider;
         [SerializeField] private WealthPointsModifierConfig _config;
 
         private bool _isTriggered;
@@ -40,7 +40,13 @@ namespace ViewComponents.WealthPointsModifier
 
         private void Validate()
         {
+            Guard.AgainstNull(
+                _collider,
+                () => new MissingWealthPointsModifierConfigException(nameof(_collider), gameObject.name)
+            );
+
             Guard.AgainstNull(_config, () => new MissingWealthPointsModifierConfigException(nameof(_config), gameObject.name));
+            Guard.AgainstTrue(!_collider.isTrigger, () => new InvalidWealthPointsModifierColliderException(gameObject.name));
 
             _config.Validate();
         }
