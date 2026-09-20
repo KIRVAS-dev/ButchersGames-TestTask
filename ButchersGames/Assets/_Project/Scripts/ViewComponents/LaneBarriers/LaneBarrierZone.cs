@@ -6,11 +6,12 @@ using ViewComponents.Track;
 
 namespace ViewComponents.LaneBarriers
 {
-    [RequireComponent(typeof(Collider))]
     public sealed class LaneBarrierZone
         : MonoBehaviour,
           ILaneBarrier
     {
+        [SerializeField] private Collider _collider;
+
         private float _minLateralOffset;
         private float _maxLateralOffset;
 
@@ -22,11 +23,10 @@ namespace ViewComponents.LaneBarriers
 
         public void Initialize(TrackPath track)
         {
-            Collider zoneCollider = GetComponent<Collider>();
+            Guard.AgainstNull(_collider, () => new MissingLaneBarrierFieldException(nameof(_collider), gameObject.name));
+            Guard.AgainstTrue(!_collider.isTrigger, () => new InvalidLaneBarrierColliderException(gameObject.name));
 
-            Guard.AgainstTrue(!zoneCollider.isTrigger, () => new InvalidLaneBarrierColliderException(gameObject.name));
-
-            (_minLateralOffset, _maxLateralOffset) = CalculateLateralRange(zoneCollider, track);
+            (_minLateralOffset, _maxLateralOffset) = CalculateLateralRange(track);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -39,9 +39,9 @@ namespace ViewComponents.LaneBarriers
             Exited?.Invoke(this);
         }
 
-        private (float min, float max) CalculateLateralRange(Collider zoneCollider, TrackPath track)
+        private (float min, float max) CalculateLateralRange(TrackPath track)
         {
-            Bounds bounds = zoneCollider.bounds;
+            Bounds bounds = _collider.bounds;
 
             TrackPoint nearestPoint = track.NearestPointTo(bounds.center);
             Vector3 lateralAxis = Vector3.Cross(nearestPoint.Forward, Vector3.up).normalized;

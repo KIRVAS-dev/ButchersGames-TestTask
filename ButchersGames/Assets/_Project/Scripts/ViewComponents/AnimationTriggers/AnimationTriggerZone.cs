@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace ViewComponents.AnimationTriggers
 {
-    [RequireComponent(typeof(Collider))]
     public sealed class AnimationTriggerZone : MonoBehaviour
     {
+        [SerializeField] private Collider _collider;
         [SerializeField] private Animator _animator;
         [SerializeField] private string _animationName;
 
@@ -30,6 +30,11 @@ namespace ViewComponents.AnimationTriggers
 
         private void Validate()
         {
+            Guard.AgainstNull(
+                _collider,
+                () => new MissingAnimationTriggerZoneFieldException(nameof(_collider), gameObject.name)
+            );
+
             Guard.AgainstNull(_animator, () => new MissingAnimationTriggerZoneFieldException(nameof(_animator), gameObject.name));
 
             Guard.AgainstTrue(
@@ -37,8 +42,7 @@ namespace ViewComponents.AnimationTriggers
                 () => new MissingAnimationTriggerZoneFieldException(nameof(_animationName), gameObject.name)
             );
 
-            Collider zoneCollider = GetComponent<Collider>();
-            Guard.AgainstTrue(!zoneCollider.isTrigger, () => new InvalidAnimationTriggerZoneColliderException(gameObject.name));
+            Guard.AgainstTrue(!_collider.isTrigger, () => new InvalidAnimationTriggerZoneColliderException(gameObject.name));
         }
     }
 }
