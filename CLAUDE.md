@@ -1,6 +1,6 @@
 # WebGL-Template — правила для Claude Code
 
-Адаптация Cursor-rules (`.cursor/rules/*.mdc`) под Claude Code. Этот файл загружается **всегда и целиком** — здесь только то, что должно действовать в любой момент (approval, архитектура-суть, principles, review-процедура, индекс). Триггерные / условные части (кодстайл, exceptions, MCP-тулинг, planning, perfmeter, полная архитектура) вынесены в `.claude/rules/*.md` — Claude читает нужный файл сам, когда открыт/правится `.cs` или сработал текстовый триггер, как описано в §5 «Индекс» ниже.
+Адаптация Cursor-rules (`.cursor/rules/*.mdc`) под Claude Code. Этот файл загружается **всегда и целиком** — здесь только то, что должно действовать в любой момент (approval, архитектура-суть, principles, review-процедура, индекс). Триггерные / условные части (кодстайл, exceptions, MCP-тулинг, planning, perfmeter, полная архитектура) вынесены в `.claude/rules/*.md` — файлы по коду и Unity подгружаются сами по `paths:` во frontmatter, остальные Claude читает по текстовому триггеру, как описано в §5 «Индекс» ниже.
 
 `.cursor/rules/*.mdc` (правила для Cursor) — отдельный, независимый набор; не читать, не синхронизировать и не трогать при правках `.claude/rules/*.md` или этого файла.
 
@@ -27,7 +27,7 @@ Permission mode решает, можно ли вообще позвать Edit/W
 - `CLAUDE.md`, `.claude/rules/*`, `.cursor/rules/*` — трогать только когда это явно часть задачи, а не побочный эффект другой правки
 - git push / force-операции / отправка сообщений вовне (issue, PR, сообщения) — проговорить явно перед вызовом, даже если permission mode пропустит без вопроса; общие причины — см. системные правила "Executing actions with care"
 
-Наоборот, **входит** в scope согласованной правки `.cs` без отдельного переспроса: rename/format после каждой правки ([rider-mcp.md](.claude/rules/rider-mcp.md)), проверка компиляции / console после C# ([unity-mcp.md](.claude/rules/unity-mcp.md)) — это часть самой правки, а не отдельное действие.
+Наоборот, **входит** в scope согласованной правки `.cs` без отдельного переспроса: rename, format по завершении правок ([rider-mcp.md](.claude/rules/rider-mcp.md)), проверка компиляции / console после C# ([unity-mcp.md](.claude/rules/unity-mcp.md)) — это часть самой правки, а не отдельное действие.
 
 ### 1.3 План (Plan mode / grill)
 
@@ -219,7 +219,7 @@ Rules: §2, §3, [class-design.md](.claude/rules/class-design.md), [method-desig
 
 ## 5. Индекс reference-файлов (`.claude/rules/`)
 
-Эти файлы **не загружаются автоматически** — читай нужный, когда открыт/правится `.cs` в `Scripts/**` или сработал триггер, как описано в колонке «Когда».
+Файлы с `paths:` во frontmatter (architecture, codestyle, exceptions, rider-mcp, class-design, method-design, variable-design, unity-mcp) подгружаются сами, когда открывается подходящий файл (`.cs` в `Scripts/**`, сцена, prefab). Автозагрузка при **создании** нового `.cs` не проверена — тогда прочитай нужные файлы вручную перед правкой. Остальные (planning, refactor, perfmeter) — по триггеру, как описано в колонке «Когда».
 
 | Файл | Когда |
 |---|---|

@@ -1,3 +1,8 @@
+---
+paths:
+  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
+---
+
 # Variable design
 
 Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.

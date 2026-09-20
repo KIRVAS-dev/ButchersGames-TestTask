@@ -1,3 +1,8 @@
+---
+paths:
+  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
+---
+
 # Rider MCP
 
 Когда читать: правки `.cs` в `ButchersGames/Assets/_Project/Scripts/**`.
@@ -33,7 +38,7 @@ Rider запущен, solution открыт. Bridge недоступен → **�
 
 ## Format
 
-После **каждого** изменения `.cs` (создание или правка) — `mcp__rider__reformat_file`. При нескольких файлах — после каждого файла (или одним вызовом со списком `files`).
+По завершении правок `.cs` в задаче (создание или правка) — **один** вызов `mcp__rider__reformat_file` со списком `files` всех затронутых файлов, после последней правки и до отчёта. Порядок после C#: format → `refresh_unity` → `read_console` ([unity-mcp.md](unity-mcp.md)).
 
 Пути в `files` — **относительно корня solution**, не абсолютные.
 

@@ -1,3 +1,10 @@
+---
+paths:
+  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
+  - "**/*.unity"
+  - "**/*.prefab"
+---
+
 # Unity MCP
 
 Когда читать: правки `ButchersGames/Assets/_Project/Scripts/**/*.cs`, сцены, `**/*.prefab`.
@@ -26,9 +33,11 @@ Server: `unityMCP`, tools — `mcp__unityMCP__*`. Перед вызовом не
 
 ## Must после C#
 
-1. Дождаться конца компиляции (`isCompiling` в состоянии editor)
-2. `mcp__unityMCP__read_console` — Errors; исправить до шага, зависящего от новых типов
-3. Новые компоненты / play mode — только после чистой компиляции
+1. `reformat_file` (Rider) — один вызов за задачу, [rider-mcp.md](rider-mcp.md); format меняет файлы и может вызвать повторную компиляцию, поэтому он **до** refresh
+2. `mcp__unityMCP__refresh_unity` (`compile`, `wait_for_ready`) — дождаться конца компиляции (`isCompiling` в состоянии editor)
+3. `mcp__unityMCP__read_console` — Errors; исправить до шага, зависящего от новых типов
+4. При необходимости — EditMode-тесты: `mcp__unityMCP__run_tests` (при открытом Editor) или `unity test` (только при закрытом)
+5. Новые компоненты / play mode — только после чистой компиляции
 
 ## Инстанс
 
@@ -42,7 +51,7 @@ Server: `unityMCP`, tools — `mcp__unityMCP__*`. Перед вызовом не
 
 **C. Prefab** — `manage_prefabs` / `manage_asset` → правки через MCP (не YAML) → apply/save → `read_console`.
 
-**D. После C#** — `isCompiling == false` → `read_console` Errors → затем компоненты / play.
+**D. После C#** — `reformat_file` → `refresh_unity` (`isCompiling == false`) → `read_console` Errors → при необходимости тесты → затем компоненты / play.
 
 **E. Play mode** — `manage_editor` enter → проверка → exit перед структурными правками сцены/ассетов (если требует editor) → `read_console`.
 
@@ -68,21 +77,26 @@ Server: `unityMCP`, tools — `mcp__unityMCP__*`. Перед вызовом не
 
 (Полные имена — с префиксом `mcp__unityMCP__`.) Перед вызовом непривычного тула — свериться со схемой, не угадывать аргументы.
 
-## Типизированные тулы vs `execute_code` (eval)
+## Coplay MCP vs Pipeline (`unity command eval`)
 
-В этом проекте один MCP-сервер — `unityMCP` (пакет `com.coplaydev.unity-mcp`, Coplay). В отличие от ProjectR здесь **нет** отдельного второго моста (`com.unity.pipeline` / `unity command eval`) — пакет не установлен, и заводить его без явного запроса пользователя не нужно. Вместо этого сам `unityMCP` предоставляет `mcp__unityMCP__execute_code` — произвольный C# в живом Editor — как один из своих тулов, наравне с типизированными `manage_*`.
+В проекте доступны два независимых моста к Editor: **Coplay MCP** (`mcp__unityMCP__*`, описан выше; включает `mcp__unityMCP__execute_code`) и **Unity CLI + `com.unity.pipeline`** (пакет `0.7.0-exp.1` есть в `ButchersGames/Packages/manifest.json`; `unity command eval` — произвольный C# в живом Editor, порт 7800 по умолчанию). Транспорты разные и не конфликтуют, но выбор между ними — «какой инструмент подходит задаче», а не «какой подключён». Перед первым использованием CLI в сессии — `unity status` (состояние `ready`, нужный проект); `unity pipeline list` — если Editor не отвечает (Safe Mode из-за ошибок компиляции).
 
 **По умолчанию — типизированный тул.** Любая задача, которая укладывается в существующий `manage_*` / `find_gameobjects` / `read_console` / `batch_execute`, — только через него: у тула фиксированная схема параметров, вызов ревьюабелен (понятная строка для запроса одобрения — [../../CLAUDE.md](../../CLAUDE.md) §1.4), тул физически не может сделать больше, чем описано в схеме.
 
-**`execute_code` — точечно, когда типизированного тула нет:**
+**`execute_code` / `unity command eval` — точечно, когда типизированного тула нет:**
 
 1. Специфичный API движка / внутреннее состояние без готового `manage_*`-тула (пример: `SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.*` — [perfmeter.md](perfmeter.md))
 2. Read-only диагностика, для которой нет своего тула
 3. Разовый скрипт для узкой задачи, явно не покрываемой существующими тулами
+4. Официальные `unity:*` skills, жёстко зашитые на `eval` — там выбора нет
 
-**Не использовать `execute_code`, если то же самое покрывает typed-тул.** Мутирующий `execute_code` — произвольный код с полным доступом к `UnityEditor.*`/`UnityEngine.*` без ограничений схемы; даже когда permission mode пропускает такой вызов без вопроса, проговорить его отдельно ([../../CLAUDE.md](../../CLAUDE.md) §1.2, §1.4) — в отличие от именованного `manage_*` с фиксированными параметрами, по коду заранее не видно, что именно он сделает.
+**`unity test` / `unity build` — только при закрытом Editor.** При открытом Editor на этом проекте они падают: `already open in a running Editor`, код выхода 6 (проверено `unity test` на этом проекте). При открытом Editor — `mcp__unityMCP__run_tests` и `mcp__unityMCP__manage_build`. `unity run --command` переиспользует уже открытый Editor и оставляет его работать.
 
-Если задаче для `execute_code` понадобится что-то в духе `com.unity.pipeline` (CLI/batch/headless вне интерактивной MCP-сессии) — сказать пользователю, что пакет не установлен, и спросить, ставить ли, а не тихо обходить ограничение.
+**Без проговаривания (read-only):** MCP — `read_console`, чтение сцены и hierarchy, `find_gameobjects`, ресурсы редактора; CLI — `unity status`, `unity logs`, `unity doctor`, `unity pipeline list`, `unity command` без имени (листинг).
+
+**Не использовать `execute_code` / `eval`, если то же самое покрывает typed-тул.** Мутирующий `execute_code` — произвольный код с полным доступом к `UnityEditor.*`/`UnityEngine.*` без ограничений схемы; даже когда permission mode пропускает такой вызов без вопроса, проговорить его отдельно ([../../CLAUDE.md](../../CLAUDE.md) §1.2, §1.4) — в отличие от именованного `manage_*` с фиксированными параметрами, по коду заранее не видно, что именно он сделает.
+
+Если `unity status` не видит Editor, хотя он открыт, — не подменять это скрытым обходом (например, отдельным headless-Editor): сказать пользователю и уточнить (возможные причины: Safe Mode, песочница агента).
 
 ## Если Unity MCP недоступен
 

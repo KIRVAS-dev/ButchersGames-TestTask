@@ -1,3 +1,8 @@
+---
+paths:
+  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
+---
+
 # Architecture
 
 Когда читать: правки `ButchersGames/Assets/_Project/Scripts/**/*.cs`; вопросы про слои, DI, эталон фичи.

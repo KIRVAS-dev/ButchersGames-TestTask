@@ -1,3 +1,8 @@
+---
+paths:
+  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
+---
+
 # C# Code Style
 
 Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.

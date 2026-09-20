@@ -1,3 +1,8 @@
+---
+paths:
+  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
+---
+
 # Typed exceptions и Guard
 
 Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
