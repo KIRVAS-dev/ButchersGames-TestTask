@@ -90,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4508b109c9fd74c4687fa7e62d77d35c, type: 3}
       propertyPath: m_Name
-      value: RunnerModel
+      value: CharacterModel
       objectReference: {fileID: 0}
     - target: {fileID: 1009562781750873517, guid: 4508b109c9fd74c4687fa7e62d77d35c, type: 3}
       propertyPath: m_Layer
@@ -134,6 +134,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4508b109c9fd74c4687fa7e62d77d35c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6412276072824375871}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4508b109c9fd74c4687fa7e62d77d35c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -5784503615605953921}
   m_SourcePrefab: {fileID: 100100000, guid: 4508b109c9fd74c4687fa7e62d77d35c, type: 3}
 --- !u!1 &125182216284027939 stripped
 GameObject:
@@ -212,3 +215,16 @@ MonoBehaviour:
   _middle: {fileID: 125182216284027939}
   _business: {fileID: 5689094175744713656}
   _rich: {fileID: 975342652147493967}
+--- !u!114 &-5784503615605953921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7202127279673931545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce0291e3d79d6e3458ed6f0cec1f4fc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.CharacterTurn.CharacterTurnView
+  _config: {fileID: 11400000, guid: af8655f9fa6d9d5428d1ff0a18581ca9, type: 2}

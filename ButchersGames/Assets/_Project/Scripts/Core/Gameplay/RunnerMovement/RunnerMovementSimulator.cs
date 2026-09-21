@@ -22,6 +22,7 @@ namespace Core.Gameplay.RunnerMovement
         private ILaneBarrier _correctingLaneBarrier;
         private int _activeObstacleCount;
         private float _lateralCorrectionTarget;
+        private float _previousLateralOffset;
 
         private enum LateralClampDirection
         {
@@ -48,60 +49,44 @@ namespace Core.Gameplay.RunnerMovement
             _lateralHalfRange = settings.LateralRange * HalfFactor;
         }
 
-        public void Reset(float startCoordinate)
+        public void Tick(float deltaTime, float finishCoordinate)
+        {
+            if (_model.State.Value == RunnerMovementState.Moving)
+            {
+                MoveForward(deltaTime, finishCoordinate);
+                CorrectLateralOffset(deltaTime);
+            }
+
+            UpdateLateralDirection();
+        }
+
+        internal void Reset(float startCoordinate)
         {
             _model.CurrentRunnerCoordinate.Value = startCoordinate;
             _model.LateralOffset.Value = CenteredLateralOffset;
+            _model.LateralDirection.Value = RunnerLateralDirection.None;
             _model.State.Value = RunnerMovementState.Moving;
 
+            _previousLateralOffset = CenteredLateralOffset;
             _activeObstacleCount = NoActiveObstacles;
             _activeLaneBarrierClamps.Clear();
             _correctingLaneBarrier = null;
         }
 
-        public void Tick(float deltaTime, float finishCoordinate)
-        {
-            if (_model.State.Value != RunnerMovementState.Moving)
-            {
-                return;
-            }
-
-            MoveForward(deltaTime, finishCoordinate);
-            CorrectLateralOffset(deltaTime);
-        }
-
-        public void AddNormalizedLateralOffsetDelta(float normalizedDelta)
+        internal void AddNormalizedLateralOffsetDelta(float normalizedDelta)
         {
             float currentNormalizedOffset = _model.LateralOffset.Value / _lateralHalfRange;
 
             SetNormalizedLateralOffset(currentNormalizedOffset + normalizedDelta);
         }
 
-        private void SetNormalizedLateralOffset(float normalizedOffset)
-        {
-            if (_correctingLaneBarrier != null)
-            {
-                return;
-            }
-
-            float clampedNormalizedOffset = Math.Clamp(normalizedOffset, NormalizedLateralOffsetMin, NormalizedLateralOffsetMax);
-            float offset = clampedNormalizedOffset * _lateralHalfRange;
-
-            foreach (LateralClamp clamp in _activeLaneBarrierClamps.Values)
-            {
-                offset = ClampOffset(offset, clamp);
-            }
-
-            _model.LateralOffset.Value = offset;
-        }
-
-        public void HitObstacle()
+        internal void HitObstacle()
         {
             _activeObstacleCount++;
             _model.State.Value = RunnerMovementState.Stopped;
         }
 
-        public void ReleaseObstacle()
+        internal void ReleaseObstacle()
         {
             _activeObstacleCount--;
 
@@ -114,7 +99,7 @@ namespace Core.Gameplay.RunnerMovement
             _model.State.Value = RunnerMovementState.Moving;
         }
 
-        public void EnterLaneBarrier(ILaneBarrier barrier)
+        internal void EnterLaneBarrier(ILaneBarrier barrier)
         {
             float currentOffset = _model.LateralOffset.Value;
 
@@ -143,7 +128,7 @@ namespace Core.Gameplay.RunnerMovement
             _lateralCorrectionTarget = clamp.Boundary;
         }
 
-        public void ExitLaneBarrier(ILaneBarrier barrier)
+        internal void ExitLaneBarrier(ILaneBarrier barrier)
         {
             _activeLaneBarrierClamps.Remove(barrier);
 
@@ -174,6 +159,39 @@ namespace Core.Gameplay.RunnerMovement
             {
                 _correctingLaneBarrier = null;
             }
+        }
+
+        private void UpdateLateralDirection()
+        {
+            float lateralOffset = _model.LateralOffset.Value;
+            float lateralDelta = lateralOffset - _previousLateralOffset;
+
+            _previousLateralOffset = lateralOffset;
+
+            _model.LateralDirection.Value = lateralDelta switch
+            {
+                > LateralOffsetEpsilon => RunnerLateralDirection.Right,
+                < -LateralOffsetEpsilon => RunnerLateralDirection.Left,
+                _ => RunnerLateralDirection.None
+            };
+        }
+
+        private void SetNormalizedLateralOffset(float normalizedOffset)
+        {
+            if (_correctingLaneBarrier != null)
+            {
+                return;
+            }
+
+            float clampedNormalizedOffset = Math.Clamp(normalizedOffset, NormalizedLateralOffsetMin, NormalizedLateralOffsetMax);
+            float offset = clampedNormalizedOffset * _lateralHalfRange;
+
+            foreach (LateralClamp clamp in _activeLaneBarrierClamps.Values)
+            {
+                offset = ClampOffset(offset, clamp);
+            }
+
+            _model.LateralOffset.Value = offset;
         }
 
         private float MoveTowards(

@@ -23,25 +23,10 @@ namespace ViewComponents.RunnerMovement
 
         public void Validate()
         {
-            Guard.AgainstNonPositive(
-                _forwardSpeed,
-                () => new InvalidRunnerMovementValueException(nameof(_forwardSpeed), _forwardSpeed)
-            );
-
-            Guard.AgainstNonPositive(
-                _lateralRange,
-                () => new InvalidRunnerMovementValueException(nameof(_lateralRange), _lateralRange)
-            );
-
-            Guard.AgainstNonPositive(
-                _lateralCorrectionSpeed,
-                () => new InvalidRunnerMovementValueException(nameof(_lateralCorrectionSpeed), _lateralCorrectionSpeed)
-            );
-
-            Guard.AgainstNonPositive(
-                _lateralDragSensitivity,
-                () => new InvalidRunnerMovementValueException(nameof(_lateralDragSensitivity), _lateralDragSensitivity)
-            );
+            Guard.AgainstNonPositive(_forwardSpeed, () => new InvalidRunnerMovementValueException(nameof(_forwardSpeed), _forwardSpeed));
+            Guard.AgainstNonPositive(_lateralRange, () => new InvalidRunnerMovementValueException(nameof(_lateralRange), _lateralRange));
+            Guard.AgainstNonPositive(_lateralCorrectionSpeed, () => new InvalidRunnerMovementValueException(nameof(_lateralCorrectionSpeed), _lateralCorrectionSpeed));
+            Guard.AgainstNonPositive(_lateralDragSensitivity, () => new InvalidRunnerMovementValueException(nameof(_lateralDragSensitivity), _lateralDragSensitivity));
         }
     }
 }

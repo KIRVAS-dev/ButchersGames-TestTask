@@ -18,6 +18,7 @@ using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
 using ViewComponents.CharacterAnimation;
+using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
@@ -36,12 +37,12 @@ namespace Core.Bootstrap
         protected override void Configure(IContainerBuilder builder)
         {
             RegisterEntryPoint(builder);
-            RegisterLevel(builder);
+            RegisterGameFlow(builder);
             RegisterWealthMeter(builder);
             RegisterRunnerMovement(builder);
-            RegisterGameFlow(builder);
-            RegisterCharacterAnimation(builder);
-            RegisterFeedback(builder);
+            RegisterLevel(builder);
+            RegisterCharacterPresentation(builder);
+            RegisterFeedbackPresentation(builder);
             RegisterUi(builder);
         }
 
@@ -51,22 +52,13 @@ namespace Core.Bootstrap
             builder.RegisterEntryPoint<GameLoop>();
         }
 
-        private static void RegisterLevel(IContainerBuilder builder)
+        private static void RegisterGameFlow(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().AsSelf();
-
-            builder
-               .Register<CurrentLevel>(Lifetime.Singleton)
-               .As<IObstacleRegistry>()
-               .As<ILaneBarrierRegistry>()
-               .As<IWealthPointsModifierRegistry>()
-               .As<ITrackProvider>()
-               .AsSelf();
-
-            builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
-            builder.Register<LevelModel>(Lifetime.Singleton);
-            builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
-            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
+            builder.Register<GameStateModel>(Lifetime.Singleton);
+            builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
+            builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
+            builder.Register<GameResultDetector>(Lifetime.Singleton);
+            builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
         }
 
         private void RegisterWealthMeter(IContainerBuilder builder)
@@ -110,22 +102,33 @@ namespace Core.Bootstrap
             builder.Register<RunnerMovementPresenter>(Lifetime.Singleton);
         }
 
-        private static void RegisterGameFlow(IContainerBuilder builder)
+        private static void RegisterLevel(IContainerBuilder builder)
         {
-            builder.Register<GameStateModel>(Lifetime.Singleton);
-            builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
-            builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
-            builder.Register<GameResultDetector>(Lifetime.Singleton);
-            builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
+            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().AsSelf();
+
+            builder
+               .Register<CurrentLevel>(Lifetime.Singleton)
+               .As<IObstacleRegistry>()
+               .As<ILaneBarrierRegistry>()
+               .As<IWealthPointsModifierRegistry>()
+               .As<ITrackProvider>()
+               .AsSelf();
+
+            builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
+            builder.Register<LevelModel>(Lifetime.Singleton);
+            builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
+            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
         }
 
-        private static void RegisterCharacterAnimation(IContainerBuilder builder)
+        private static void RegisterCharacterPresentation(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<CharacterAnimationView>().As<ICharacterAnimationView>();
             builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton);
+            builder.RegisterComponentInHierarchy<CharacterTurnView>().As<ICharacterTurnView>().As<IPresentationTickable>();
+            builder.Register<CharacterTurnPresenter>(Lifetime.Singleton);
         }
 
-        private static void RegisterFeedback(IContainerBuilder builder)
+        private static void RegisterFeedbackPresentation(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<FeedbackPerformer>().As<IFeedbackPerformer>();
             builder.Register<FeedbackPresenter>(Lifetime.Singleton);
