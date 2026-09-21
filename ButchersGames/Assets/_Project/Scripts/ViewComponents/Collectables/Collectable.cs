@@ -1,4 +1,5 @@
 using UnityEngine;
+using ViewComponents.Common;
 using ViewComponents.WealthPointsModifier;
 
 namespace ViewComponents.Collectables

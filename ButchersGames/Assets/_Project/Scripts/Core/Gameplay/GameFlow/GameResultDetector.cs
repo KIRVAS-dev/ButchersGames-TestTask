@@ -14,7 +14,7 @@ namespace Core.Gameplay.GameFlow
         private readonly ITrackProvider _trackProvider;
         private readonly RunnerMovementModel _runnerMovementModel;
 
-        private IDisposable _distanceSubscription;
+        private IDisposable _runnerCurrentCoordinateSubscription;
 
         public GameResultDetector(
             IGameFlowService gameFlowService,
@@ -33,13 +33,14 @@ namespace Core.Gameplay.GameFlow
         public void StartListening()
         {
             _wealthMeter.Depleted += OnWealthDepleted;
-            _distanceSubscription = _runnerMovementModel.DistanceTraveled.Subscribe(OnDistanceTraveled);
+            _runnerCurrentCoordinateSubscription =
+                _runnerMovementModel.CurrentRunnerCoordinate.Subscribe(OnCurrentRunnerCoordinateChanged);
         }
 
         public void StopListening()
         {
             _wealthMeter.Depleted -= OnWealthDepleted;
-            _distanceSubscription?.Dispose();
+            _runnerCurrentCoordinateSubscription?.Dispose();
         }
 
         private void OnWealthDepleted()
@@ -47,14 +48,14 @@ namespace Core.Gameplay.GameFlow
             FinishRun(GameState.Lose);
         }
 
-        private void OnDistanceTraveled(float distance)
+        private void OnCurrentRunnerCoordinateChanged(float coordinate)
         {
             if (_gameStateMachine.State != GameState.Run)
             {
                 return;
             }
 
-            if (distance >= _trackProvider.FinishDistance)
+            if (coordinate >= _trackProvider.FinishCoordinate)
             {
                 FinishRun(GameState.Win);
             }

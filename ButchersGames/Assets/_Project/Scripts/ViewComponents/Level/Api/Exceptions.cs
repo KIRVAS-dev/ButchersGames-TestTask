@@ -20,6 +20,18 @@ namespace ViewComponents.Level
             : base("level-5", $"Missing field {fieldName} on {objectName}") { }
     }
 
+    public sealed class InvalidLevelRunException : ExtendedException
+    {
+        public InvalidLevelRunException(
+            string objectName,
+            float startCoordinate,
+            float finishCoordinate)
+            : base(
+                "level-6",
+                $"Finish coordinate {finishCoordinate} must be greater than start coordinate {startCoordinate} on {objectName}"
+            ) { }
+    }
+
     public sealed class EmptyLevelListException : ExtendedException
     {
         public EmptyLevelListException(string configName)

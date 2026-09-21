@@ -45,7 +45,7 @@ namespace Core.Gameplay.RunnerMovement
                 return;
             }
 
-            _simulator.Tick(deltaTime, _trackProvider.Length);
+            _simulator.Tick(deltaTime, _trackProvider.FinishCoordinate);
         }
 
         public void StartListening()
@@ -68,7 +68,7 @@ namespace Core.Gameplay.RunnerMovement
 
         private void OnLevelLoaded()
         {
-            _simulator.Reset();
+            _simulator.Reset(_trackProvider.StartCoordinate);
 
             ResubscribeToObstacles();
             ResubscribeToLaneBarriers();

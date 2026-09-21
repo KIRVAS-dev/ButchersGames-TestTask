@@ -2,6 +2,7 @@ using System;
 using Core.Gameplay.WealthPointsModifier;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
+using ViewComponents.Common;
 
 namespace ViewComponents.WealthPointsModifier
 {

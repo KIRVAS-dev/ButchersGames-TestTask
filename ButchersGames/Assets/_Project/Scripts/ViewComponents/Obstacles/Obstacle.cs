@@ -4,6 +4,7 @@ using Core.Gameplay.Obstacle;
 using Cysharp.Threading.Tasks;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
+using ViewComponents.Common;
 using ViewComponents.WealthPointsModifier;
 
 namespace ViewComponents.Obstacles

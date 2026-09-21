@@ -15,6 +15,7 @@ namespace UI.Hud
         [SerializeField] private TextMeshProUGUI _moneyAmountText;
         [SerializeField] private TextMeshProUGUI _wealthStageNameText;
         [SerializeField] private Image _wealthFillBarImage;
+        [SerializeField] private Image _runProgressFillBarImage;
         [SerializeField] private HudConfig _config;
 
         private void Awake()
@@ -49,6 +50,11 @@ namespace UI.Hud
             _wealthFillBarImage.fillAmount = normalizedFill;
         }
 
+        public void SetRunProgressFillBar(float normalizedFill)
+        {
+            _runProgressFillBarImage.fillAmount = normalizedFill;
+        }
+
         public void SetWealthStage(WealthStage stage)
         {
             WealthStageAppearance appearance = _config.AppearanceOf(stage);
@@ -65,6 +71,7 @@ namespace UI.Hud
             Guard.AgainstNull(_moneyAmountText, () => Missing(nameof(_moneyAmountText)));
             Guard.AgainstNull(_wealthStageNameText, () => Missing(nameof(_wealthStageNameText)));
             Guard.AgainstNull(_wealthFillBarImage, () => Missing(nameof(_wealthFillBarImage)));
+            Guard.AgainstNull(_runProgressFillBarImage, () => Missing(nameof(_runProgressFillBarImage)));
             Guard.AgainstNull(_config, () => Missing(nameof(_config)));
 
             return;

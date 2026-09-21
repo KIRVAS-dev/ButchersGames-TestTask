@@ -8,7 +8,6 @@ namespace Core.Gameplay.RunnerMovement
     {
         private const float NormalizedLateralOffsetMin = -1f;
         private const float NormalizedLateralOffsetMax = 1f;
-        private const float StartDistance = 0f;
         private const float CenteredLateralOffset = 0f;
         private const int NoActiveObstacles = 0;
         private const float LateralOffsetEpsilon = 0.0001f;
@@ -46,9 +45,9 @@ namespace Core.Gameplay.RunnerMovement
             _model = model;
         }
 
-        public void Reset()
+        public void Reset(float startCoordinate)
         {
-            _model.DistanceTraveled.Value = StartDistance;
+            _model.CurrentRunnerCoordinate.Value = startCoordinate;
             _model.LateralOffset.Value = CenteredLateralOffset;
             _model.State.Value = RunnerMovementState.Moving;
 
@@ -57,15 +56,15 @@ namespace Core.Gameplay.RunnerMovement
             _correctingLaneBarrier = null;
         }
 
-        public void Tick(float deltaTime, float trackLength)
+        public void Tick(float deltaTime, float finishCoordinate)
         {
             if (_model.State.Value != RunnerMovementState.Moving)
             {
                 return;
             }
 
-            AdvanceDistance(deltaTime, trackLength);
-            AdvanceLateralCorrection(deltaTime);
+            MoveForward(deltaTime, finishCoordinate);
+            CorrectLateralOffset(deltaTime);
         }
 
         public void AddNormalizedLateralOffsetDelta(float normalizedDelta)
@@ -87,7 +86,7 @@ namespace Core.Gameplay.RunnerMovement
 
             foreach (LateralClamp clamp in _activeLaneBarrierClamps.Values)
             {
-                offset = ApplyClamp(offset, clamp);
+                offset = ClampOffset(offset, clamp);
             }
 
             _model.LateralOffset.Value = offset;
@@ -151,14 +150,14 @@ namespace Core.Gameplay.RunnerMovement
             }
         }
 
-        private void AdvanceDistance(float deltaTime, float trackLength)
+        private void MoveForward(float deltaTime, float finishCoordinate)
         {
-            float distance = _model.DistanceTraveled.Value + _settings.ForwardSpeed * deltaTime;
+            float coordinate = _model.CurrentRunnerCoordinate.Value + _settings.ForwardSpeed * deltaTime;
 
-            _model.DistanceTraveled.Value = Math.Min(distance, trackLength);
+            _model.CurrentRunnerCoordinate.Value = Math.Min(coordinate, finishCoordinate);
         }
 
-        private void AdvanceLateralCorrection(float deltaTime)
+        private void CorrectLateralOffset(float deltaTime)
         {
             if (_correctingLaneBarrier == null)
             {
@@ -174,13 +173,6 @@ namespace Core.Gameplay.RunnerMovement
             }
         }
 
-        private float ApplyClamp(float offset, LateralClamp clamp)
-        {
-            return clamp.Direction == LateralClampDirection.UpperBound
-                ? Math.Min(offset, clamp.Boundary)
-                : Math.Max(offset, clamp.Boundary);
-        }
-
         private float MoveTowards(
             float current,
             float target,
@@ -192,6 +184,13 @@ namespace Core.Gameplay.RunnerMovement
             }
 
             return current + Math.Sign(target - current) * maxDelta;
+        }
+
+        private float ClampOffset(float offset, LateralClamp clamp)
+        {
+            return clamp.Direction == LateralClampDirection.UpperBound
+                ? Math.Min(offset, clamp.Boundary)
+                : Math.Max(offset, clamp.Boundary);
         }
     }
 }
