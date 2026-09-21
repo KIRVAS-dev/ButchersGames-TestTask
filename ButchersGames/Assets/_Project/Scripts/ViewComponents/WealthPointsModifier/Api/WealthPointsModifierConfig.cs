@@ -7,15 +7,15 @@ namespace ViewComponents.WealthPointsModifier
     [CreateAssetMenu(menuName = "Configs/Wealth Points Modifier")]
     public sealed class WealthPointsModifierConfig : ScriptableObject
     {
-        [SerializeField] private WealthPointsModifierType _type;
-        [SerializeField] [Min(1)] private int _amount;
+        [SerializeField] private WealthPointsModifierType _modifierType;
+        [SerializeField] [Min(1)] private int _wealthPoints;
 
-        public WealthPointsModifierType Type => _type;
-        public int Amount => _amount;
+        internal WealthPointsModifierType ModifierType => _modifierType;
+        internal int WealthPoints => _wealthPoints;
 
         public void Validate()
         {
-            Guard.AgainstNonPositive(_amount, () => new InvalidWealthPointsModifierValueException(nameof(_amount), _amount));
+            Guard.AgainstNonPositive(_wealthPoints, () => new InvalidWealthPointsModifierValueException(nameof(_wealthPoints), _wealthPoints));
         }
     }
 }
