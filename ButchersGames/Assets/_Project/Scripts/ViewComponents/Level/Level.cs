@@ -30,22 +30,5 @@ namespace ViewComponents.Level
 
             ExtendedException Missing(string fieldName) => new MissingLevelFieldException(fieldName, gameObject.name);
         }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (!_start)
-            {
-                return;
-            }
-
-            Gizmos.color = Color.magenta;
-            Matrix4x4 gizmosMatrix = Gizmos.matrix;
-            Gizmos.matrix = _start.transform.localToWorldMatrix;
-            Gizmos.DrawSphere(Vector3.up * 0.5f + Vector3.forward, 0.5f);
-            Gizmos.DrawCube(Vector3.up * 0.5f, Vector3.one);
-            Gizmos.matrix = gizmosMatrix;
-        }
-#endif
     }
 }

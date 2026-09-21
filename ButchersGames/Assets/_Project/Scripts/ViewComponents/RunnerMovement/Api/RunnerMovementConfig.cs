@@ -12,12 +12,12 @@ namespace ViewComponents.RunnerMovement
           IRunnerMovementInputSettings
     {
         [SerializeField] private float _forwardSpeed;
-        [SerializeField] private float _trackHalfWidth;
+        [SerializeField] private float _lateralRange;
         [SerializeField] private float _lateralCorrectionSpeed;
         [SerializeField] private float _lateralDragSensitivity;
 
         public float ForwardSpeed => _forwardSpeed;
-        public float TrackHalfWidth => _trackHalfWidth;
+        public float LateralRange => _lateralRange;
         public float LateralDragSensitivity => _lateralDragSensitivity;
         public float LateralCorrectionSpeed => _lateralCorrectionSpeed;
 
@@ -29,8 +29,8 @@ namespace ViewComponents.RunnerMovement
             );
 
             Guard.AgainstNonPositive(
-                _trackHalfWidth,
-                () => new InvalidRunnerMovementValueException(nameof(_trackHalfWidth), _trackHalfWidth)
+                _lateralRange,
+                () => new InvalidRunnerMovementValueException(nameof(_lateralRange), _lateralRange)
             );
 
             Guard.AgainstNonPositive(
