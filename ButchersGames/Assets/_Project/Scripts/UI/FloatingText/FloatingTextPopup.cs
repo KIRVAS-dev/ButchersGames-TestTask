@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UI.FloatingText
 {
-    public sealed class FloatingTextPopup : MonoBehaviour
+    internal sealed class FloatingTextPopup : MonoBehaviour
     {
         private const float HiddenAlpha = 0f;
         private const float VisibleAlpha = 1f;

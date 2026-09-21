@@ -7,7 +7,7 @@ using UnityEngine;
 namespace ViewComponents.Feedback
 {
     [Serializable]
-    public sealed class FeedbackEntry
+    internal sealed class FeedbackEntry
     {
         [SerializeField] private FeedbackType _type;
         [SerializeField] private EventReference _sound;

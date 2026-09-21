@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UI.Hud
 {
     [Serializable]
-    public sealed class WealthStageAppearance
+    internal sealed class WealthStageAppearance
     {
         [SerializeField] private WealthStage _stage;
         [SerializeField] private string _displayName;

@@ -5,7 +5,7 @@ using VContainer.Unity;
 
 namespace Infrastructure.Bootstrap
 {
-    public sealed class EntryPoint : IStartable
+    internal sealed class EntryPoint : IStartable
     {
         private const string CoreSceneName = "Core";
 

@@ -2,5 +2,5 @@ using UnityEngine;
 
 namespace ViewComponents.Track
 {
-    public sealed class StartMarker : MonoBehaviour { }
+    internal sealed class StartMarker : MonoBehaviour { }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ViewComponents.Obstacles
 {
     [CreateAssetMenu(menuName = "Configs/Obstacle")]
-    public sealed class ObstacleConfig : ScriptableObject
+    internal sealed class ObstacleConfig : ScriptableObject
     {
         [SerializeField] [Min(0f)] private float _stopDuration;
 

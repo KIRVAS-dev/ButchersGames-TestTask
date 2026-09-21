@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ViewComponents.CharacterTurn
 {
-    public sealed class TurnAnimator
+    internal sealed class TurnAnimator
     {
         private const float NoAngle = 0f;
 

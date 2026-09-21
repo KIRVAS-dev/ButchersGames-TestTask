@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UI.Hud
 {
     [CreateAssetMenu(menuName = "Configs/Hud Config")]
-    public sealed class HudConfig : ScriptableObject
+    internal sealed class HudConfig : ScriptableObject
     {
         [SerializeField] private WealthStageAppearance[] _stageAppearances;
 

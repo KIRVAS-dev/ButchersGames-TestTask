@@ -6,7 +6,7 @@ using ViewComponents.Track;
 
 namespace ViewComponents.LaneBarriers
 {
-    public sealed class LaneBarrierZone
+    internal sealed class LaneBarrierZone
         : MonoBehaviour,
           ILaneBarrier
     {

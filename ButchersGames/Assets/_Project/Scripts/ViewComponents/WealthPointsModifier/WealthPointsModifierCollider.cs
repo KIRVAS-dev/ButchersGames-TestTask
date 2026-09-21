@@ -6,7 +6,7 @@ using ViewComponents.Common;
 
 namespace ViewComponents.WealthPointsModifier
 {
-    public sealed class WealthPointsModifierCollider
+    internal sealed class WealthPointsModifierCollider
         : MonoBehaviour,
           IWealthPointsModifier
     {

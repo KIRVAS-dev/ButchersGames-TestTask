@@ -17,7 +17,7 @@ using ViewComponents.WealthMeter;
 
 namespace Core.Bootstrap
 {
-    public sealed class CoreEntryPoint
+    internal sealed class CoreEntryPoint
         : IStartable,
           IDisposable
     {

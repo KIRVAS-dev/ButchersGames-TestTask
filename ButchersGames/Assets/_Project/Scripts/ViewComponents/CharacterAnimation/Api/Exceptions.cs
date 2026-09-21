@@ -3,13 +3,13 @@ using Infrastructure.ExtendedExceptions;
 
 namespace ViewComponents.CharacterAnimation
 {
-    public sealed class MissingCharacterAnimationViewFieldException : ExtendedException
+    internal sealed class MissingCharacterAnimationViewFieldException : ExtendedException
     {
         public MissingCharacterAnimationViewFieldException(string fieldName, string objectName)
             : base("character-animation-view-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
 
-    public sealed class InvalidCharacterAnimationViewValueException : ExtendedException
+    internal sealed class InvalidCharacterAnimationViewValueException : ExtendedException
     {
         public InvalidCharacterAnimationViewValueException(
             string fieldName,
@@ -18,27 +18,30 @@ namespace ViewComponents.CharacterAnimation
             : base("character-animation-view-2", $"Field '{fieldName}' has invalid value '{value}' on '{objectName}'") { }
     }
 
-    public sealed class DuplicateCharacterAnimationSlotException : ExtendedException
+    internal sealed class DuplicateCharacterAnimationSlotException : ExtendedException
     {
         public DuplicateCharacterAnimationSlotException(CharacterAnimationSlot slot, string objectName)
             : base("character-animation-view-3", $"Duplicate character animation slot '{slot}' on '{objectName}'") { }
     }
 
-    public sealed class CharacterAnimationStateNameMissingException : ExtendedException
+    internal sealed class CharacterAnimationStateNameMissingException : ExtendedException
     {
         public CharacterAnimationStateNameMissingException(CharacterAnimationSlot slot, string objectName)
             : base("character-animation-view-4", $"State name is missing for slot '{slot}' on '{objectName}'") { }
     }
 
-    public sealed class CharacterAnimationSlotNotMappedException : ExtendedException
+    internal sealed class CharacterAnimationSlotNotMappedException : ExtendedException
     {
         public CharacterAnimationSlotNotMappedException(CharacterAnimationSlot slot, string objectName)
             : base("character-animation-view-5", $"Character animation slot '{slot}' is not mapped on '{objectName}'") { }
     }
 
-    public sealed class UnhandledCharacterAnimationStateException : ExtendedException
+    internal sealed class UnhandledCharacterAnimationStateException : ExtendedException
     {
         public UnhandledCharacterAnimationStateException(GameState state)
-            : base("character-animation-presenter-1", $"GameState '{state}' is not handled by the character animation presenter") { }
+            : base(
+                "character-animation-presenter-1",
+                $"GameState '{state}' is not handled by the character animation presenter"
+            ) { }
     }
 }

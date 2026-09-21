@@ -2,7 +2,7 @@ using System.Threading;
 
 namespace Core.Lifecycle
 {
-    public interface ICoreScopeCancellation
+    internal interface ICoreScopeCancellation
     {
         CancellationToken Token { get; }
     }

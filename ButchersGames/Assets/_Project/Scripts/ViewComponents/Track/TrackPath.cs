@@ -4,7 +4,7 @@ using UnityEngine.Splines;
 
 namespace ViewComponents.Track
 {
-    public sealed class TrackPath
+    internal sealed class TrackPath
     {
         private const float SplineStartParameter = 0f;
         private const float SplineEndParameter = 1f;

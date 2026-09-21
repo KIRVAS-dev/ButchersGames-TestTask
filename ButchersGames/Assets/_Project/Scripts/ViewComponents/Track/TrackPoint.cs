@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ViewComponents.Track
 {
-    public readonly struct TrackPoint
+    internal readonly struct TrackPoint
     {
         public TrackPoint(Vector3 position, Vector3 forward)
         {

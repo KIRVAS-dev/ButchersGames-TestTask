@@ -8,7 +8,7 @@ namespace Core.Gameplay.WealthPointsModifier
             : base("wealthpointsmodifier-1", $"WealthPointsModifierConfig field '{fieldName}' has invalid value {value}") { }
     }
 
-    public sealed class InvalidWealthPointsModifierTypeException : ExtendedException
+    internal sealed class InvalidWealthPointsModifierTypeException : ExtendedException
     {
         public InvalidWealthPointsModifierTypeException(WealthPointsModifierType type)
             : base("wealthpointsmodifier-2", $"Unsupported WealthPointsModifierType value {type}") { }
