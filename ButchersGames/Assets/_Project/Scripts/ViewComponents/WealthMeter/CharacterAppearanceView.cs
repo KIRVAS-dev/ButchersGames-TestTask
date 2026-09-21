@@ -9,10 +9,10 @@ namespace ViewComponents.WealthMeter
           ICharacterAppearanceView
     {
         [SerializeField] private GameObject _poor;
-        [SerializeField] private GameObject _descent;
         [SerializeField] private GameObject _casual;
+        [SerializeField] private GameObject _middle;
+        [SerializeField] private GameObject _business;
         [SerializeField] private GameObject _rich;
-        [SerializeField] private GameObject _millionaire;
 
         private void Awake()
         {
@@ -22,19 +22,19 @@ namespace ViewComponents.WealthMeter
         public void SetActiveStage(WealthStage stage)
         {
             _poor.SetActive(stage == WealthStage.Poor);
-            _descent.SetActive(stage == WealthStage.Descent);
             _casual.SetActive(stage == WealthStage.Casual);
+            _middle.SetActive(stage == WealthStage.Middle);
+            _business.SetActive(stage == WealthStage.Business);
             _rich.SetActive(stage == WealthStage.Rich);
-            _millionaire.SetActive(stage == WealthStage.Millionaire);
         }
 
         private void Validate()
         {
             Guard.AgainstNull(_poor, () => Missing(nameof(_poor)));
-            Guard.AgainstNull(_descent, () => Missing(nameof(_descent)));
             Guard.AgainstNull(_casual, () => Missing(nameof(_casual)));
+            Guard.AgainstNull(_middle, () => Missing(nameof(_middle)));
+            Guard.AgainstNull(_business, () => Missing(nameof(_business)));
             Guard.AgainstNull(_rich, () => Missing(nameof(_rich)));
-            Guard.AgainstNull(_millionaire, () => Missing(nameof(_millionaire)));
 
             return;
 

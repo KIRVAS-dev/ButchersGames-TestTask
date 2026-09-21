@@ -71,7 +71,7 @@ namespace UI.Hud
 
         private void OnValueChanged(int value)
         {
-            int maxValue = _wealthMeterSettings.MillionaireThreshold;
+            int maxValue = _wealthMeterSettings.RichThreshold;
 
             float wealthProgress = (float)value / maxValue;
             float normalizedFill = Mathf.Clamp01(wealthProgress);

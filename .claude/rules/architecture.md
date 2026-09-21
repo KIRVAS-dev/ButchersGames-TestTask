@@ -233,6 +233,19 @@ View **никогда** не держит прямую ссылку на кон�
 
 Presenter — обычный `Register<TPresenter>(Lifetime.Singleton)` в `CoreScope`, без своего `I*Service` в Core Api (на него не ссылается никто, кроме `CoreEntryPoint`). Лайфцикл — `StartListening()`/`StopListening()` через параметр `CoreEntryPoint` (форсирует eager-резолв — Presenter это plain C# класс без другого потребителя, см. **Entry points**).
 
+### Роль Presenter — классический MVP
+
+Presenter — презентер в классическом смысле MVP: он владеет **логикой представления**. Подписывается на Core-состояние (один или несколько `*Model`), сам решает, что View должна показать или проиграть, и отдаёт ей готовую команду (`Show`/`Hide`/`SetX(value)`/`Play(slot)`).
+
+| Кто | Что делает | Чего не делает |
+|---|---|---|
+| **Presenter** | Маппинг Core-состояния в команду View: `switch` по `GameState`, свёртка нескольких `*Model` в один результат, выбор слота/варианта, форматирование значения | Gameplay-решений: не меняет `Model`, не валидирует, не определяет исход игры — это Service. Core сообщает, **что случилось** (`Win`, `Stopped`), Presenter решает, **что показать** |
+| **View** | Применяет команду | Не читает Core, не подписывается, не выбирает, что показывать |
+
+- Если Presenter вынужден угадывать причину по косвенным признакам, недостающий факт добавляется в Core как событие/порт (например `IObstacle.Hit`), а не выдумывается новым значением состояния под нужды отображения (`RunnerMovementState` остаётся `Moving`/`Stopped`)
+- Один Presenter может свести несколько `*Model` в одну команду View
+- Примеры: `CharacterAnimationPresenter` (`GameStateModel` + `RunnerMovementModel` → `CharacterAnimationSlot` → `ICharacterAnimationView.Play`), `FeedbackPresenter` (`GameState` → `FeedbackType`), `CharacterAppearancePresenter` (`WealthMeterModel.Stage` → `SetActiveStage`)
+
 Частный случай — UI-экран без собственной модели вообще: там Presenter/View дополнительно разносятся по отдельным файлам с фиксированной структурой `UI/{Screen}/`, см. ниже.
 
 ## UI-экраны (GameUI, MVP)

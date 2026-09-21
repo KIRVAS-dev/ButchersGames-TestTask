@@ -83,10 +83,10 @@ namespace Core.Gameplay.WealthMeter
             return value switch
             {
                 _ when value <= _settings.PoorThreshold => WealthStage.Poor,
-                _ when value <= _settings.DescentThreshold => WealthStage.Descent,
                 _ when value <= _settings.CasualThreshold => WealthStage.Casual,
-                _ when value <= _settings.RichThreshold => WealthStage.Rich,
-                _ => WealthStage.Millionaire
+                _ when value <= _settings.MiddleThreshold => WealthStage.Middle,
+                _ when value <= _settings.BusinessThreshold => WealthStage.Business,
+                _ => WealthStage.Rich
             };
         }
     }

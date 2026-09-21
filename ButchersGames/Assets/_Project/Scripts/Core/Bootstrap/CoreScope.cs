@@ -17,6 +17,7 @@ using UI.FloatingText;
 using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
+using ViewComponents.CharacterAnimation;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
@@ -39,6 +40,7 @@ namespace Core.Bootstrap
             RegisterWealthMeter(builder);
             RegisterRunnerMovement(builder);
             RegisterGameFlow(builder);
+            RegisterCharacterAnimation(builder);
             RegisterFeedback(builder);
             RegisterUi(builder);
         }
@@ -114,6 +116,12 @@ namespace Core.Bootstrap
             builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
             builder.Register<GameResultDetector>(Lifetime.Singleton);
             builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
+        }
+
+        private static void RegisterCharacterAnimation(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<CharacterAnimationView>().As<ICharacterAnimationView>();
+            builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton);
         }
 
         private static void RegisterFeedback(IContainerBuilder builder)

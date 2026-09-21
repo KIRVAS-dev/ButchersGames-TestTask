@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthMeter.WealthMeterConfig
   _startValue: 200
   _poorThreshold: 100
-  _descentThreshold: 500
-  _casualThreshold: 2500
-  _richThreshold: 10000
-  _millionaireThreshold: 20000
+  _casualThreshold: 500
+  _middleThreshold: 2500
+  _businessThreshold: 10000
+  _richThreshold: 20000
