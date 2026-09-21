@@ -4,9 +4,9 @@ namespace Core.Gameplay.WealthMeter
     {
         int StartValue { get; }
         int PoorThreshold { get; }
-        int DescentThreshold { get; }
         int CasualThreshold { get; }
+        int MiddleThreshold { get; }
+        int BusinessThreshold { get; }
         int RichThreshold { get; }
-        int MillionaireThreshold { get; }
     }
 }

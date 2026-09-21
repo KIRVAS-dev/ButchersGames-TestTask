@@ -9,6 +9,7 @@ using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
 using VContainer.Unity;
+using ViewComponents.CharacterAnimation;
 using ViewComponents.Feedback;
 using ViewComponents.RunnerMovement;
 using ViewComponents.WealthMeter;
@@ -27,6 +28,7 @@ namespace Core.Bootstrap
         private readonly GameFlowService _gameFlowService;
         private readonly CharacterAppearancePresenter _characterAppearancePresenter;
         private readonly RunnerMovementPresenter _runnerMovementPresenter;
+        private readonly CharacterAnimationPresenter _characterAnimationPresenter;
         private readonly StartScreenPresenter _startScreenPresenter;
         private readonly HudPresenter _hudPresenter;
         private readonly ResultScreenPresenter _resultScreenPresenter;
@@ -42,6 +44,7 @@ namespace Core.Bootstrap
             GameFlowService gameFlowService,
             CharacterAppearancePresenter characterAppearancePresenter,
             RunnerMovementPresenter runnerMovementPresenter,
+            CharacterAnimationPresenter characterAnimationPresenter,
             StartScreenPresenter startScreenPresenter,
             HudPresenter hudPresenter,
             ResultScreenPresenter resultScreenPresenter,
@@ -56,6 +59,7 @@ namespace Core.Bootstrap
             _gameFlowService = gameFlowService;
             _characterAppearancePresenter = characterAppearancePresenter;
             _runnerMovementPresenter = runnerMovementPresenter;
+            _characterAnimationPresenter = characterAnimationPresenter;
             _startScreenPresenter = startScreenPresenter;
             _hudPresenter = hudPresenter;
             _resultScreenPresenter = resultScreenPresenter;
@@ -74,6 +78,7 @@ namespace Core.Bootstrap
 
             _characterAppearancePresenter.StartListening();
             _runnerMovementPresenter.StartListening();
+            _characterAnimationPresenter.StartListening();
             _startScreenPresenter.StartListening();
             _hudPresenter.StartListening();
             _resultScreenPresenter.StartListening();
@@ -94,6 +99,7 @@ namespace Core.Bootstrap
 
             _characterAppearancePresenter.StopListening();
             _runnerMovementPresenter.StopListening();
+            _characterAnimationPresenter.StopListening();
             _startScreenPresenter.StopListening();
             _hudPresenter.StopListening();
             _resultScreenPresenter.StopListening();
