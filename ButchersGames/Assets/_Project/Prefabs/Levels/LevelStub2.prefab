@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1291411da60df67449e97bc7d2e2e214, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.Level
-  _playerSpawnPoint: {fileID: 1779352391616915169}
+  _start: {fileID: 7047320127647080137}
   _finish: {fileID: 940095483366204257}
   _splineContainer: {fileID: 2852304511723934351}
 --- !u!114 &2852304511723934351
@@ -139,6 +139,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1779352391616915169}
+  - component: {fileID: 7047320127647080137}
   m_Layer: 0
   m_Name: Start
   m_TagString: Untagged
@@ -161,6 +162,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 9091797728129656741}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7047320127647080137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4842211565827951896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e43b88b1bb1fe754ab25b56021af2cff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.Track.StartMarker
 --- !u!1 &8365801164576851459
 GameObject:
   m_ObjectHideFlags: 0

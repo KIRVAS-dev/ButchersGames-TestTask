@@ -2116,6 +2116,7 @@ MonoBehaviour:
   _moneyAmountText: {fileID: 1665016670}
   _wealthStageNameText: {fileID: 748944383}
   _wealthFillBarImage: {fileID: 1785228035}
+  _runProgressFillBarImage: {fileID: 0}
   _config: {fileID: 11400000, guid: c2243b76fd30ddc4aace98ceb21ef942, type: 2}
 --- !u!1 &1201889598
 GameObject:

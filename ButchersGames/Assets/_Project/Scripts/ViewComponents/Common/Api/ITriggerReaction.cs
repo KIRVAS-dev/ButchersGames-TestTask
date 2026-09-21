@@ -1,4 +1,4 @@
-namespace ViewComponents
+namespace ViewComponents.Common
 {
     public interface ITriggerReaction
     {

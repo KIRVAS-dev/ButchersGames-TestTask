@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ViewComponents.Finish
+namespace ViewComponents.Track
 {
     public sealed class FinishMarker : MonoBehaviour { }
 }

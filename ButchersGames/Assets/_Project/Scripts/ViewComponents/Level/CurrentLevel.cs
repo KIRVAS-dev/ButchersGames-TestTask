@@ -21,8 +21,9 @@ namespace ViewComponents.Level
         public IReadOnlyCollection<ILaneBarrier> Barriers { get; private set; }
         public IReadOnlyCollection<IWealthPointsModifier> Modifiers { get; private set; }
         public TrackPath Track { get; private set; }
-        public float FinishDistance { get; private set; }
-        public float Length => Track.Length;
+        public float StartCoordinate { get; private set; }
+        public float FinishCoordinate { get; private set; }
+        public float RunLength => FinishCoordinate - StartCoordinate;
 
         internal void Set(Level level)
         {
@@ -34,13 +35,22 @@ namespace ViewComponents.Level
 
             Guard.AgainstNonPositive(track.Length, () => new InvalidSplineLengthException(level.gameObject.name, track.Length));
 
+            float startCoordinate = track.NearestCoordinateTo(level.StartPosition);
+            float finishCoordinate = track.NearestCoordinateTo(level.FinishPosition);
+
+            Guard.AgainstNonPositive(
+                finishCoordinate - startCoordinate,
+                () => new InvalidLevelRunException(level.gameObject.name, startCoordinate, finishCoordinate)
+            );
+
             foreach (LaneBarrierZone barrier in barriers)
             {
                 barrier.Initialize(track);
             }
 
             Track = track;
-            FinishDistance = track.NearestDistanceTo(level.FinishPosition);
+            StartCoordinate = startCoordinate;
+            FinishCoordinate = finishCoordinate;
             Obstacles = obstacles;
             Barriers = barriers;
             Modifiers = modifiers;

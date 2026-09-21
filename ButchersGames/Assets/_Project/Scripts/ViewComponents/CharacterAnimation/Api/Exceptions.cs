@@ -39,6 +39,6 @@ namespace ViewComponents.CharacterAnimation
     public sealed class UnhandledCharacterAnimationStateException : ExtendedException
     {
         public UnhandledCharacterAnimationStateException(GameState state)
-            : base("character-animation-view-6", $"GameState '{state}' is not handled by the character animation presenter") { }
+            : base("character-animation-presenter-1", $"GameState '{state}' is not handled by the character animation presenter") { }
     }
 }

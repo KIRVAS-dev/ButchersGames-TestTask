@@ -24,15 +24,15 @@ namespace ViewComponents.Track
 
         public float Length { get; }
 
-        public TrackPoint PointAt(float distance)
+        public TrackPoint PointAt(float coordinate)
         {
             Spline spline = _splineContainer.Spline;
 
-            float distanceFraction = Mathf.Clamp01(distance / Length);
+            float trackProgress = Mathf.Clamp01(coordinate / Length);
 
             float splineParameter = SplineUtility.GetNormalizedInterpolation(
                 spline,
-                distanceFraction * spline.GetLength(),
+                trackProgress * spline.GetLength(),
                 PathIndexUnit.Distance
             );
 
@@ -44,7 +44,7 @@ namespace ViewComponents.Track
             return PointAtSplineParameter(_splineContainer.Spline, NearestSplineParameter(worldPoint));
         }
 
-        public float NearestDistanceTo(Vector3 worldPoint)
+        public float NearestCoordinateTo(Vector3 worldPoint)
         {
             Spline spline = _splineContainer.Spline;
 

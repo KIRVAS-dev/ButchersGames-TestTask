@@ -12,7 +12,7 @@ namespace ViewComponents.RunnerMovement
           IPresentationTickable
     {
         private CurrentLevel _currentLevel;
-        private float _distance;
+        private float _coordinate;
         private float _lateralOffset;
         private bool _isTransformDirty;
 
@@ -31,7 +31,7 @@ namespace ViewComponents.RunnerMovement
 
             _isTransformDirty = false;
 
-            TrackPoint point = _currentLevel.Track.PointAt(_distance);
+            TrackPoint point = _currentLevel.Track.PointAt(_coordinate);
 
             Vector3 lateralAxis = Vector3.Cross(Vector3.up, point.Forward).normalized;
             Vector3 position = point.Position + lateralAxis * _lateralOffset;
@@ -40,9 +40,9 @@ namespace ViewComponents.RunnerMovement
             transform.SetPositionAndRotation(position, rotation);
         }
 
-        public void SetDistance(float distance)
+        public void SetCoordinate(float coordinate)
         {
-            _distance = distance;
+            _coordinate = coordinate;
             _isTransformDirty = true;
         }
 

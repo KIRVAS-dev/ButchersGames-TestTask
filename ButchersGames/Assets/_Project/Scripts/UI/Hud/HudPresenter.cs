@@ -1,6 +1,8 @@
 using System;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LevelProgression;
+using Core.Gameplay.RunnerMovement;
+using Core.Gameplay.Track;
 using Core.Gameplay.WealthMeter;
 using R3;
 using UnityEngine;
@@ -9,31 +11,40 @@ namespace UI.Hud
 {
     public sealed class HudPresenter
     {
+        private const int SkipInitialValue = 1;
+
         private readonly IHudView _view;
         private readonly ILevelLoader _levelLoader;
         private readonly ILevelService _levelService;
         private readonly IWealthMeterSettings _wealthMeterSettings;
+        private readonly ITrackProvider _trackProvider;
         private readonly GameStateModel _gameStateModel;
         private readonly WealthMeterModel _wealthMeterModel;
+        private readonly RunnerMovementModel _runnerMovementModel;
 
         private IDisposable _stateSubscription;
         private IDisposable _valueSubscription;
         private IDisposable _stageSubscription;
+        private IDisposable _runProgressSubscription;
 
         public HudPresenter(
             IHudView view,
             ILevelLoader levelLoader,
             ILevelService levelService,
             IWealthMeterSettings wealthMeterSettings,
+            ITrackProvider trackProvider,
             GameStateModel gameStateModel,
-            WealthMeterModel wealthMeterModel)
+            WealthMeterModel wealthMeterModel,
+            RunnerMovementModel runnerMovementModel)
         {
             _view = view;
             _levelLoader = levelLoader;
             _levelService = levelService;
             _wealthMeterSettings = wealthMeterSettings;
+            _trackProvider = trackProvider;
             _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
+            _runnerMovementModel = runnerMovementModel;
         }
 
         public void StartListening()
@@ -42,6 +53,9 @@ namespace UI.Hud
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
             _valueSubscription = _wealthMeterModel.WealthPoints.Subscribe(OnValueChanged);
             _stageSubscription = _wealthMeterModel.Stage.Subscribe(_view.SetWealthStage);
+
+            _runProgressSubscription =
+                _runnerMovementModel.CurrentRunnerCoordinate.Skip(SkipInitialValue).Subscribe(OnCurrentCoordinateChanged);
         }
 
         public void StopListening()
@@ -50,6 +64,7 @@ namespace UI.Hud
             _stateSubscription?.Dispose();
             _valueSubscription?.Dispose();
             _stageSubscription?.Dispose();
+            _runProgressSubscription?.Dispose();
         }
 
         private void OnLevelLoaded()
@@ -78,6 +93,13 @@ namespace UI.Hud
 
             _view.SetMoneyAmount(value);
             _view.SetWealthFillBar(normalizedFill);
+        }
+
+        private void OnCurrentCoordinateChanged(float coordinate)
+        {
+            float runProgress = (coordinate - _trackProvider.StartCoordinate) / _trackProvider.RunLength;
+
+            _view.SetRunProgressFillBar(Mathf.Clamp01(runProgress));
         }
     }
 }

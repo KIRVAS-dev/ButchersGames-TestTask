@@ -9,6 +9,7 @@ namespace UI.Hud
         void SetLevelNumber(int levelNumber);
         void SetMoneyAmount(int amount);
         void SetWealthFillBar(float normalizedFill);
+        void SetRunProgressFillBar(float normalizedFill);
         void SetWealthStage(WealthStage stage);
     }
 }

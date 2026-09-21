@@ -2,7 +2,7 @@ namespace ViewComponents.RunnerMovement
 {
     public interface IRunnerMovementView
     {
-        void SetDistance(float distance);
+        void SetCoordinate(float coordinate);
         void SetLateralOffset(float lateralOffset);
     }
 }
