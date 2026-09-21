@@ -6,7 +6,6 @@
         "VContainer",
         "UniTask",
         "Core",
-        "Core.Input",
         "Input",
         "UI",
         "ViewComponents",

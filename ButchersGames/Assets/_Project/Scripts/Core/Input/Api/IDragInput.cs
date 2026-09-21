@@ -1,6 +1,6 @@
 using System;
 
-namespace Input
+namespace Core.Input
 {
     public interface IDragInput
     {

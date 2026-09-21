@@ -1,4 +1,4 @@
-using Core;
+using Core.Loop;
 using UnityEngine;
 using ViewComponents.Level;
 using ViewComponents.Track;

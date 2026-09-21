@@ -3,10 +3,10 @@ using Infrastructure.ExtendedExceptions;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using CoreLoadSceneMode = Core.Bootstrap.LoadSceneMode;
+using CoreLoadSceneMode = Core.Bootstrap.Scene.LoadSceneMode;
 using UnityLoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
 
-namespace Core.Bootstrap
+namespace Core.Bootstrap.Scene
 {
     public sealed class CoreLoader : ISceneLoader
     {
