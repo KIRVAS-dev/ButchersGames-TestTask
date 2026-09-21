@@ -1,4 +1,5 @@
 using System;
+using Core.Gameplay.WealthPointsModifier;
 
 namespace Core.Gameplay.Obstacle
 {
@@ -6,5 +7,7 @@ namespace Core.Gameplay.Obstacle
     {
         event Action Hit;
         event Action Released;
+
+        IWealthPointsModifier Modifier { get; }
     }
 }

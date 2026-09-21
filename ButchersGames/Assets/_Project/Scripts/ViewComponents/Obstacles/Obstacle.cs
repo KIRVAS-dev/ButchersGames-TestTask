@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Core.Gameplay.Obstacle;
+using Core.Gameplay.WealthPointsModifier;
 using Cysharp.Threading.Tasks;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -17,11 +18,17 @@ namespace ViewComponents.Obstacles
     {
         [SerializeField] private ObstacleConfig _config;
 
+        private WealthPointsModifierCollider _modifier;
+
         public event Action Hit;
         public event Action Released;
 
+        public IWealthPointsModifier Modifier => _modifier;
+
         private void Awake()
         {
+            _modifier = GetComponent<WealthPointsModifierCollider>();
+
             Validate();
         }
 
@@ -42,11 +49,7 @@ namespace ViewComponents.Obstacles
         private void Validate()
         {
             Guard.AgainstNull(_config, () => new MissingObstacleConfigException(nameof(_config), gameObject.name));
-
-            Guard.AgainstNull(
-                GetComponent<WealthPointsModifierCollider>(),
-                () => new MissingObstacleModifierColliderException(gameObject.name)
-            );
+            Guard.AgainstNull(_modifier, () => new MissingObstacleModifierColliderException(gameObject.name));
 
             _config.Validate();
         }

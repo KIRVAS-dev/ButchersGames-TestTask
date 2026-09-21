@@ -22,22 +22,30 @@ namespace ViewComponents.CharacterAnimation
         [SerializeField] private StateNamesMapItem[] _rawStatesMap;
 
         private Dictionary<CharacterAnimationSlot, int> _stateHashes;
+        private Dictionary<CharacterAnimationSlot, int> _reactionTriggers;
 
         private void Awake()
         {
             Validate();
 
             _stateHashes = BuildStateHashes();
+            EnsureAllSlotsMapped(_stateHashes);
+            _reactionTriggers = BuildReactionTriggers();
         }
 
         public void Play(CharacterAnimationSlot slot)
         {
-            Guard.AgainstTrue(
-                !_stateHashes.TryGetValue(slot, out int stateHash),
-                () => new CharacterAnimationSlotNotMappedException(slot, gameObject.name)
-            );
+            _animator.CrossFadeInFixedTime(_stateHashes[slot], _crossFadeDuration);
+        }
 
-            _animator.CrossFadeInFixedTime(stateHash, _crossFadeDuration);
+        public void SetReaction(CharacterAnimationSlot slot)
+        {
+            foreach (int triggerHash in _reactionTriggers.Values)
+            {
+                _animator.ResetTrigger(triggerHash);
+            }
+
+            _animator.SetTrigger(_reactionTriggers[slot]);
         }
 
         private Dictionary<CharacterAnimationSlot, int> BuildStateHashes()
@@ -47,20 +55,36 @@ namespace ViewComponents.CharacterAnimation
 
             foreach (StateNamesMapItem mapItem in _rawStatesMap)
             {
-                Guard.AgainstTrue(
-                    stateHashes.ContainsKey(mapItem.AnimationSlot),
-                    () => new DuplicateCharacterAnimationSlotException(mapItem.AnimationSlot, gameObject.name)
-                );
+                Guard.AgainstTrue(stateHashes.ContainsKey(mapItem.AnimationSlot), () =>
+                    new DuplicateCharacterAnimationSlotException(mapItem.AnimationSlot, gameObject.name));
 
-                Guard.AgainstTrue(
-                    string.IsNullOrWhiteSpace(mapItem.StateName),
-                    () => new CharacterAnimationStateNameMissingException(mapItem.AnimationSlot, gameObject.name)
-                );
+                Guard.AgainstTrue(string.IsNullOrWhiteSpace(mapItem.StateName), () =>
+                    new CharacterAnimationStateNameMissingException(mapItem.AnimationSlot, gameObject.name));
 
                 stateHashes.Add(mapItem.AnimationSlot, Animator.StringToHash(mapItem.StateName));
             }
 
             return stateHashes;
+        }
+
+        private void EnsureAllSlotsMapped(Dictionary<CharacterAnimationSlot, int> stateHashes)
+        {
+            foreach (CharacterAnimationSlot slot in Enum.GetValues(typeof(CharacterAnimationSlot)))
+            {
+                Guard.AgainstTrue(
+                    !stateHashes.ContainsKey(slot),
+                    () => new CharacterAnimationSlotNotMappedException(slot, gameObject.name)
+                );
+            }
+        }
+
+        private Dictionary<CharacterAnimationSlot, int> BuildReactionTriggers()
+        {
+            return new Dictionary<CharacterAnimationSlot, int>
+            {
+                [CharacterAnimationSlot.Happy] = _stateHashes[CharacterAnimationSlot.Happy],
+                [CharacterAnimationSlot.Sad] = _stateHashes[CharacterAnimationSlot.Sad]
+            };
         }
 
         private void Validate()

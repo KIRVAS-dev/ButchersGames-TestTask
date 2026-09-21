@@ -198,6 +198,10 @@ MonoBehaviour:
     StateName: Victory
   - AnimationSlot: 4
     StateName: Defeat
+  - AnimationSlot: 5
+    StateName: Sad
+  - AnimationSlot: 6
+    StateName: Happy
 --- !u!114 &6412276072824375871
 MonoBehaviour:
   m_ObjectHideFlags: 0

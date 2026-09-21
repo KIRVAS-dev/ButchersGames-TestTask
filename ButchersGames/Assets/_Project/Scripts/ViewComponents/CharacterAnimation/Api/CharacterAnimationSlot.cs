@@ -6,6 +6,8 @@ namespace ViewComponents.CharacterAnimation
         Run = 1,
         GetHit = 2,
         Victory = 3,
-        Defeat = 4
+        Defeat = 4,
+        Sad = 5,
+        Happy = 6
     }
 }

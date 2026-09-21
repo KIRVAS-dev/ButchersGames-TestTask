@@ -31,7 +31,7 @@ namespace ViewComponents.WealthPointsModifier
 
             _isTriggered = true;
 
-            Triggered?.Invoke(_config.Type, _config.Amount);
+            Triggered?.Invoke(_config.ModifierType, _config.WealthPoints);
 
             if (TryGetComponent(out ITriggerReaction reaction))
             {
@@ -41,11 +41,7 @@ namespace ViewComponents.WealthPointsModifier
 
         private void Validate()
         {
-            Guard.AgainstNull(
-                _collider,
-                () => new MissingWealthPointsModifierConfigException(nameof(_collider), gameObject.name)
-            );
-
+            Guard.AgainstNull(_collider, () => new MissingWealthPointsModifierConfigException(nameof(_collider), gameObject.name));
             Guard.AgainstNull(_config, () => new MissingWealthPointsModifierConfigException(nameof(_config), gameObject.name));
             Guard.AgainstTrue(!_collider.isTrigger, () => new InvalidWealthPointsModifierColliderException(gameObject.name));
 
