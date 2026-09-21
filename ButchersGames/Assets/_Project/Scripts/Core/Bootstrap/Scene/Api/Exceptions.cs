@@ -1,6 +1,6 @@
 using Infrastructure.ExtendedExceptions;
 
-namespace Core.Bootstrap
+namespace Core.Bootstrap.Scene
 {
     public sealed class UnhandledLoadSceneModeException : ExtendedException
     {

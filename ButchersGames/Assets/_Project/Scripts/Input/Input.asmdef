@@ -2,6 +2,7 @@
     "name": "Input",
     "rootNamespace": "Input",
     "references": [
+        "Core",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

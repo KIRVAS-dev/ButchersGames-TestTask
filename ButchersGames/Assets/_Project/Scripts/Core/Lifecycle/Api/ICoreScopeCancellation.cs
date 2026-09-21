@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Core
+namespace Core.Lifecycle
 {
     public interface ICoreScopeCancellation
     {

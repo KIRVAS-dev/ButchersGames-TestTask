@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Core.Bootstrap.Scene;
 using VContainer;
 using VContainer.Unity;
 

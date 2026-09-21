@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Core.Bootstrap.Scene;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using VContainer.Unity;

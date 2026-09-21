@@ -18,11 +18,12 @@ Assets/_Project/Scripts/
 │   ├── ExtendedExceptions/  ExtendedExceptions        — ExtendedException, Guard
 │   └── Persistence/         Infrastructure.Persistence — PlayerPrefs и пр. адаптеры хранения
 ├── Core/
-│   ├── Api/                 Core                      — порты цикла: IInputTickable, IGameplayTickable, IPresentationTickable
-│   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, GameLoop, scene loader API
+│   ├── Loop/Api/            Core                      — порты цикла (namespace Core.Loop): IInputTickable, IGameplayTickable, IPresentationTickable
+│   ├── Lifecycle/           Core                      — жизненный цикл scope (namespace Core.Lifecycle): CoreScopeCancellationSource; `Api/` — ICoreScopeCancellation
+│   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, GameLoop; `Scene/` — CoreLoader + `Api/` ISceneLoader, LoadSceneMode (Core.Bootstrap.Scene)
 │   ├── Gameplay/{Feature}/  Core                      — Model, Service, Api (в т.ч. I*Settings)
-│   └── Input/{Feature}/     Core.Input                — InputHandler → Service
-├── Input/                   Input                     — feature-agnostic низкоуровневый ввод
+│   └── Input/               Core                      — порты ввода `Api/` (IDragInput, namespace Core.Input) и `{Feature}/` InputHandler → Service (namespace Core.Input.{Feature})
+├── Input/                   Input                     — адаптеры устройств ввода: реализуют порты Core (I*Input, IInputTickable), читают Input System
 ├── UI/{Screen}/             UI                        — View, Presenter, Config экрана (MVP), см. «UI-экраны»
 ├── ViewComponents/{Feature}/ ViewComponents           — View, Providers, SO Config, scene MonoBehaviour
 ├── Debug/                   Debug                     — Editor-only утилиты (`#if UNITY_EDITOR`), без ссылок на gameplay
@@ -35,10 +36,8 @@ Assets/_Project/Scripts/
 
 ```
 ExtendedExceptions  ←  Core  ←  ViewComponents
-                    ←  Input  ←  ViewComponents
-Core  ←  Core.Input  ←  Bootstrap  ←  Infrastructure.Bootstrap
+Core  ←  Input  ←  Bootstrap  ←  Infrastructure.Bootstrap
 Core  ←  Infrastructure.Persistence  ←  Bootstrap
-Input  ←  Core.Input
 Rendering  — изолирован от gameplay (URP only)
 ```
 
@@ -47,14 +46,15 @@ Rendering  — изолирован от gameplay (URP only)
 | **ExtendedExceptions** | — | `ExtendedException`, `Guard` |
 | **Infrastructure.Persistence** | Core | Адаптеры persistence (PlayerPrefs и т.п.) |
 | **Core** | ExtendedExceptions, R3 | Gameplay, порты `Api/` (без SO Config), фазы цикла |
-| **Input** | Unity.InputSystem | Низкоуровневый ввод **без** знания фич |
-| **ViewComponents** | Core, Input, ExtendedExceptions, UniTask, VContainer, FMOD, Splines, R3 | View, Providers, SO Config |
+| **Input** | Core, Unity.InputSystem | Адаптеры устройств: `DragInput` и т.п. (plain C#, реализуют порты Core), `ITrigger` |
+| **ViewComponents** | Core, ExtendedExceptions, UniTask, VContainer, FMOD, Splines, R3 | View, Providers, SO Config |
 | **UI** | Core, ExtendedExceptions, DOTween, TMP, uGUI, R3 | Экраны UI: View, Presenter, Config |
-| **Core.Input** | Core, Input | `{Feature}InputHandler` |
-| **Bootstrap** | Core, Core.Input, Input, UI, ViewComponents, Infrastructure.Persistence, ExtendedExceptions, VContainer, UniTask | CoreScope, CoreEntryPoint, GameLoop |
+| **Bootstrap** | Core, Input, UI, ViewComponents, Infrastructure.Persistence, ExtendedExceptions, VContainer, UniTask | CoreScope, CoreEntryPoint, GameLoop |
 | **Debug** | Unity.InputSystem | Editor-only отладка |
 | **Infrastructure.Bootstrap** | Bootstrap, VContainer, UniTask | ProjectScope, загрузка Core |
 | **Rendering** | URP | Пост-эффекты |
+
+**`Api/` везде.** Интерфейсы (порты), DTO и `Exceptions.cs` любой папки лежат в её подпапке `Api/` — даже если рядом нет реализаций и папка состоит из одних интерфейсов. Namespace без суффикса `.Api`.
 
 VContainer, UniTask, R3 — пакеты; в asmdef вручную не добавлять (кроме явных precompiled, если нужно).
 
@@ -63,13 +63,13 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | Запрещено | Почему |
 |---|---|
 | `Core` → `ViewComponents` | Core не знает сцену |
-| `Core.Input` → `ViewComponents` | Handler зависит только от портов Core и низкого Input |
+| `Core` → `Input` | Порты ввода принадлежат Core (потребитель); адаптер устройства в `Input` зависит от Core, не наоборот |
 | View вызывает `I*Service` напрямую | Обход входного адаптера (InputHandler; для UI-экрана — Presenter) |
 | Model использует `UnityEngine.*` | State должен быть pure C# |
 | View принимает gameplay-решения / меняет Model | Логика только в Service |
 | View напрямую держит ссылку на конкретный `Model`-класс | Между View и Model — Presenter, см. **Model → View через Presenter** |
 
-Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Performer` / `I*Loader` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
+Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Performer` / `I*Loader` / `I*Provider`); `Input` → `Core` (реализует `I*Input` / `IInputTickable`); Bootstrap регистрирует конкретные View в DI.
 
 ## DI scopes
 
@@ -147,7 +147,8 @@ ViewComponents/{Feature}/
 | **Performer** | `ViewComponents/{Feature}/` | Один на сцену, без своей сущности: принимает смысловой тип события (`enum`) и проигрывает эффекты по таблице записей (звук FMOD, VFX). Реализует `I{Feature}Performer` из Core Api. Не меняет game state. Пример: `FeedbackPerformer` |
 | **Loader** | `ViewComponents/{Feature}/` | Один на сцену: по команде Core (`Load{X}(index)`) создаёт в сцене экземпляр контента (спавн префаба из своего конфига), хранит его как текущий и сообщает о готовности событием `{X}Loaded`; отдаёт Core счётчик и настройки загружаемого списка. Реализует `I{Feature}Loader` из Core Api. Не меняет game state. Содержимое загруженного экземпляра он передаёт в постоянный класс `Current{X}` (обычный C#, Singleton в DI), который хранит его и сам реализует порты `I*Registry`/`I*Provider` для Core; читатели зависят от `Current{X}`, а не от Loader. Примеры: `LevelLoader` + `CurrentLevel` |
 | **Provider** | `ViewComponents/{Feature}/` | Сцена → DTO / данные для Core через порт |
-| **InputHandler** | `Core/Input/{Feature}/` | Низкий Input → `I{Feature}Service`. Без ссылок на ViewComponents |
+| **InputHandler** | `Core/Input/{Feature}/` | Порт ввода Core (`I*Input`) → `I{Feature}Service`. Без ссылок на ViewComponents и Input |
+| **Input adapter** | `Input/` | Plain C# адаптер устройства: реализует порт Core (`I*Input`, `IInputTickable`), читает Input System. Регистрируется `Register<T>(Singleton).As<…>()` |
 | **Scope** | `Core/Bootstrap/CoreScope` | `Register{Feature}(builder)` |
 
 ### Поток данных
@@ -256,7 +257,7 @@ UI/{Screen}/
 | **Presenter** | `UI/{Screen}/` | ctor DI на существующий Core `*Model`/`I*Service` (не новая модель для самого экрана) + `I{Screen}View`. R3-подпиской транслирует Core-состояние в вызовы `I{Screen}View` (`Show`/`Hide`/`SetX`); подписан на `{Action}Clicked` View и вызывает `I*Service` — единственная точка ввода экрана |
 | **View** | `UI/{Screen}/` | Реализует `I{Screen}View`. `SetActive`/`Set*` на UI-элементах; клик uGUI `Button` пробрасывает как `event Action` — без чтения Core, без R3, без условий, без вызова Service |
 
-**Ввод UI-экрана.** Клик кнопки: `Button.onClick` → View поднимает `{Action}Clicked` → Presenter вызывает `I*Service` (например `IGameFlowService.StartGame()`). Отдельный `InputHandler`, порт ввода в `Input/Api` и `ITrigger`-обёртка для кнопок экрана не нужны. Presenter только передаёт намерение в Service и **не принимает gameplay-решений** — валидация допустимости (`Guard`, переходы состояний) остаётся в Service. `InputHandler` (`Core/Input/{Feature}/`) остаётся для низкоуровневого ввода без экрана (drag, клавиши).
+**Ввод UI-экрана.** Клик кнопки: `Button.onClick` → View поднимает `{Action}Clicked` → Presenter вызывает `I*Service` (например `IGameFlowService.StartGame()`). Отдельный `InputHandler`, порт ввода в `Core/Input/Api` и `ITrigger`-обёртка для кнопок экрана не нужны. Presenter только передаёт намерение в Service и **не принимает gameplay-решений** — валидация допустимости (`Guard`, переходы состояний) остаётся в Service. `InputHandler` (`Core/Input/{Feature}/`) остаётся для низкоуровневого ввода без экрана (drag, клавиши).
 
 Регистрация и лайфцикл Presenter — как описано в **Model → View через Presenter** выше.
 
@@ -267,6 +268,6 @@ UI/{Screen}/
 - Soft-checks запрещены — секция выше
 - Бизнес-логика только в `Core/Gameplay/{Feature}/` (Service)
 - Core **не** ссылается на ViewComponents; View реализует интерфейсы из Core
-- Core.Input **не** ссылается на ViewComponents
+- Core (включая InputHandler) **не** ссылается на Input и ViewComponents
 - ViewComponents **не** вызывает Service напрямую — только через InputHandler; Providers отдают данные, не команды
 - UI-экран (`UI/{Screen}/`): View Service не вызывает, клики уходят `event Action` → Presenter → `I*Service`

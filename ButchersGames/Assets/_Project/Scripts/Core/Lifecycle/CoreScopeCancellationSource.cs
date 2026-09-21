@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 
-namespace Core.Bootstrap
+namespace Core.Lifecycle
 {
-    public sealed class CoreCancellationSource
+    public sealed class CoreScopeCancellationSource
         : ICoreScopeCancellation,
           IDisposable
     {

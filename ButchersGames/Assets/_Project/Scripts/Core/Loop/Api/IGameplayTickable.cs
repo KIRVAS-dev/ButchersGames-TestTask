@@ -1,4 +1,4 @@
-namespace Core
+namespace Core.Loop
 {
     public interface IGameplayTickable
     {

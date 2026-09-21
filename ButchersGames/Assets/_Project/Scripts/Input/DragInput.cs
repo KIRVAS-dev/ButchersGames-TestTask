@@ -1,14 +1,13 @@
 using System;
-using Core;
-using Input;
+using Core.Input;
+using Core.Loop;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace ViewComponents.RunnerMovement
+namespace Input
 {
     public sealed class DragInput
-        : MonoBehaviour,
-          IDragInput,
+        : IDragInput,
           IInputTickable
     {
         private const float ScreenHalfFactor = 0.5f;

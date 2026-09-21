@@ -73,19 +73,19 @@ VContainer (DI), UniTask (async), R3 (реактивное связывание 
 
 ### Слои (кратко)
 
-`ExtendedExceptions` ← `Core` ← `ViewComponents`; `Core` ← `Core.Input` ← `Bootstrap` ← `Infrastructure.Bootstrap`; `Core` ← `Infrastructure.Persistence` ← `Bootstrap`; `Input` ← `Core.Input`; `Rendering` изолирован (URP only). Config SO — во ViewComponents (`I*Settings` в Core). Полный asmdef-граф — [architecture.md](.claude/rules/architecture.md).
+`ExtendedExceptions` ← `Core` ← `ViewComponents`; `Core` ← `Input` ← `Bootstrap` ← `Infrastructure.Bootstrap`; `Core` ← `Infrastructure.Persistence` ← `Bootstrap`; `Rendering` изолирован (URP only). Config SO — во ViewComponents (`I*Settings` в Core). Полный asmdef-граф — [architecture.md](.claude/rules/architecture.md).
 
 ### Dependency rule (топ)
 
 | Запрещено | Почему |
 |---|---|
 | `Core` → `ViewComponents` | Core не знает сцену |
-| `Core.Input` → `ViewComponents` | Handler зависит только от портов Core и низкого Input |
+| `Core` → `Input` | Порты ввода принадлежат Core; адаптер устройства в `Input` зависит от Core, не наоборот |
 | View вызывает `I*Service` напрямую | Обход входного адаптера |
 | Model использует `UnityEngine.*` | State должен быть pure C# |
 | View принимает gameplay-решения / меняет Model | Логика только в Service |
 
-Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Provider`); `Core.Input` → `Core` + `Input`; Bootstrap регистрирует конкретные View в DI.
+Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Provider`); `Input` → `Core` (реализует `I*Input` / `IInputTickable`); Bootstrap регистрирует конкретные View в DI.
 
 ### Decision tree
 

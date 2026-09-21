@@ -19,7 +19,7 @@ paths:
 | Core Bootstrap | `Core.Bootstrap` | `Core.Bootstrap` |
 | Core Input | `Core.Input.{Feature}` | `Core.Input.Movement` |
 | ViewComponents | `ViewComponents.{Feature}` | `ViewComponents.Hud` |
-| Input | `Input` | низкоуровневый ввод |
+| Input | `Input` | адаптеры устройств ввода |
 | Infrastructure Bootstrap | `Infrastructure.Bootstrap` | `Infrastructure.Bootstrap` |
 | Infrastructure Persistence | `Infrastructure.Persistence` | `Infrastructure.Persistence` |
 | ExtendedExceptions | `ExtendedExceptions` | shared base |
@@ -69,7 +69,7 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 | `I*Performer` | Core Api | порт проигрывания эффектов (звук/VFX) по смысловому типу события; реализация без собственной сущности — `*Performer` во ViewComponents |
 | `I*Loader` | Core Api | порт загрузки контента в сцену по команде Core: `Load*`, событие `*Loaded`, счётчик и настройки списка; реализация — `*Loader` во ViewComponents |
 | `I*Provider` | Core Api | данные сцены для Core |
-| `*InputHandler` | Core.Input | адаптер ввода |
+| `*InputHandler` | Core (`Core.Input.{Feature}`) | порт ввода → Service |
 | `*Helper` | Core / ViewComponents | `public static class`, stateless functions |
 | `*Manager` | — | **не вводить** без явного ok пользователя |
 | `*Controller` | — | допустим; уточнить у пользователя соответствие роли |

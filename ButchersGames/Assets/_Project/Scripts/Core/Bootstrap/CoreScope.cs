@@ -7,7 +7,9 @@ using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
+using Core.Input;
 using Core.Input.RunnerMovement;
+using Core.Loop;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
@@ -91,7 +93,7 @@ namespace Core.Bootstrap
             _runnerMovementConfig.Validate();
 
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
-            builder.RegisterComponentInHierarchy<DragInput>().As<IDragInput>().As<IInputTickable>();
+            builder.Register<DragInput>(Lifetime.Singleton).As<IDragInput>().As<IInputTickable>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().As<IRunnerMovementView>().As<IPresentationTickable>();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
 

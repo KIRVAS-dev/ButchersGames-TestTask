@@ -3,7 +3,6 @@
     "rootNamespace": "ViewComponents",
     "references": [
         "Core",
-        "Input",
         "ExtendedExceptions",
         "UniTask",
         "FMODUnity",

@@ -4,6 +4,7 @@ using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.Track;
+using Core.Loop;
 
 namespace Core.Gameplay.RunnerMovement
 {
