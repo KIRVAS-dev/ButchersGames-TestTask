@@ -95,6 +95,7 @@ namespace Core.Bootstrap
             _runnerMovementConfig.Validate();
 
             builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
+            builder.RegisterInstance<IRunnerMovementInputSettings>(_runnerMovementConfig);
             builder.Register<DragInput>(Lifetime.Singleton).As<IDragInput>().As<IInputTickable>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().As<IRunnerMovementView>().As<IPresentationTickable>();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);

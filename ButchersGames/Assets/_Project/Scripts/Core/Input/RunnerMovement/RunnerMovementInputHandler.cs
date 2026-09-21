@@ -7,15 +7,18 @@ namespace Core.Input.RunnerMovement
     {
         private readonly IGameplayInputBlock _inputBlock;
         private readonly IRunnerMovementService _service;
+        private readonly IRunnerMovementInputSettings _settings;
         private readonly IDragInput _dragInput;
 
         public RunnerMovementInputHandler(
             IGameplayInputBlock inputBlock,
             IRunnerMovementService service,
+            IRunnerMovementInputSettings settings,
             IDragInput dragInput)
         {
             _inputBlock = inputBlock;
             _service = service;
+            _settings = settings;
             _dragInput = dragInput;
         }
 
@@ -36,7 +39,7 @@ namespace Core.Input.RunnerMovement
                 return;
             }
 
-            _service.AddNormalizedLateralOffsetDelta(normalizedDelta);
+            _service.AddNormalizedLateralOffsetDelta(normalizedDelta * _settings.LateralDragSensitivity);
         }
     }
 }
