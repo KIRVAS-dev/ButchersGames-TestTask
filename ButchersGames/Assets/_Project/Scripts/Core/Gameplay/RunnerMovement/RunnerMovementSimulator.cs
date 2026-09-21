@@ -11,11 +11,13 @@ namespace Core.Gameplay.RunnerMovement
         private const float CenteredLateralOffset = 0f;
         private const int NoActiveObstacles = 0;
         private const float LateralOffsetEpsilon = 0.0001f;
+        private const float HalfFactor = 0.5f;
 
         private readonly IRunnerMovementSettings _settings;
         private readonly RunnerMovementModel _model;
         private readonly Dictionary<ILaneBarrier, LateralClamp> _activeLaneBarrierClamps =
             new Dictionary<ILaneBarrier, LateralClamp>();
+        private readonly float _lateralHalfRange;
 
         private ILaneBarrier _correctingLaneBarrier;
         private int _activeObstacleCount;
@@ -43,6 +45,7 @@ namespace Core.Gameplay.RunnerMovement
         {
             _settings = settings;
             _model = model;
+            _lateralHalfRange = settings.LateralRange * HalfFactor;
         }
 
         public void Reset(float startCoordinate)
@@ -69,7 +72,7 @@ namespace Core.Gameplay.RunnerMovement
 
         public void AddNormalizedLateralOffsetDelta(float normalizedDelta)
         {
-            float currentNormalizedOffset = _model.LateralOffset.Value / _settings.TrackHalfWidth;
+            float currentNormalizedOffset = _model.LateralOffset.Value / _lateralHalfRange;
 
             SetNormalizedLateralOffset(currentNormalizedOffset + normalizedDelta);
         }
@@ -82,7 +85,7 @@ namespace Core.Gameplay.RunnerMovement
             }
 
             float clampedNormalizedOffset = Math.Clamp(normalizedOffset, NormalizedLateralOffsetMin, NormalizedLateralOffsetMax);
-            float offset = clampedNormalizedOffset * _settings.TrackHalfWidth;
+            float offset = clampedNormalizedOffset * _lateralHalfRange;
 
             foreach (LateralClamp clamp in _activeLaneBarrierClamps.Values)
             {

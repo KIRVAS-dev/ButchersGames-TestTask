@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelListConfig
   _isRandomized: 0
   _levels:
-  - {fileID: 717560512806817344, guid: 555eedcb46494ed45966bce24f31e117, type: 3}
-  - {fileID: 8290429377968950214, guid: f50db6e076ccde0479b310db6ae968cf, type: 3}
+  - {fileID: 601553256763186826, guid: 099267e1c7c80dc459b7c4dda336d0e5, type: 3}
+  - {fileID: 601553256763186826, guid: 416d8ca45ad2fac43a81e26157553e34, type: 3}

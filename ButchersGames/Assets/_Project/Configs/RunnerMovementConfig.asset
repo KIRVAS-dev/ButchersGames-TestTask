@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46192f773781fb042be7d336fa5fd476, type: 3}
   m_Name: RunnerMovementConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.RunnerMovementConfig
-  _forwardSpeed: 5
-  _trackHalfWidth: 3
-  _lateralCorrectionSpeed: 5
-  _lateralDragSensitivity: 0.4
+  _forwardSpeed: 10
+  _lateralRange: 3
+  _lateralCorrectionSpeed: 10
+  _lateralDragSensitivity: 1.5
