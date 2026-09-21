@@ -4,7 +4,7 @@ using Core.Gameplay.LaneBarrier;
 
 namespace Core.Gameplay.RunnerMovement
 {
-    public sealed class RunnerMovementSimulator
+    internal sealed class RunnerMovementSimulator
     {
         private const float NormalizedLateralOffsetMin = -1f;
         private const float NormalizedLateralOffsetMax = 1f;

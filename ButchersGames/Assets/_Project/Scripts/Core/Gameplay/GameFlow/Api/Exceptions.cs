@@ -2,12 +2,12 @@ using Infrastructure.ExtendedExceptions;
 
 namespace Core.Gameplay.GameFlow
 {
-    public sealed class InvalidGameStateTransitionException : ExtendedException
+    internal sealed class InvalidGameStateTransitionException : ExtendedException
     {
         public InvalidGameStateTransitionException(string attemptedTransition, GameState currentState)
             : base("game-flow-1", $"Transition '{attemptedTransition}' is not valid from state '{currentState}'") { }
     }
-    public sealed class UnhandledGameStateException : ExtendedException
+    internal sealed class UnhandledGameStateException : ExtendedException
     {
         public UnhandledGameStateException(GameState state)
             : base("game-flow-2", $"GameState '{state}' is not handled by the game state machine") { }

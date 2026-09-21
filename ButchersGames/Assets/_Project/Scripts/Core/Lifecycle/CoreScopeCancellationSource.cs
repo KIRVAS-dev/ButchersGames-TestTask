@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Core.Lifecycle
 {
-    public sealed class CoreScopeCancellationSource
+    internal sealed class CoreScopeCancellationSource
         : ICoreScopeCancellation,
           IDisposable
     {

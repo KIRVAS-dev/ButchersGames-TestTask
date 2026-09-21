@@ -1,6 +1,6 @@
 namespace UI
 {
-    public static class LevelNumberTextHelper
+    internal static class LevelNumberTextHelper
     {
         private const string LevelNumberTextFormat = "Уровень {0}";
 

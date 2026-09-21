@@ -4,7 +4,7 @@ namespace UI.SafeArea
 {
     [RequireComponent(typeof(RectTransform))]
     [ExecuteAlways]
-    public sealed class SafeArea : MonoBehaviour
+    internal sealed class SafeArea : MonoBehaviour
     {
         [SerializeField] private bool _updateInEditor;
         [SerializeField] private bool _ignoreIosBottom;

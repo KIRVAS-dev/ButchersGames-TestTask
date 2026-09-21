@@ -34,9 +34,25 @@ Finding: god-интерфейс; разнородные сервисы в одн
 - Минимальная видимость членов; **без публичных полей** состояния (исключения — явные DTO/`record`/readonly-конфиги по [architecture.md](architecture.md))
 - Не светить закрытые детали в публичном API
 - Слабое сопряжение: меньше прямых и цепочек вызовов в чужие типы (`a.B().C().D()`)
-- В C#: избегать чрезмерного `internal`/`InternalsVisibleTo` без необходимости
+- Видимость по умолчанию — `internal`. `public` только если тип или член нужен другой сборке
 
-Finding: утечка реализации; жёсткая связь через детали; клиент знает внутренности лучше, чем документированный API.
+Finding: утечка реализации; жёсткая связь через детали; клиент знает внутренности лучше, чем документированный API; `public` у типа или члена, которого нет ни в одной другой сборке.
+
+### Видимость сборки (`internal` vs `public`)
+
+По умолчанию `internal`. `public` — только когда другая сборка (`asmdef`) реально именует тип или член: вызов, поле, базовый тип, реализация, `new`, DI `Register<T>` / `RegisterEntryPoint<T>`.
+
+`public` оставить, даже если реализация «внутри фичи»:
+
+- конкретный тип, который регистрирует чужая сборка (Bootstrap → Model, Service, View, Presenter)
+- порт `Api/`, который реализует или вызывает чужая сборка
+- член неявной реализации public-интерфейса и `override` — доступ совпадает с контрактом
+- конструктор, который вызывает чужая сборка
+- public-поле `MonoBehaviour` / `ScriptableObject`: Unity сериализует public-поля и `[SerializeField]`. Сужение до `internal` или `private` без `[SerializeField]` стирает данные инспектора. Если снаружи сборки поле не читают — `[SerializeField] private`, не голый `internal`
+
+`InternalsVisibleTo` не добавлять, чтобы выдать `internal` наружу. Другой сборке нужен тип — он `public`.
+
+Член `internal`-типа снаружи сборки и так не виден. В новом коде у такого члена тоже `internal`, кроме реализации интерфейса и сериализуемого поля.
 
 ## Наследование vs композиция
 
@@ -62,12 +78,12 @@ Finding: наследование «ради переиспользования 
 
 ## WebGL-Template
 
-- **Core Api:** публичный контракт — `I*Service`, `I*View`, `I*Provider`; Model/Service — internal детали фичи, наружу — через Api
+- **Сборка:** `public` только у типов и членов, которые именует другая сборка. Порт `Api/` (`I*Service`, `I*View`, `I*Provider`, DTO, exception) — `internal`, пока на него нет ссылки снаружи. Конкретный Model/Service/View, который регистрирует другая сборка, остаётся `public`
 - **DTO / Models:** `record` или plain class с данными — ok в `Api/`; минимальные `CopyWith*` допустимы; правила — в Service
 - **Managed OOP** (Model, Service, View, Bootstrap): **class** / `record` по умолчанию; не вводить `struct` «ради perf» без нужды
 - **ViewComponents / Input:** presentation и адаптеры; без бизнес-правил Core
-- **Helper:** `public static class {Feature}Helper` — stateless pure functions ([codestyle.md](codestyle.md)); domain-math в Core, view-math во ViewComponents
+- **Helper:** `internal static class {Feature}Helper`, если его не зовёт другая сборка; иначе `public`. Stateless pure functions ([codestyle.md](codestyle.md)); domain-math в Core, view-math во ViewComponents
 
 ## Soft-check для агента
 
-Перед новым типом или расширением публичного API: цель → согласованный интерфейс → инкапсуляция → композиция vs наследование → не god / не verb-only. Новые методы контракта — [method-design.md](method-design.md). Ревью — [../../CLAUDE.md](../../CLAUDE.md) §4.
+Перед новым типом или расширением публичного API: цель → согласованный интерфейс → инкапсуляция → `internal`, если другую сборку тип не называет → композиция vs наследование → не god / не verb-only. Новые методы контракта — [method-design.md](method-design.md). Ревью — [../../CLAUDE.md](../../CLAUDE.md) §4.

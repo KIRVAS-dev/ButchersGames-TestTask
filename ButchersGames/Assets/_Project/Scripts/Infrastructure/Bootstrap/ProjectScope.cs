@@ -4,7 +4,7 @@ using VContainer.Unity;
 
 namespace Infrastructure.Bootstrap
 {
-    public sealed class ProjectScope : LifetimeScope
+    internal sealed class ProjectScope : LifetimeScope
     {
         protected override void Configure(IContainerBuilder builder)
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ViewComponents.CharacterTurn
 {
     [CreateAssetMenu(menuName = "Configs/Character Turn")]
-    public sealed class CharacterTurnConfig : ScriptableObject
+    internal sealed class CharacterTurnConfig : ScriptableObject
     {
         [SerializeField] [Min(0f)] private float _maxAngle = 35f;
         [SerializeField] [Min(0f)] private float _turnSpeed = 200f;

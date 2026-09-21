@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UI.FloatingText
 {
     [CreateAssetMenu(menuName = "Configs/Floating Text Config")]
-    public sealed class FloatingTextConfig : ScriptableObject
+    internal sealed class FloatingTextConfig : ScriptableObject
     {
         [SerializeField] private float _sideOffset = 120f;
         [SerializeField] private int _prewarmCount = 8;

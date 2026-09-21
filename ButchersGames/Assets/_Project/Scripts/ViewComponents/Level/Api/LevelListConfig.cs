@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ViewComponents.Level
 {
     [CreateAssetMenu(menuName = "Configs/Level List")]
-    public sealed class LevelListConfig : ScriptableObject
+    internal sealed class LevelListConfig : ScriptableObject
     {
         [SerializeField] private bool _isRandomized;
         [SerializeField] private List<Level> _levels;

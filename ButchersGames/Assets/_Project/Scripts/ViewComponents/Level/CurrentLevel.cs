@@ -20,10 +20,10 @@ namespace ViewComponents.Level
         public IReadOnlyCollection<IObstacle> Obstacles { get; private set; }
         public IReadOnlyCollection<ILaneBarrier> Barriers { get; private set; }
         public IReadOnlyCollection<IWealthPointsModifier> Modifiers { get; private set; }
-        public TrackPath Track { get; private set; }
         public float StartCoordinate { get; private set; }
         public float FinishCoordinate { get; private set; }
         public float RunLength => FinishCoordinate - StartCoordinate;
+        internal TrackPath Track { get; private set; }
 
         internal void Set(Level level)
         {

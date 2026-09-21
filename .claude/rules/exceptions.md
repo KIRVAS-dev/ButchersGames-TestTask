@@ -28,7 +28,7 @@ public class ExtendedException : Exception
 
 - Один файл `Exceptions.cs` на фичу (обычно `{Layer}/{Feature}/Api/`)
 - Namespace фичи **без** суффикса `.Api`
-- `public sealed class … : ExtendedException`
+- `sealed class … : ExtendedException` — `public`, если тип создают или ловят в другой сборке; иначе `internal` ([class-design.md](class-design.md))
 - Отдельный файл на каждый тип — **не** создавать
 - **Запрещено:** generic-исключение с произвольной строкой `reason`
 

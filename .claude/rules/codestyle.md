@@ -38,12 +38,13 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 ## Структура класса
 
 - Порядок: Поля → Конструктор → Свойства → Методы
-- Внутри блока: `public` → `protected` → `private`
+- Внутри блока: `public` → `internal` → `protected` → `private`
+- Доступ по умолчанию — `internal`. `public` только если член или тип именует другая сборка ([class-design.md](class-design.md))
 - **Порядок полей и параметров конструктора:** сначала интерфейсы (`I…`), потом конкретные классы. Порядок параметров совпадает с порядком полей
 - События — выше остальных полей
 - Модификаторы доступа **явно** (кроме интерфейсов)
 - `static` для методов — **только при строгой необходимости** (factory без состояния, `RuntimeInitializeOnLoad`, extension-методы). Приватные хелперы класса — instance, не `static`
-- **Математические Helper-классы** — `public static class {Feature}Helper` в `{ViewLayer}/{Feature}/` (view-math); domain-math без Unity presentation — `{CoreLayer}/{Feature}/`. Stateless pure functions. Суффикс `Helper` **разрешён**. Без MonoBehaviour, DOTween и FMOD
+- **Математические Helper-классы** — `internal static class {Feature}Helper` в `{ViewLayer}/{Feature}/` (view-math); domain-math без Unity presentation — `{CoreLayer}/{Feature}/`. `public` только если helper зовёт другая сборка. Stateless pure functions. Суффикс `Helper` **разрешён**. Без MonoBehaviour, DOTween и FMOD
 - **`[SerializeField]`** — порядок полей **не менять** (Inspector)
 
 После правок `.cs` — `reformat_file` ([rider-mcp.md](rider-mcp.md)). Порядок членов после Rider — доверять результату reorder, не переставлять вручную обратно.
@@ -52,7 +53,7 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 
 - `camelCase` — локальные переменные, параметры
 - `_camelCase` — private поля
-- `PascalCase` — public/protected поля, свойства, методы, **локальные функции**, типы
+- `PascalCase` — public/internal/protected поля, свойства, методы, **локальные функции**, типы
 - `PascalCase` — `const` (как и остальные члены типа)
 - `static readonly` / `readonly` — по правилам полей, не как const
 - Bool-методы: `IsX` / `CanX` / `HasX`; `TryX` для try-паттерна
@@ -70,7 +71,7 @@ Model / Service / View / InputHandler — см. [architecture.md](architecture.m
 | `I*Loader` | Core Api | порт загрузки контента в сцену по команде Core: `Load*`, событие `*Loaded`, счётчик и настройки списка; реализация — `*Loader` во ViewComponents |
 | `I*Provider` | Core Api | данные сцены для Core |
 | `*InputHandler` | Core (`Core.Input.{Feature}`) | порт ввода → Service |
-| `*Helper` | Core / ViewComponents | `public static class`, stateless functions |
+| `*Helper` | Core / ViewComponents | `static class`, stateless functions; `internal`, если нет вызова из другой сборки |
 | `*Manager` | — | **не вводить** без явного ok пользователя |
 | `*Controller` | — | допустим; уточнить у пользователя соответствие роли |
 
@@ -150,7 +151,7 @@ public FooService(
 
 ## `sealed`
 
-- **Обязательно:** `public sealed class … : ExtendedException`
+- **Обязательно:** `sealed class … : ExtendedException`; `public` только если тип виден другой сборке ([class-design.md](class-design.md))
 - **Рекомендуется:** новые leaf View / InputHandler
 - Service / Model — обычно **без** `sealed`, если не leaf
 
@@ -170,7 +171,7 @@ public FooService(
 
 ## Static
 
-- `public static class {Feature}Helper` — pure functions
+- `internal static class {Feature}Helper` — pure functions; `public`, только если helper зовёт другая сборка
 - `static void Register*(IContainerBuilder)` — DI registration в LifetimeScope
 - Static helpers внутри service/logic классов — **не** добавлять
 

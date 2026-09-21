@@ -29,7 +29,7 @@ using UnityEngine;
 
 namespace Core.Bootstrap
 {
-    public sealed class CoreScope : LifetimeScope
+    internal sealed class CoreScope : LifetimeScope
     {
         [SerializeField] private WealthMeterConfig _wealthMeterConfig;
         [SerializeField] private RunnerMovementConfig _runnerMovementConfig;

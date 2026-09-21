@@ -5,7 +5,7 @@ using ViewComponents.WealthPointsModifier;
 namespace ViewComponents.Collectables
 {
     [RequireComponent(typeof(WealthPointsModifierCollider))]
-    public sealed class Collectable
+    internal sealed class Collectable
         : MonoBehaviour,
           ITriggerReaction
     {

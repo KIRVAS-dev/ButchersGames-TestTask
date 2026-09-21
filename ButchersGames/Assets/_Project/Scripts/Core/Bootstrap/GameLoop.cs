@@ -5,7 +5,7 @@ using VContainer.Unity;
 
 namespace Core.Bootstrap
 {
-    public sealed class GameLoop : ITickable
+    internal sealed class GameLoop : ITickable
     {
         private readonly IReadOnlyList<IInputTickable> _inputTickables;
         private readonly IReadOnlyList<IGameplayTickable> _gameplayTickables;

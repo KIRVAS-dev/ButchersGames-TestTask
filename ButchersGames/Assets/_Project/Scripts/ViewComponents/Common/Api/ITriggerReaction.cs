@@ -1,6 +1,6 @@
 namespace ViewComponents.Common
 {
-    public interface ITriggerReaction
+    internal interface ITriggerReaction
     {
         void React();
     }
