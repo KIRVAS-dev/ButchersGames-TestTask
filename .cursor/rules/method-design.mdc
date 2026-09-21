@@ -1,6 +1,6 @@
 ---
 description: WebGL-Template — method design (cohesion, params, returns)
-globs: Template-UnityProject/Assets/_Project/Scripts/**/*.cs
+globs: ButchersGames/Assets/_Project/Scripts/**/*.cs
 alwaysApply: false
 ---
 
@@ -48,9 +48,9 @@ Finding: имя не покрывает побочные эффекты; мет�
 
 ## Порядок методов в файле
 
-Порядок групп — `codestyle.mdc` (Construct → Unity lifecycle → public API → private helpers).
+Читать класс — как статью: сначала основное действие, детали — ниже. Метод верхнего уровня — выше; вызываемые им helper-методы — ниже.
 
-Внутри группы: читать класс — как статью: сначала основное действие, детали — ниже. Метод верхнего уровня — выше; вызываемые им helper-методы — ниже.
+Это порядок **внутри** блока Methods (см. `codestyle.mdc`), не альтернатива ему.
 
 ## Параметры (C#)
 
@@ -62,7 +62,7 @@ Finding: имя не покрывает побочные эффекты; мет�
 - **`out`:** только для «не input»; после остальных (`CancellationToken` — всё равно последний)
 - **`ref` в managed-коде:** редко; не для «оптимизации передачи struct»
 - Неочевидный `bool`-аргумент → `enum` или options/`record`; режим работы → два метода с честными именами
-- Nетривиальная lambda → named method
+- Нетривиальная lambda → named method
 - `CancellationToken cancellationToken` — **последний** (`codestyle.mdc`)
 - Invalid **command** на границе — inline `if` + typed exception (`exceptions.mdc`); query — `bool`/`TryX`, не throw на UX-gate
 

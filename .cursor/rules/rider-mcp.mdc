@@ -1,22 +1,18 @@
 ---
 description: WebGL-Template — C# rename + format (Rider MCP)
-globs: Template-UnityProject/Assets/_Project/Scripts/**/*.cs
+globs: ButchersGames/Assets/_Project/Scripts/**/*.cs
 alwaysApply: false
 ---
 
 # Rider MCP
 
-Портативный kit. Rename: MCP-сервер `user-rider-native-rename` (`mcp.json`: `rider-native-rename`) — tools `rider_native_rename`, `rider_native_status`. Format: MCP-сервер `user-rider` (`mcp.json`: `rider`) — **в этом rule только** `reformat_file`; остальные tools JetBrains Rider MCP вне scope.
+Rename **и** Format — один MCP-сервер `user-rider` (официальный JetBrains Rider MCP): rename — `rename_refactoring`; format — **в этом rule только** `reformat_file`. Остальные tools сервера `user-rider` вне scope этого файла. `user-rider-native-rename` / `rider_native_rename` для rename **не** использовать.
 
-Binding к проекту: global `~/.cursor/mcp.json` → `IJ_MCP_SERVER_PROJECT_PATH: "${workspaceFolder}"`. Rider и Cursor должны работать с одним корнем проекта (где `.sln`).
-
-Сцена / prefab / console — **не здесь**; см. `unity-mcp.mdc`.
+Перед вызовом непривычного тула — схема (`GetDynamicTools`, namespace `user-rider`). Сцена / prefab / console — **не здесь**; см. `unity-mcp.mdc`. Стиль — `codestyle.mdc`.
 
 ## Rename
 
-Переименование C#-символов (тип, метод, свойство, поле, параметр и т.д.) — **только** через `rider_native_rename` на `user-rider-native-rename`.
-
-**Не использовать** для rename: `rename_refactoring` и прочие rename-tools на `user-rider`.
+Переименование C#-символов (тип, метод, свойство, поле, параметр и т.д.) — **только** через `rename_refactoring` на `user-rider`.
 
 **Запрещено** для rename:
 
@@ -24,26 +20,26 @@ Binding к проекту: global `~/.cursor/mcp.json` → `IJ_MCP_SERVER_PROJEC
 - переписывание файла с новым именем типа
 - `git mv` / ручное переименование `.cs` вместо Rider, если файл связан с типом
 
-До вызова: позиция символа — **1-based** `line` и `column`.
-
 | Аргумент | Значение |
 |---|---|
-| `project_path` | корень Unity-проекта, где лежит `.sln` (обычно `${workspaceFolder}`) |
-| `file_path` | абсолютный путь к `.cs` |
-| `line` / `column` | позиция идентификатора |
-| `new_name` | новое имя |
+| `filePath` | путь к `.cs`, где объявлен символ (абсолютный или относительно solution) |
+| `symbolName` | имя символа: `TypeName`, `MemberName` или `TypeName.MemberName` |
+| `newName` | новое имя |
+| `preview` | `true` — только анализ, файлы не меняются |
 
-Опционально: `search_in_comments`, `search_text_occurrences`.
+Если схема тула требует `rootFolder` — передавать корень Unity-проекта, где лежит `.sln`.
 
-Перед rename при сомнении — `rider_native_status` с тем же `project_path`.
+При сомнении в целевом символе / на публичном Api — сначала вызвать с `preview: true` и свериться с `affects`, затем вызвать без `preview` для применения. `preview` **не** запускает conflict-анализ — чистый preview всё равно может дать `ok=false` на apply.
+
+`ok=false` с `conflicts` — rename отклонён, файлы не тронуты; скорректировать `newName`, не обходить точечным diff. `error.kind` (`new_name_invalid`, `no_renamable_symbol`, `new_name_matches_current`, `symbol_invalidated`, …) — типовые причины, не гадать.
 
 Rider запущен, solution открыт. Bridge недоступен → **остановиться и сказать пользователю**; не подменять rename точечным diff.
 
-После успеха Rider обновляет ссылки сам. Ручной проход по references — только при ошибке / частичном результате tool.
+После успеха Rider обновляет ссылки сам (`touched` в ответе). Ручной проход по references — только при ошибке / частичном результате tool.
 
 ## Format
 
-После **каждого** изменения `.cs` (создание или правка) — `reformat_file` на `user-rider`. При нескольких файлах — `reformat_file` **после каждого** файла.
+По завершении правок `.cs` в задаче (создание или правка) — **один** вызов `reformat_file` со списком `files` всех затронутых файлов, после последней правки и до отчёта. Порядок после C#: format → `refresh_unity` → `read_console` (`unity-mcp.mdc`).
 
 Пути в `files` — **относительно корня solution**, не абсолютные.
 
@@ -56,13 +52,13 @@ Rider / `reformat_file` недоступен → **остановиться и �
 | Область | Инструмент |
 |---|---|
 | `.unity`, `.prefab`, `.asset`, `.asmdef` | Unity MCP (`unity-mcp.mdc`) или точечный diff по задаче |
-| Новый файл с новым типом (не rename) | создать файл; сразу `reformat_file` |
-| `.cursor/prompts/`, конфиги вне `Assets/` | Rider не требуется |
+| Новый файл с новым типом (не rename) | создать файл; `reformat_file` один раз в конце задачи |
+| Конфиги вне `Assets/` | Rider не требуется |
 
 ## Разделение
 
 | Задача | MCP |
 |---|---|
-| Rename C#-символов | **user-rider-native-rename** `rider_native_rename` |
+| Rename C#-символов | **user-rider** `rename_refactoring` |
 | Format C# | **user-rider** `reformat_file` |
 | Сцена, prefab, components, play mode, console | **Unity** (`unity-mcp.mdc`) |

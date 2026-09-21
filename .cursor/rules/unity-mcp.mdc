@@ -1,27 +1,25 @@
 ---
 description: WebGL-Template — Unity Editor, Unity MCP, scenes, prefabs
-globs: "{Template-UnityProject/Assets/_Project/Scripts/**/*.cs,Template-UnityProject/Assets/_Project/Scenes/**/*,Template-UnityProject/Assets/_Project/**/*.prefab}"
+globs: "{ButchersGames/Assets/_Project/Scripts/**/*.cs,**/*.unity,**/*.prefab}"
 alwaysApply: false
 ---
 
 # Unity MCP
 
-Проект: `Template-UnityProject/` (корень workspace — `WebGL-Template`). Скрипты: `Assets/_Project/Scripts/`. Сцены: `Assets/_Project/Scenes/` (Bootstrap, Core).
+Проект: `ButchersGames/`. Скрипты: `Assets/_Project/Scripts/`. Сцены: `Assets/_Project/Scenes/` (Bootstrap, Core).
 
-C# rename/format — `rider-mcp.mdc`. Архитектура — `architecture-core.mdc`.
-
-Server: `user-unityMCP`. Перед вызовом — schema tool (`GetDynamicTools`, namespace `user-unityMCP`); не угадывать аргументы.
+Server: namespace `user-unityMCP`. Перед вызовом непривычного тула — схема (`GetDynamicTools`, namespace `user-unityMCP`); не угадывать аргументы. C# rename/format — **не здесь**; см. `rider-mcp.mdc`. Архитектура — `architecture-core.mdc`.
 
 ## Обязательно через Unity MCP
 
-| Задача | Зачем MCP |
-|---|---|
-| Сцена (load/save/hierarchy/selection) | бинарный/YAML scene state |
-| GameObject / компоненты / свойства | Inspector-эквивалент |
-| Prefab create/edit/apply | не править `.prefab` «вслепую» |
-| Play mode / editor state | `manage_editor` |
-| Console после скриптов / domain reload | `read_console` |
-| Asset search (shader, prefab, и т.п.) | `manage_asset` |
+| Задача | Tool | Зачем MCP |
+|---|---|---|
+| Сцена (load/save/hierarchy/selection) | `manage_scene`, `find_gameobjects` | бинарный/YAML scene state |
+| GameObject / компоненты / свойства | `manage_gameobject`, `manage_components` | Inspector-эквивалент |
+| Prefab create/edit/apply | `manage_prefabs` | не править `.prefab` «вслепую» |
+| Play mode / editor state | `manage_editor` | контроль play mode |
+| Console после скриптов / domain reload | `read_console` | проверка compile errors |
+| Asset search (shader, prefab, и т.п.) | `manage_asset` | поиск ассетов |
 
 ## Запрещено
 
@@ -32,25 +30,27 @@ Server: `user-unityMCP`. Перед вызовом — schema tool (`GetDynamicT
 
 ## Must после C#
 
-1. Дождаться конца компиляции (`editor_state` / `isCompiling`)
-2. `read_console` — Errors; исправить до шага, зависящего от новых типов
-3. Новые компоненты / play mode — только после чистой компиляции
+1. `reformat_file` (Rider) — один вызов за задачу, `rider-mcp.mdc`; format меняет файлы и может вызвать повторную компиляцию, поэтому он **до** refresh
+2. `refresh_unity` (`compile`, `wait_for_ready`) — дождаться конца компиляции (`isCompiling` в состоянии editor)
+3. `read_console` — Errors; исправить до шага, зависящего от новых типов
+4. При необходимости — EditMode-тесты: `run_tests` (при открытом Editor) или `unity test` (только при закрытом)
+5. Новые компоненты / play mode — только после чистой компиляции
 
 ## Инстанс
 
-Несколько Unity → `set_active_instance` с точным `Name@hash` (из `mcpforunity://instances`) до остальных вызовов.
+Несколько Unity → `set_active_instance` с точным `Name@hash` до остальных вызовов.
 
 ## Последовательности
 
-**A. Осмотреть сцену** — `manage_scene` (active/load) → hierarchy (`page_size` ~50, paging) → find target → `get_components` с `include_properties=false` сначала.
+**A. Осмотреть сцену** — `manage_scene` (active/load) → hierarchy (`page_size` ~50, paging) → find target → `manage_components` с `include_properties=false` сначала.
 
 **B. Изменить объект** — find target → `manage_gameobject` / `manage_components` → при пачке `batch_execute` → save сцены при необходимости → `read_console`.
 
 **C. Prefab** — `manage_prefabs` / `manage_asset` → правки через MCP (не YAML) → apply/save → `read_console`.
 
-**D. После C#** — `isCompiling == false` → `read_console` Errors → затем компоненты / play.
+**D. После C#** — `reformat_file` → `refresh_unity` (`isCompiling == false`) → `read_console` Errors → при необходимости тесты → затем компоненты / play.
 
-**E. Play mode** — `manage_editor` enter → проверка → exit перед структурными правками сцены/ассетов → `read_console`.
+**E. Play mode** — `manage_editor` enter → проверка → exit перед структурными правками сцены/ассетов (если требует editor) → `read_console`.
 
 ## Payload / токены
 
@@ -69,8 +69,34 @@ Server: `user-unityMCP`. Перед вызовом — schema tool (`GetDynamicT
 | Prefab / assets | `manage_prefabs`, `manage_asset` |
 | Editor / play | `manage_editor` |
 | Console | `read_console` |
+| Компиляция | `refresh_unity` |
+| Тесты / билд | `run_tests`, `manage_build` |
 | Пачки | `batch_execute` |
 | Инстанс | `set_active_instance` |
+| Произвольный C# | `execute_code` |
+
+Перед вызовом непривычного тула — свериться со схемой, не угадывать аргументы.
+
+## Typed tools vs `execute_code` / `unity command eval`
+
+В проекте два независимых моста к Editor: **Unity MCP** (`user-unityMCP`, описан выше; включает `execute_code`) и **Unity CLI + `com.unity.pipeline`** (пакет `0.7.0-exp.1` в `ButchersGames/Packages/manifest.json`; `unity command eval` — произвольный C# в живом Editor, порт 7800 по умолчанию). Транспорты разные и не конфликтуют, но выбор между ними — «какой инструмент подходит задаче», а не «какой подключён». Перед первым использованием CLI в сессии — `unity status` (состояние `ready`, нужный проект); `unity pipeline list` — если Editor не отвечает (Safe Mode из-за ошибок компиляции).
+
+**По умолчанию — типизированный тул.** Любая задача, которая укладывается в существующий `manage_*` / `find_gameobjects` / `read_console` / `batch_execute`, — только через него: у тула фиксированная схема параметров, вызов ревьюабелен (`user-approval-mode.mdc`), тул не может сделать больше, чем описано в схеме.
+
+**`execute_code` / `unity command eval` — точечно, когда типизированного тула нет:**
+
+1. Специфичный API движка / внутреннее состояние без готового `manage_*`-тула (пример: `SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.*` — `perfmeter.mdc`)
+2. Read-only диагностика, для которой нет своего тула
+3. Разовый скрипт для узкой задачи, явно не покрываемой существующими тулами
+4. Официальные `unity:*` skills, жёстко зашитые на `eval` — там выбора нет
+
+**`unity test` / `unity build` — только при закрытом Editor.** При открытом Editor на этом проекте они падают: `already open in a running Editor`, код выхода 6. При открытом Editor — `run_tests` и `manage_build`. `unity run --command` переиспользует уже открытый Editor и оставляет его работать.
+
+**Без отдельного проговаривания (read-only):** MCP — `read_console`, чтение сцены и hierarchy, `find_gameobjects`, ресурсы редактора; CLI — `unity status`, `unity logs`, `unity doctor`, `unity pipeline list`, `unity command` без имени (листинг).
+
+**Не использовать `execute_code` / `eval`, если то же самое покрывает typed-тул.** Мутирующий `execute_code` — произвольный код с полным доступом к `UnityEditor.*`/`UnityEngine.*` без ограничений схемы; даже когда approval пропускает такой вызов без вопроса, проговорить его отдельно (`user-approval-mode.mdc`) — по коду заранее не видно, что именно он сделает.
+
+Если `unity status` не видит Editor, хотя он открыт, — не подменять это скрытым обходом (например, отдельным headless-Editor): сказать пользователю и уточнить (возможные причины: Safe Mode, песочница агента).
 
 ## Если Unity MCP недоступен
 
@@ -84,6 +110,6 @@ Server: `user-unityMCP`. Перед вызовом — schema tool (`GetDynamicT
 
 | Задача | MCP |
 |---|---|
-| Сцена, prefab, components, play mode, console | **Unity** |
-| Rename C# | **rider-native-rename** |
-| Format C# | **rider** `reformat_file` |
+| Сцена, prefab, components, play mode, console | **Unity** (`user-unityMCP`) |
+| Rename C# | **user-rider** `rename_refactoring` |
+| Format C# | **user-rider** `reformat_file` |

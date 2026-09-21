@@ -7,24 +7,26 @@ alwaysApply: true
 
 WebGL-Template only. **Always:** approval, architecture-core, principles, review, этот index.
 
+Файлы с `globs` подгружаются, когда открыт подходящий файл. Автозагрузка при **создании** нового `.cs` не гарантирована — тогда прочитай нужные файлы перед правкой. Остальные (planning, refactor, perfmeter) — по триггеру.
+
 | Rule | Когда |
 |---|---|
-| `user-approval-mode.mdc` | Всегда (мутации) |
+| `user-approval-mode.mdc` | Всегда (объём правок, report-only) |
 | `architecture-core.mdc` | Всегда (слои, decision tree) |
-| `architecture-reference.mdc` | Globs: `Template-UnityProject/Assets/_Project/Scripts/**/*.cs` |
+| `architecture-reference.mdc` | Globs: `ButchersGames/Assets/_Project/Scripts/**/*.cs`; вопросы про слои/DI/эталон фичи |
 | `codestyle.mdc` | Globs: Scripts `.cs` |
 | `exceptions.mdc` | Globs: Scripts `.cs` |
-| `rider-mcp.mdc` | Globs: Scripts `.cs` |
+| `rider-mcp.mdc` | Globs: Scripts `.cs` (rename/format) |
 | `class-design.mdc` | Globs: Scripts `.cs` |
 | `method-design.mdc` | Globs: Scripts `.cs` |
 | `variable-design.mdc` | Globs: Scripts `.cs` |
-| `unity-mcp.mdc` | Globs: Scripts, Scenes, prefab |
-| `planning.mdc` | Триггер: план / grill / Plan mode |
+| `unity-mcp.mdc` | Globs: Scripts, сцена, prefab |
+| `planning.mdc` | Триггер: `grill me` / «план» / Plan mode |
 | `review.mdc` | Always (процедура); триггер Review / ревью для применения |
 | `refactor.mdc` | Не always; по триггеру — **Read** (см. ниже) |
 | `perfmeter.mdc` | Триггер: Perf / PerfMeter / «перф» |
 
-Без открытого `.cs`: `@architecture-reference` или открыть файл в Scripts.
+Без открытого `.cs`: прочитать `architecture-reference.mdc` или открыть файл в Scripts.
 
 ## Refactor (stub)
 

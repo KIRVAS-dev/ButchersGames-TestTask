@@ -1,6 +1,6 @@
 ---
 description: WebGL-Template — variable design (init, scope, binding)
-globs: Template-UnityProject/Assets/_Project/Scripts/**/*.cs
+globs: ButchersGames/Assets/_Project/Scripts/**/*.cs
 alwaysApply: false
 ---
 

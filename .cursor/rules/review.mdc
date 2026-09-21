@@ -11,12 +11,12 @@ Rules: `architecture-core.mdc`, `architecture-reference.mdc`, `principles.mdc`, 
 
 ## Scope
 
-- По умолчанию — проект (`Template-UnityProject/Assets/_Project/Scripts/` по слоям)
+- По умолчанию — весь проект (`ButchersGames/Assets/_Project/Scripts/` по слоям)
 - Пользователь задал scope — ревью **только в нём**; не расширять самостоятельно
 
 ## Процедура
 
-1. Scope → файлы **целиком** (не только диф)
+1. Определить scope. Для коммита/диапазона — `git log` / `git show`. Файлы в scope — **целиком**, не только диф.
 2. Проверки по категориям:
    - **Архитектура** — `architecture-core.mdc`, детали — `architecture-reference.mdc`
    - **Principles** — `principles.mdc`
@@ -24,9 +24,10 @@ Rules: `architecture-core.mdc`, `architecture-reference.mdc`, `principles.mdc`, 
    - **Method design** — одна задача, имена, параметры, return vs void — `method-design.mdc`
    - **Variable design** — init, scope, binding, одна цель — `variable-design.mdc`
    - **Кодстайл** — `codestyle.mdc`
-   - **Исключения** — `exceptions.mdc`; soft-checks — `architecture-core.mdc`
+   - **Исключения / Guard / Validate** — `exceptions.mdc`; soft-checks — `architecture-core.mdc`
    - **Баги и логика:** null, async/`CancellationToken`, утечки подписок/tween, edge cases
-   - **Hot path / Unity 6 API** — `principles.mdc`, Context в `architecture-core.mdc`
+   - **Оптимизация (короткий чеклист):** аллокации в hot path, `GetComponent`/`Find` в частом коде, лишние обновления — согласовано с `principles.mdc`; сомнение в API/perf → docs/Context7, не гадать. Полный runtime-замер — `perfmeter.mdc`, по триггеру `Perf`
+   - **C# / engine API:** актуальные под Unity 6.5, без Deprecated
 3. **Только отчёт**; правки — по отдельному ok
 
 ## Findings

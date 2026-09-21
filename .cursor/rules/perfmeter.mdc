@@ -7,14 +7,14 @@ alwaysApply: false
 
 Триггер (явный список, без fuzzy): `Perf` / `PerfMeter` / «перф» — в начале сообщения или отдельной строкой. Вне триггера — правило не применять.
 
-Kit для **SGG PerfMeter** (`com.sungeargames.perfmeter`). Платформа, сцены, стек, целевой FPS — из Context / Stack `architecture-core.mdc`. Unity Editor bridge — `unity-mcp.mdc`. Index — `rules-index.mdc`.
+Kit для **SGG PerfMeter** (`com.sungeargames.perfmeter`). Платформа, сцены, стек, целевой FPS — `architecture-core.mdc` / `architecture-reference.mdc`. Unity Editor bridge — `unity-mcp.mdc`.
 
 Интервью / grill — **не** здесь: при необходимости подготовка плана — через `planning.mdc` (`grill me`), не дублировать.
 
 ## Доступ
 
 - Отдельного MCP-сервера у PerfMeter **нет**
-- Основной путь данных: **Unity MCP** → `execute_code` → `SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.*`
+- Основной путь данных: **Unity MCP** (`user-unityMCP`) → `execute_code` → `SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.*`
 - Zero-code settings: `Assets/Resources/SGG.PerfMeter/perfmeter-settings.json`
 - Setup UI: **SGG → Perfmeter → Setup** (тумблеры **Setup → Work mode**: Enabled / Auto Start / Collect Metrics / Show Overlay)
 
@@ -44,9 +44,9 @@ return SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.SessionExport("{\"format\":
 
 Для этого проекта:
 
-- **Дефолт замера:** Editor Play Mode на целевой gameplay-сцене из `architecture-core.mdc` + Unity MCP
-- Editor / Dev Build → counts и **относительные** сравнения (A/B); абсолютные мс для целевой платформы — **с оговоркой**
-- Итоговый вердикт для ship/fix подтверждать на **целевом player** (из `architecture-core.mdc`), когда цифры решают
+- **Дефолт замера:** Editor Play Mode на целевой gameplay-сцене (Core, `architecture-core.mdc`) + Unity MCP
+- Editor / Dev Build → counts и **относительные** сравнения (A/B); абсолютные мс для целевой платформы (WebGL) — **с оговоркой**
+- Итоговый вердикт для ship/fix подтверждать на **целевом player** (WebGL build), когда цифры решают
 
 ## Гипотеза → preset (без полного grill)
 
@@ -64,12 +64,12 @@ return SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.SessionExport("{\"format\":
 
 ## Pre-flight
 
-1. Unity MCP подключён (`unity-mcp.mdc`); Play Mode на целевой gameplay-сцене из `architecture-core.mdc`
+1. Unity MCP подключён (`unity-mcp.mdc`); Play Mode на целевой gameplay-сцене (Core)
 2. `SetupStatus` — Frame Timing Stats on; JSON loaded если zero-code; URP Render Graph feature на **активном** renderer (после правок URP — перепроверить)
 3. **Нормализация baseline:** collection **Background**; overlay **hidden** (или Minimal только если нужен human glance); FMOD Debug / прочий debug UI off — они раздувают Draw Calls
 4. Editor **focused**, не paused; иначе Frame Timing может быть `NotCollected`
 5. `OverdrawDiagnostic` / heatmap — только короткие diagnostic-окна, не baseline
-6. Среда в отчёте явно: Editor ≠ целевой player ≠ device (имена платформ — из `architecture-core.mdc`)
+6. Среда в отчёте явно: Editor ≠ целевой player (WebGL) ≠ device
 7. Пакет не установлен / handlers не компилируются → остановиться и сказать; не парсить скриншоты overlay вместо JSON
 
 ## Процедура (Editor + MCP — основной путь)
@@ -88,23 +88,21 @@ return SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.SessionExport("{\"format\":
 
 Только по явной фразе: «ручной замер на устройстве» / «кнопка» / «брекет в билде» (и аналоги). Обычный `Perf` этот путь **не** стартует.
 
-Нужен, когда MCP в рантайме нет (Development / целевой player) и окно замера задаёт пользователь тапом START/STOP.
+Нужен, когда MCP в рантайме нет (Development / целевой WebGL player) и окно замера задаёт пользователь тапом START/STOP.
 
 **Источник кода (не выдумывать):** `.cursor/prompts/perfmeter/PerfMarkDebugButton.cs.txt`  
 Шаблон вне `Assets/` — Unity его не импортирует. В билде кнопки нет, пока копию не положили в проект и не собрали player.
 
 ### Цикл
 
-1. Скопировать шаблон → `Assets/Debug/PerfMark/PerfMarkDebugButton.cs` (папку создать при необходимости). Код не генерировать с нуля.
+1. Скопировать шаблон → `ButchersGames/Assets/Debug/PerfMark/PerfMarkDebugButton.cs` (папку создать при необходимости). Код не генерировать с нуля.
 2. Дождаться компиляции; `read_console` — без Errors (`unity-mcp.mdc`).
-3. Собрать **Development Build** целевой платформы (из `architecture-core.mdc`). Обычный release: кнопка и glue под `#if DEVELOPMENT_BUILD || UNITY_EDITOR || PERFMETER_RELEASE` в ноль; для сознательного release-профайла — define `PERFMETER_RELEASE` до билда.
-4. Установить/запустить player. Скрипт сам создаёт overlay-кнопку (`RuntimeInitializeOnLoadMethod`) — сцену/префаб не трогать.
+3. Собрать **Development Build** WebGL. Обычный release: кнопка и glue под `#if DEVELOPMENT_BUILD || UNITY_EDITOR || PERFMETER_RELEASE` в ноль; для сознательного release-профайла — define `PERFMETER_RELEASE` до билда.
+4. Запустить player. Скрипт сам создаёт overlay-кнопку (`RuntimeInitializeOnLoadMethod`) — сцену/префаб не трогать.
 5. Пользователь: START → играет отрезок → STOP. В лог: `[PERFMARK]` (+ `[TEMP:perfmark]`). JSON: `Application.persistentDataPath/PerfMarks/session_n.json` (точный `path` — в STOP-маркере).
-6. Забрать экспорт:
-   - **Android / device с adb:** `adb pull` каталога из STOP-маркера (типично под `Android/data/<package_id>/files/…`)
-   - **WebGL / без adb:** путь платформенный; спросить у пользователя файл/способ выгрузки, не предполагать adb
+6. Забрать экспорт: WebGL — путь платформенный (browser storage); спросить у пользователя файл/способ выгрузки, не предполагать adb.
 7. Разобрать JSON + маркеры; отчёт как ниже. Canvas кнопки раздувает DC — не смешивать с «чистым» baseline без оговорки.
-8. **Cleanup (обязательно):** удалить `Assets/Debug/PerfMark/PerfMarkDebugButton.cs` (+ `.meta` и пустую папку); grep по репо — `[TEMP:perfmark]` и `PerfMarkDebugButton` не остались. Шаблон в `.cursor/prompts/` **не** удалять.
+8. **Cleanup (обязательно):** удалить `ButchersGames/Assets/Debug/PerfMark/PerfMarkDebugButton.cs` (+ `.meta` и пустую папку); grep по репо — `[TEMP:perfmark]` и `PerfMarkDebugButton` не остались. Шаблон в `.cursor/prompts/` **не** удалять.
 
 Кнопку в `Assets/` между замерами не держать. Editor+MCP baseline — без кнопки.
 
@@ -128,7 +126,7 @@ return SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.SessionExport("{\"format\":
 
 ## Формат отчёта
 
-- Вердикт **первым**: в бюджете / риски / вне бюджета (целевой FPS / платформа — из запроса или `architecture-core.mdc`)
+- Вердикт **первым**: в бюджете / риски / вне бюджета (целевой FPS / WebGL — из запроса или контекста проекта)
 - Среда: Editor / целевой player / device, сцена, collection mode, overlay on/off, focused
 - Таблица: FPS, 1%/0.1% low, bottleneck, CPU/GPU ms, DC, SetPass, SrpInst, memory
 - Findings: `Severity (Blocker / Major / Minor / Nit)` — область/метрика — суть — обоснование — рекомендация
@@ -151,7 +149,7 @@ return SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.SessionExport("{\"format\":
 ```
 Perf
 
-Сцена: <gameplay из architecture-core.mdc>. Play Mode. Цель: <FPS / платформа из architecture-core.mdc>.
+Сцена: Core (gameplay). Play Mode. Цель: целевой FPS / WebGL.
 
 Сними метрики SGG PerfMeter через Unity MCP (Background, overlay off),
 прогрей ≥2 с, прочитай metrics/status/device/alerts.

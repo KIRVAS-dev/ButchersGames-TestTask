@@ -1,6 +1,6 @@
 ---
 description: WebGL-Template — class design (ADT, encapsulation, composition)
-globs: Template-UnityProject/Assets/_Project/Scripts/**/*.cs
+globs: ButchersGames/Assets/_Project/Scripts/**/*.cs
 alwaysApply: false
 ---
 
