@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.Obstacle;
@@ -17,9 +18,9 @@ namespace ViewComponents.Level
           IWealthPointsModifierRegistry,
           ITrackProvider
     {
-        public IReadOnlyCollection<IObstacle> Obstacles { get; private set; }
-        public IReadOnlyCollection<ILaneBarrier> Barriers { get; private set; }
-        public IReadOnlyCollection<IWealthPointsModifier> Modifiers { get; private set; }
+        public IReadOnlyCollection<IObstacle> Obstacles { get; private set; } = Array.Empty<IObstacle>();
+        public IReadOnlyCollection<ILaneBarrier> Barriers { get; private set; } = Array.Empty<ILaneBarrier>();
+        public IReadOnlyCollection<IWealthPointsModifier> Modifiers { get; private set; } = Array.Empty<IWealthPointsModifier>();
         public float StartCoordinate { get; private set; }
         public float FinishCoordinate { get; private set; }
         public float RunLength => FinishCoordinate - StartCoordinate;

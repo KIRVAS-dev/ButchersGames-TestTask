@@ -567,7 +567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a13ac66523199254a86e194f2632c9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Level.LevelView
-  _levelListConfig: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
+  _config: {fileID: 11400000, guid: 277b95849e3cf5248829740d67ce0b5b, type: 2}
 --- !u!1 &614447803
 GameObject:
   m_ObjectHideFlags: 0
