@@ -4,11 +4,12 @@ using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthPointsModifier;
+using Core.Lifecycle;
 using R3;
 
 namespace ViewComponents.CharacterAnimation
 {
-    public sealed class CharacterAnimationPresenter
+    public sealed class CharacterAnimationPresenter : ISubscriptionLifecycle
     {
         private readonly ICharacterAnimationView _view;
         private readonly ILevelLoader _levelLoader;
@@ -32,7 +33,7 @@ namespace ViewComponents.CharacterAnimation
             _runnerMovementModel = runnerMovementModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _levelLoader.LevelLoaded += OnLevelLoaded;
 
@@ -42,7 +43,7 @@ namespace ViewComponents.CharacterAnimation
                .Subscribe(_view.Play);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _levelLoader.LevelLoaded -= OnLevelLoaded;
 

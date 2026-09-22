@@ -1,11 +1,12 @@
 using System;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.RunnerMovement;
+using Core.Lifecycle;
 using R3;
 
 namespace ViewComponents.RunnerMovement
 {
-    public sealed class RunnerMovementPresenter
+    public sealed class RunnerMovementPresenter : ISubscriptionLifecycle
     {
         private const int SkipInitialValue = 1;
 
@@ -26,7 +27,7 @@ namespace ViewComponents.RunnerMovement
             _model = model;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _levelLoader.LevelLoaded += OnLevelLoaded;
 
@@ -34,7 +35,7 @@ namespace ViewComponents.RunnerMovement
             _lateralOffsetSubscription = _model.LateralOffset.Skip(SkipInitialValue).Subscribe(_view.SetLateralOffset);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _levelLoader.LevelLoaded -= OnLevelLoaded;
 

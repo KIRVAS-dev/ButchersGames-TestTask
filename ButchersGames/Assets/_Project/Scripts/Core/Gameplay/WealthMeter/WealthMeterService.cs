@@ -1,9 +1,12 @@
 using System;
 using Core.Gameplay.LevelProgression;
+using Core.Lifecycle;
 
 namespace Core.Gameplay.WealthMeter
 {
-    public sealed class WealthMeterService : IWealthMeterService
+    public sealed class WealthMeterService
+        : IWealthMeterService,
+          ISubscriptionLifecycle
     {
         private readonly ILevelLoader _levelLoader;
         private readonly IWealthMeterSettings _settings;
@@ -26,12 +29,12 @@ namespace Core.Gameplay.WealthMeter
         int IWealthMeterService.Value => _model.WealthPoints.Value;
         WealthStage IWealthMeterService.Stage => _model.Stage.Value;
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _levelLoader.LevelLoaded += OnLevelLoaded;
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _levelLoader.LevelLoaded -= OnLevelLoaded;
         }

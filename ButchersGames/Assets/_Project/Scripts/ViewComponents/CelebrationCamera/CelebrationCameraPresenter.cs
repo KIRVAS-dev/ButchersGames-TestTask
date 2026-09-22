@@ -1,10 +1,11 @@
 using System;
 using Core.Gameplay.GameFlow;
+using Core.Lifecycle;
 using R3;
 
 namespace ViewComponents.CelebrationCamera
 {
-    public sealed class CelebrationCameraPresenter
+    public sealed class CelebrationCameraPresenter : ISubscriptionLifecycle
     {
         private readonly ICelebrationCameraView _view;
         private readonly GameStateModel _gameStateModel;
@@ -17,12 +18,12 @@ namespace ViewComponents.CelebrationCamera
             _gameStateModel = gameStateModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _stateSubscription?.Dispose();
         }

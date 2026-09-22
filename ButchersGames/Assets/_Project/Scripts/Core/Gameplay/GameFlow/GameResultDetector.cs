@@ -2,11 +2,12 @@ using System;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 using R3;
 
 namespace Core.Gameplay.GameFlow
 {
-    public sealed class GameResultDetector
+    public sealed class GameResultDetector : ISubscriptionLifecycle
     {
         private readonly IGameFlowService _gameFlowService;
         private readonly IGameStateMachine _gameStateMachine;
@@ -30,14 +31,15 @@ namespace Core.Gameplay.GameFlow
             _runnerMovementModel = runnerMovementModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _wealthMeter.Depleted += OnWealthDepleted;
+
             _runnerCurrentCoordinateSubscription =
                 _runnerMovementModel.CurrentRunnerCoordinate.Subscribe(OnCurrentRunnerCoordinateChanged);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _wealthMeter.Depleted -= OnWealthDepleted;
             _runnerCurrentCoordinateSubscription?.Dispose();

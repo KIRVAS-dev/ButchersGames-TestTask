@@ -104,7 +104,7 @@ URP / post-effects? → Rendering
 
 ```
 Bootstrap (ProjectScope) → additive load Core.unity
-  → CoreScope → CoreEntryPoint.Start() (InputHandlers + сервисы-наблюдатели без потребителя через ctor)
+  → CoreScope → CoreEntryPoint.Start() (ISubscriptionLifecycle.Start → PrepareGame)
   → gameplay (GameLoop.Tick: IInputTickable → IGameplayTickable → IPresentationTickable каждый кадр) → CoreEntryPoint.Dispose()
 ```
 

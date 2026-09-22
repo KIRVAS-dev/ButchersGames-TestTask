@@ -1,8 +1,9 @@
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 
 namespace UI.FloatingText
 {
-    public sealed class FloatingTextPresenter
+    public sealed class FloatingTextPresenter : ISubscriptionLifecycle
     {
         private readonly IFloatingTextView _view;
         private readonly IWealthMeterService _wealthMeterService;
@@ -13,13 +14,13 @@ namespace UI.FloatingText
             _wealthMeterService = wealthMeterService;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _wealthMeterService.Increased += OnMoneyIncreased;
             _wealthMeterService.Decreased += OnMoneyDecreased;
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _wealthMeterService.Increased -= OnMoneyIncreased;
             _wealthMeterService.Decreased -= OnMoneyDecreased;

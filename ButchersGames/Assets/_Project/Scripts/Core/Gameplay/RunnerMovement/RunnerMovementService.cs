@@ -3,13 +3,15 @@ using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.Track;
+using Core.Lifecycle;
 using Core.Loop;
 
 namespace Core.Gameplay.RunnerMovement
 {
     public sealed class RunnerMovementService
         : IRunnerMovementService,
-          IGameplayTickable
+          IGameplayTickable,
+          ISubscriptionLifecycle
     {
         private readonly ILevelLoader _levelLoader;
         private readonly IGameStateMachine _gameStateMachine;
@@ -45,12 +47,12 @@ namespace Core.Gameplay.RunnerMovement
             _simulator.Tick(deltaTime, _trackProvider.FinishCoordinate);
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _levelLoader.LevelLoaded += OnLevelLoaded;
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _levelLoader.LevelLoaded -= OnLevelLoaded;
 
