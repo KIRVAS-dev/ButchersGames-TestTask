@@ -16,8 +16,8 @@ namespace ViewComponents.CelebrationCamera
         private const int InfiniteLoopCount = -1;
 
         [SerializeField] private CelebrationCameraConfig _config;
-        [SerializeField] private CinemachineFollow _follow;
-        [SerializeField] private Transform _target;
+        [SerializeField] private CinemachineFollow _cinemachineFollow;
+        [SerializeField] private Transform _orbitPivot;
 
         private Tween _motion;
         private Vector3 _restPosition;
@@ -46,7 +46,7 @@ namespace ViewComponents.CelebrationCamera
             float leftArc = LeftArcSign * _config.ArcDistance;
             Sequence intro = CreateLeg(0f, leftArc);
             intro.OnComplete(BeginLeftRight);
-            intro.SetLink(_follow.gameObject);
+            intro.SetLink(_cinemachineFollow.gameObject);
             _motion = intro;
             intro.Play();
         }
@@ -68,7 +68,7 @@ namespace ViewComponents.CelebrationCamera
 
             Sequence returnLeg = CreateLeg(arc, 0f);
             returnLeg.OnComplete(FinishReturn);
-            returnLeg.SetLink(_follow.gameObject);
+            returnLeg.SetLink(_cinemachineFollow.gameObject);
             _motion = returnLeg;
             returnLeg.Play();
         }
@@ -76,15 +76,15 @@ namespace ViewComponents.CelebrationCamera
         void ICelebrationCameraView.Cancel()
         {
             KillMotion();
-            _follow.transform.SetPositionAndRotation(_restPosition, _restRotation);
+            _cinemachineFollow.transform.SetPositionAndRotation(_restPosition, _restRotation);
             _arc = 0f;
             EnableFollow();
         }
 
         private void RememberRestPose()
         {
-            _restPosition = _follow.transform.position;
-            _restRotation = _follow.transform.rotation;
+            _restPosition = _cinemachineFollow.transform.position;
+            _restRotation = _cinemachineFollow.transform.rotation;
             _radius = HorizontalDistance();
         }
 
@@ -98,7 +98,7 @@ namespace ViewComponents.CelebrationCamera
             cycle.Append(CreateLeg(leftArc, rightArc));
             cycle.Append(CreateLeg(rightArc, leftArc));
             cycle.SetLoops(InfiniteLoopCount);
-            cycle.SetLink(_follow.gameObject);
+            cycle.SetLink(_cinemachineFollow.gameObject);
             _motion = cycle;
             cycle.Play();
         }
@@ -126,20 +126,20 @@ namespace ViewComponents.CelebrationCamera
         {
             float deltaDegrees = (arc - _arc) / _radius * Mathf.Rad2Deg;
             _arc = arc;
-            _follow.transform.RotateAround(_target.position, Vector3.up, deltaDegrees);
+            _cinemachineFollow.transform.RotateAround(_orbitPivot.position, Vector3.up, deltaDegrees);
         }
 
         private float HorizontalDistance()
         {
-            Vector3 offset = _follow.transform.position - _target.position;
+            Vector3 offset = _cinemachineFollow.transform.position - _orbitPivot.position;
             offset.y = 0f;
 
             return offset.magnitude;
         }
 
-        private void EnableFollow() => _follow.enabled = true;
+        private void EnableFollow() => _cinemachineFollow.enabled = true;
 
-        private void DisableFollow() => _follow.enabled = false;
+        private void DisableFollow() => _cinemachineFollow.enabled = false;
 
         private void KillMotion()
         {
@@ -150,8 +150,8 @@ namespace ViewComponents.CelebrationCamera
         private void Validate()
         {
             Guard.AgainstNull(_config, () => new MissingCelebrationCameraConfigException(nameof(_config), gameObject.name));
-            Guard.AgainstNull(_follow, () => new MissingCelebrationCameraFollowException(nameof(_follow), gameObject.name));
-            Guard.AgainstNull(_target, () => new MissingCelebrationCameraTargetException(nameof(_target), gameObject.name));
+            Guard.AgainstNull(_cinemachineFollow, () => new MissingCelebrationCameraFollowException(nameof(_cinemachineFollow), gameObject.name));
+            Guard.AgainstNull(_orbitPivot, () => new MissingCelebrationCameraTargetException(nameof(_orbitPivot), gameObject.name));
 
             _config.Validate();
 

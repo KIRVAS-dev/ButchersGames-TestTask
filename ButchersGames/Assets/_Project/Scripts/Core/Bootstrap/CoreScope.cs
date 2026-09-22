@@ -28,6 +28,7 @@ using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
+using ViewComponents.Audio;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
 
@@ -45,7 +46,12 @@ namespace Core.Bootstrap
             RegisterWealthMeter(builder);
             RegisterRunnerMovement(builder);
             RegisterLevel(builder);
-            RegisterCharacterPresentation(builder);
+            RegisterWealthPointsModifier(builder);
+            RegisterTransformRotators(builder);
+            RegisterCharacterAnimation(builder);
+            RegisterCharacterTurn(builder);
+            RegisterCelebrationCamera(builder);
+            RegisterStudioListenerFollow(builder);
             RegisterFeedbackPresentation(builder);
             RegisterUi(builder);
         }
@@ -122,18 +128,39 @@ namespace Core.Bootstrap
             builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
             builder.Register<LevelModel>(Lifetime.Singleton);
             builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
+        }
+
+        private static void RegisterWealthPointsModifier(IContainerBuilder builder)
+        {
             builder.Register<WealthPointsModifierService>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterTransformRotators(IContainerBuilder builder)
+        {
             builder.Register<TransformRotatorsTicker>(Lifetime.Singleton).As<IPresentationTickable>();
         }
 
-        private static void RegisterCharacterPresentation(IContainerBuilder builder)
+        private static void RegisterCharacterAnimation(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<CharacterAnimationView>().As<ICharacterAnimationView>();
             builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterCharacterTurn(IContainerBuilder builder)
+        {
             builder.RegisterComponentInHierarchy<CharacterTurnView>().As<ICharacterTurnView>().As<IPresentationTickable>();
             builder.Register<CharacterTurnPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterCelebrationCamera(IContainerBuilder builder)
+        {
             builder.RegisterComponentInHierarchy<CelebrationCameraView>().As<ICelebrationCameraView>();
             builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterStudioListenerFollow(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<StudioListenerCameraFollower>();
         }
 
         private static void RegisterFeedbackPresentation(IContainerBuilder builder)
