@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace ProjectDebug
 {
-    static class DebugHotkey
+    internal static class DebugHotkey
     {
         internal static bool WasPressedThisFrame(Key hotkey)
         {
