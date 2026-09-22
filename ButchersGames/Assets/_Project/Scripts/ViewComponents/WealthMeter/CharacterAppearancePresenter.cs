@@ -1,10 +1,11 @@
 using System;
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 using R3;
 
 namespace ViewComponents.WealthMeter
 {
-    public sealed class CharacterAppearancePresenter
+    public sealed class CharacterAppearancePresenter : ISubscriptionLifecycle
     {
         private readonly WealthMeterModel _model;
         private readonly ICharacterAppearanceView _view;
@@ -17,12 +18,12 @@ namespace ViewComponents.WealthMeter
             _view = view;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _stageSubscription = _model.Stage.Subscribe(_view.SetActiveStage);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _stageSubscription?.Dispose();
         }

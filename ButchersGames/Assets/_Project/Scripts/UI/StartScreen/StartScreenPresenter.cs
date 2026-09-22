@@ -2,11 +2,12 @@ using System;
 using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LevelProgression;
+using Core.Lifecycle;
 using R3;
 
 namespace UI.StartScreen
 {
-    public sealed class StartScreenPresenter
+    public sealed class StartScreenPresenter : ISubscriptionLifecycle
     {
         private readonly IStartScreenView _view;
         private readonly IGameFlowService _gameFlowService;
@@ -33,14 +34,14 @@ namespace UI.StartScreen
             _gameStateModel = gameStateModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _view.StartClicked += OnStartClicked;
             _levelLoader.LevelLoaded += OnLevelLoaded;
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _view.StartClicked -= OnStartClicked;
             _levelLoader.LevelLoaded -= OnLevelLoaded;

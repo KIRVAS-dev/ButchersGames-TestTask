@@ -4,12 +4,13 @@ using Core.Gameplay.LevelProgression;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 using R3;
 using UnityEngine;
 
 namespace UI.Hud
 {
-    public sealed class HudPresenter
+    public sealed class HudPresenter : ISubscriptionLifecycle
     {
         private const int SkipInitialValue = 1;
 
@@ -47,18 +48,20 @@ namespace UI.Hud
             _runnerMovementModel = runnerMovementModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _levelLoader.LevelLoaded += OnLevelLoaded;
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
             _valueSubscription = _wealthMeterModel.WealthPoints.Subscribe(OnValueChanged);
             _stageSubscription = _wealthMeterModel.Stage.Subscribe(_view.SetWealthStage);
 
-            _runProgressSubscription =
-                _runnerMovementModel.CurrentRunnerCoordinate.Skip(SkipInitialValue).Subscribe(OnCurrentCoordinateChanged);
+            _runProgressSubscription = _runnerMovementModel
+               .CurrentRunnerCoordinate
+               .Skip(SkipInitialValue)
+               .Subscribe(OnCurrentCoordinateChanged);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _levelLoader.LevelLoaded -= OnLevelLoaded;
             _stateSubscription?.Dispose();

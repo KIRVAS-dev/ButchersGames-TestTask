@@ -1,11 +1,12 @@
 using System;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.RunnerMovement;
+using Core.Lifecycle;
 using R3;
 
 namespace ViewComponents.CharacterTurn
 {
-    public sealed class CharacterTurnPresenter
+    public sealed class CharacterTurnPresenter : ISubscriptionLifecycle
     {
         private readonly ICharacterTurnView _view;
         private readonly GameStateModel _gameStateModel;
@@ -23,19 +24,15 @@ namespace ViewComponents.CharacterTurn
             _runnerMovementModel = runnerMovementModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _sideSubscription = Observable
-               .CombineLatest(
-                    _gameStateModel.State,
-                    _runnerMovementModel.State,
-                    _runnerMovementModel.LateralDirection,
-                    SideFor)
+               .CombineLatest(_gameStateModel.State, _runnerMovementModel.State, _runnerMovementModel.LateralDirection, SideFor)
                .DistinctUntilChanged()
                .Subscribe(_view.SetTurn);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _sideSubscription?.Dispose();
         }
@@ -45,7 +42,8 @@ namespace ViewComponents.CharacterTurn
             RunnerMovementState movementState,
             RunnerLateralDirection direction)
         {
-            if (gameState != GameState.Run || movementState != RunnerMovementState.Moving)
+            if (gameState != GameState.Run
+             || movementState != RunnerMovementState.Moving)
             {
                 return CharacterTurnSide.None;
             }

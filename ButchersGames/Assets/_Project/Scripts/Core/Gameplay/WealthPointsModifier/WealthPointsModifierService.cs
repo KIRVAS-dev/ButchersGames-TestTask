@@ -1,9 +1,10 @@
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 
 namespace Core.Gameplay.WealthPointsModifier
 {
-    public sealed class WealthPointsModifierService
+    public sealed class WealthPointsModifierService : ISubscriptionLifecycle
     {
         private readonly ILevelLoader _levelLoader;
         private readonly IWealthPointsModifierRegistry _registry;
@@ -19,12 +20,12 @@ namespace Core.Gameplay.WealthPointsModifier
             _wealthMeter = wealthMeter;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _levelLoader.LevelLoaded += OnLevelLoaded;
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _levelLoader.LevelLoaded -= OnLevelLoaded;
 

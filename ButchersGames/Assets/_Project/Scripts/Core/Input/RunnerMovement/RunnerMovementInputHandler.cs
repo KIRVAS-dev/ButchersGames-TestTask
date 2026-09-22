@@ -1,9 +1,10 @@
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.RunnerMovement;
+using Core.Lifecycle;
 
 namespace Core.Input.RunnerMovement
 {
-    public sealed class RunnerMovementInputHandler
+    public sealed class RunnerMovementInputHandler : ISubscriptionLifecycle
     {
         private readonly IGameplayInputBlock _inputBlock;
         private readonly IRunnerMovementService _service;
@@ -22,12 +23,12 @@ namespace Core.Input.RunnerMovement
             _dragInput = dragInput;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _dragInput.DragNormalizedDeltaChanged += OnDragNormalizedDeltaChanged;
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _dragInput.DragNormalizedDeltaChanged -= OnDragNormalizedDeltaChanged;
         }

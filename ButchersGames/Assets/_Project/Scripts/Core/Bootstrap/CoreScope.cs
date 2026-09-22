@@ -10,6 +10,7 @@ using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
 using Core.Input;
 using Core.Input.RunnerMovement;
+using Core.Lifecycle;
 using Core.Loop;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
@@ -18,6 +19,10 @@ using UI.FloatingText;
 using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
+using UnityEngine;
+using VContainer;
+using VContainer.Unity;
+using ViewComponents.CelebrationCamera;
 using ViewComponents.CharacterAnimation;
 using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
@@ -25,10 +30,6 @@ using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
-using ViewComponents.CelebrationCamera;
-using VContainer;
-using VContainer.Unity;
-using UnityEngine;
 
 namespace Core.Bootstrap
 {
@@ -60,7 +61,7 @@ namespace Core.Bootstrap
             builder.Register<GameStateModel>(Lifetime.Singleton);
             builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
             builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
-            builder.Register<GameResultDetector>(Lifetime.Singleton);
+            builder.Register<GameResultDetector>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>();
         }
 
@@ -75,9 +76,9 @@ namespace Core.Bootstrap
 
             builder.RegisterInstance<IWealthMeterSettings>(_wealthMeterConfig);
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
-            builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>().AsSelf();
+            builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>().As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>();
-            builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton);
+            builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private void RegisterRunnerMovement(IContainerBuilder builder)
@@ -99,10 +100,10 @@ namespace Core.Bootstrap
                .Register<RunnerMovementService>(Lifetime.Singleton)
                .As<IRunnerMovementService>()
                .As<IGameplayTickable>()
-               .AsSelf();
+               .As<ISubscriptionLifecycle>();
 
-            builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton);
-            builder.Register<RunnerMovementPresenter>(Lifetime.Singleton);
+            builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+            builder.Register<RunnerMovementPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterLevel(IContainerBuilder builder)
@@ -121,36 +122,36 @@ namespace Core.Bootstrap
             builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
             builder.Register<LevelModel>(Lifetime.Singleton);
             builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
-            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
+            builder.Register<WealthPointsModifierService>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.Register<TransformRotatorsTicker>(Lifetime.Singleton).As<IPresentationTickable>();
         }
 
         private static void RegisterCharacterPresentation(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<CharacterAnimationView>().As<ICharacterAnimationView>();
-            builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton);
+            builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<CharacterTurnView>().As<ICharacterTurnView>().As<IPresentationTickable>();
-            builder.Register<CharacterTurnPresenter>(Lifetime.Singleton);
+            builder.Register<CharacterTurnPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<CelebrationCameraView>().As<ICelebrationCameraView>();
-            builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton);
+            builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterFeedbackPresentation(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<FeedbackPerformer>().As<IFeedbackPerformer>();
-            builder.Register<FeedbackPresenter>(Lifetime.Singleton);
+            builder.Register<FeedbackPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterUi(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>();
-            builder.Register<StartScreenPresenter>(Lifetime.Singleton);
+            builder.Register<StartScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<HudView>().As<IHudView>();
-            builder.Register<HudPresenter>(Lifetime.Singleton);
+            builder.Register<HudPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>();
-            builder.Register<ResultScreenPresenter>(Lifetime.Singleton);
+            builder.Register<ResultScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<FloatingTextView>().As<IFloatingTextView>();
-            builder.Register<FloatingTextPresenter>(Lifetime.Singleton);
+            builder.Register<FloatingTextPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
     }
 }

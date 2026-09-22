@@ -2,11 +2,12 @@ using System;
 using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 using R3;
 
 namespace ViewComponents.Feedback
 {
-    public sealed class FeedbackPresenter
+    public sealed class FeedbackPresenter : ISubscriptionLifecycle
     {
         private readonly IFeedbackPerformer _feedbackPerformer;
         private readonly IWealthMeterService _wealthMeterService;
@@ -28,7 +29,7 @@ namespace ViewComponents.Feedback
             _wealthMeterModel = wealthMeterModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _wealthMeterService.Increased += OnMoneyIncreased;
             _wealthMeterService.Decreased += OnMoneyDecreased;
@@ -36,7 +37,7 @@ namespace ViewComponents.Feedback
             _stateSubscription = _gameStateModel.State.Subscribe(OnGameStateChanged);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _wealthMeterService.Increased -= OnMoneyIncreased;
             _wealthMeterService.Decreased -= OnMoneyDecreased;

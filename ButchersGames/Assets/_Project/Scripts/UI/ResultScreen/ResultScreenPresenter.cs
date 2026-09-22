@@ -2,11 +2,12 @@ using System;
 using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthMeter;
+using Core.Lifecycle;
 using R3;
 
 namespace UI.ResultScreen
 {
-    public sealed class ResultScreenPresenter
+    public sealed class ResultScreenPresenter : ISubscriptionLifecycle
     {
         private readonly IResultScreenView _view;
         private readonly IGameFlowService _gameFlowService;
@@ -30,14 +31,14 @@ namespace UI.ResultScreen
             _wealthMeterModel = wealthMeterModel;
         }
 
-        public void StartListening()
+        void ISubscriptionLifecycle.Start()
         {
             _view.RetryClicked += OnRetryClicked;
             _view.NextClicked += OnNextClicked;
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
         }
 
-        public void StopListening()
+        void ISubscriptionLifecycle.Stop()
         {
             _view.RetryClicked -= OnRetryClicked;
             _view.NextClicked -= OnNextClicked;
