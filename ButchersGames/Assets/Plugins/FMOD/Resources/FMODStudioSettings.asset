@@ -380,7 +380,7 @@ MonoBehaviour:
   switchSettingsMigration: 1
   HasSourceProject: 1
   HasPlatforms: 1
-  sourceProjectPath: ../FMOD/WebGL-Template.fspro
+  sourceProjectPath: ../FMOD/ButchersGames.fspro
   sourceBankPath: ../FMOD/Build
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 5
@@ -605,8 +605,8 @@ MonoBehaviour:
       Value: 1
       HasValue: 1
     LiveUpdatePort:
-      Value: 0
-      HasValue: 0
+      Value: 9265
+      HasValue: 1
     Overlay:
       Value: 1
       HasValue: 1
