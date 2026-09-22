@@ -10,14 +10,14 @@ namespace Core.Bootstrap.Scene
 {
     public sealed class CoreLoader : ISceneLoader
     {
-        public void LoadScene(string sceneName, CoreLoadSceneMode loadSceneMode)
+        void ISceneLoader.LoadScene(string sceneName, CoreLoadSceneMode loadSceneMode)
         {
             UnityLoadSceneMode unityLoadSceneMode = ConvertLoadSceneMode(loadSceneMode);
 
             SceneManager.LoadScene(sceneName, unityLoadSceneMode);
         }
 
-        public async UniTask LoadSceneAsync(
+        async UniTask ISceneLoader.LoadSceneAsync(
             string sceneName,
             CoreLoadSceneMode loadSceneMode,
             CancellationToken cancellationToken)

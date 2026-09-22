@@ -13,23 +13,23 @@ namespace Core.Gameplay.GameFlow
             _gameStateMachine = gameStateMachine;
         }
 
-        public void PrepareGame()
+        void IGameFlowService.PrepareGame()
         {
             _gameStateMachine.EnterState(GameState.Tutorial);
             _levelService.LoadCurrentLevel();
         }
 
-        public void StartGame()
+        void IGameFlowService.StartGame()
         {
             _gameStateMachine.EnterState(GameState.Run);
         }
 
-        public void FinishGame(GameState result)
+        void IGameFlowService.FinishGame(GameState result)
         {
             _gameStateMachine.EnterState(result);
         }
 
-        public void GoToNextGame()
+        void IGameFlowService.GoToNextGame()
         {
             _gameStateMachine.EnterState(GameState.Tutorial);
             _levelService.LoadNextLevel();

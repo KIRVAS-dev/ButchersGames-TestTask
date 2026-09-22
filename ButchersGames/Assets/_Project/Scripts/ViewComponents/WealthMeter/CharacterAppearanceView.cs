@@ -19,7 +19,7 @@ namespace ViewComponents.WealthMeter
             Validate();
         }
 
-        public void SetActiveStage(WealthStage stage)
+        void ICharacterAppearanceView.SetActiveStage(WealthStage stage)
         {
             _poor.SetActive(stage == WealthStage.Poor);
             _casual.SetActive(stage == WealthStage.Casual);

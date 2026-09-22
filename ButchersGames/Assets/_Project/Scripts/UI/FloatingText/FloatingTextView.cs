@@ -42,7 +42,7 @@ namespace UI.FloatingText
             Prewarm(_lossPool);
         }
 
-        public void ShowGain(int amount)
+        void IFloatingTextView.ShowGain(int amount)
         {
             Show(
                 _gainPool,
@@ -53,7 +53,7 @@ namespace UI.FloatingText
             );
         }
 
-        public void ShowLoss(int amount)
+        void IFloatingTextView.ShowLoss(int amount)
         {
             Show(
                 _lossPool,

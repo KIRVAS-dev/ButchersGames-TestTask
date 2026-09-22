@@ -23,8 +23,8 @@ namespace Core.Gameplay.WealthMeter
             _model = model;
         }
 
-        public int Value => _model.WealthPoints.Value;
-        public WealthStage Stage => _model.Stage.Value;
+        int IWealthMeterService.Value => _model.WealthPoints.Value;
+        WealthStage IWealthMeterService.Stage => _model.Stage.Value;
 
         public void StartListening()
         {
@@ -36,7 +36,7 @@ namespace Core.Gameplay.WealthMeter
             _levelLoader.LevelLoaded -= OnLevelLoaded;
         }
 
-        public void Increase(int amount)
+        void IWealthMeterService.Increase(int amount)
         {
             bool hasBecomeDepleted = SetValue(_model.WealthPoints.Value + amount);
 
@@ -45,7 +45,7 @@ namespace Core.Gameplay.WealthMeter
             NotifyIfDepleted(hasBecomeDepleted);
         }
 
-        public void Decrease(int amount)
+        void IWealthMeterService.Decrease(int amount)
         {
             bool hasBecomeDepleted = SetValue(_model.WealthPoints.Value - amount);
 

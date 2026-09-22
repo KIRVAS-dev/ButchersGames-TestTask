@@ -37,14 +37,14 @@ namespace Core.Gameplay.LevelProgression
             );
         }
 
-        public int CurrentLevelNumber => _model.CompletedLevelCount + 1;
+        int ILevelService.CurrentLevelNumber => _model.CompletedLevelCount + 1;
 
-        public void LoadCurrentLevel()
+        void ILevelService.LoadCurrentLevel()
         {
             _levelLoader.LoadLevel(_model.CurrentLevelIndex);
         }
 
-        public void LoadNextLevel()
+        void ILevelService.LoadNextLevel()
         {
             _model.CompletedLevelCount++;
             _model.CurrentLevelIndex = NextLevelIndex();

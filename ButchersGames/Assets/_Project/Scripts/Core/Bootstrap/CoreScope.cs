@@ -61,7 +61,7 @@ namespace Core.Bootstrap
             builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
             builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
             builder.Register<GameResultDetector>(Lifetime.Singleton);
-            builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>().AsSelf();
+            builder.Register<GameFlowService>(Lifetime.Singleton).As<IGameFlowService>();
         }
 
         private void RegisterWealthMeter(IContainerBuilder builder)

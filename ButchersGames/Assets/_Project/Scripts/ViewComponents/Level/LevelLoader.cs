@@ -16,8 +16,8 @@ namespace ViewComponents.Level
 
         public event Action LevelLoaded;
 
-        public int LevelCount => _config.Levels.Count;
-        public bool IsRandomized => _config.IsRandomized;
+        int ILevelLoader.LevelCount => _config.Levels.Count;
+        bool ILevelLoader.IsRandomized => _config.IsRandomized;
 
         [Inject]
         private void Construct(CurrentLevel currentLevel)
@@ -30,7 +30,7 @@ namespace ViewComponents.Level
             Validate();
         }
 
-        public void LoadLevel(int levelIndex)
+        void ILevelLoader.LoadLevel(int levelIndex)
         {
             Level levelPrefab = _config.Levels[levelIndex];
 

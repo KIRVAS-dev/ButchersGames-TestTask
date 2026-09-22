@@ -11,13 +11,13 @@ namespace Core.Gameplay.GameFlow
             _model = model;
         }
 
-        public GameState State => _model.State.Value;
+        GameState IGameStateMachine.State => _model.State.Value;
 
-        public void EnterState(GameState state)
+        void IGameStateMachine.EnterState(GameState state)
         {
             Guard.AgainstTrue(
                 !IsTransitionAllowed(state),
-                () => new InvalidGameStateTransitionException(state.ToString(), State)
+                () => new InvalidGameStateTransitionException(state.ToString(), _model.State.Value)
             );
 
             _model.State.Value = state;
@@ -27,9 +27,9 @@ namespace Core.Gameplay.GameFlow
         {
             return state switch
             {
-                GameState.Tutorial => State != GameState.Run,
-                GameState.Run => State == GameState.Tutorial,
-                GameState.Win or GameState.Lose => State == GameState.Run,
+                GameState.Tutorial => _model.State.Value != GameState.Run,
+                GameState.Run => _model.State.Value == GameState.Tutorial,
+                GameState.Win or GameState.Lose => _model.State.Value == GameState.Run,
                 _ => throw new UnhandledGameStateException(state)
             };
         }

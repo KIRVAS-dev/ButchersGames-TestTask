@@ -7,9 +7,9 @@ namespace Core.Lifecycle
         : ICoreScopeCancellation,
           IDisposable
     {
-        public CancellationToken Token => _cancellationTokenSource.Token;
-
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        CancellationToken ICoreScopeCancellation.Token => _cancellationTokenSource.Token;
 
         void IDisposable.Dispose()
         {

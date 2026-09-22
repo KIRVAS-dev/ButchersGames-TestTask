@@ -22,6 +22,7 @@ namespace Core.Bootstrap
         : IStartable,
           IDisposable
     {
+        private readonly IGameFlowService _gameFlowService;
         private readonly RunnerMovementInputHandler _runnerMovementInputHandler;
         private readonly WealthMeterService _wealthMeterService;
         private readonly WealthPointsModifierService _wealthPointsModifierService;
@@ -37,9 +38,9 @@ namespace Core.Bootstrap
         private readonly HudPresenter _hudPresenter;
         private readonly ResultScreenPresenter _resultScreenPresenter;
         private readonly GameResultDetector _gameResultDetector;
-        private readonly GameFlowService _gameFlowService;
 
         public CoreEntryPoint(
+            IGameFlowService gameFlowService,
             RunnerMovementInputHandler runnerMovementInputHandler,
             WealthMeterService wealthMeterService,
             WealthPointsModifierService wealthPointsModifierService,
@@ -54,9 +55,9 @@ namespace Core.Bootstrap
             StartScreenPresenter startScreenPresenter,
             HudPresenter hudPresenter,
             ResultScreenPresenter resultScreenPresenter,
-            GameResultDetector gameResultDetector,
-            GameFlowService gameFlowService)
+            GameResultDetector gameResultDetector)
         {
+            _gameFlowService = gameFlowService;
             _runnerMovementInputHandler = runnerMovementInputHandler;
             _wealthMeterService = wealthMeterService;
             _wealthPointsModifierService = wealthPointsModifierService;
@@ -72,7 +73,6 @@ namespace Core.Bootstrap
             _hudPresenter = hudPresenter;
             _resultScreenPresenter = resultScreenPresenter;
             _gameResultDetector = gameResultDetector;
-            _gameFlowService = gameFlowService;
         }
 
         void IStartable.Start()

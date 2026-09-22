@@ -24,7 +24,7 @@ namespace ViewComponents.Feedback
             }
         }
 
-        public void Play(FeedbackType type)
+        void IFeedbackPerformer.Play(FeedbackType type)
         {
             if (!_entriesByType.TryGetValue(type, out FeedbackEntry entry))
             {
