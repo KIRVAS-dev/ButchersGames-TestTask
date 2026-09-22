@@ -25,37 +25,37 @@ namespace UI.Hud
             _config.Validate();
         }
 
-        public void Show()
+        void IHudView.Show()
         {
             _root.gameObject.SetActive(true);
         }
 
-        public void Hide()
+        void IHudView.Hide()
         {
             _root.gameObject.SetActive(false);
         }
 
-        public void SetLevelNumber(int levelNumber)
+        void IHudView.SetLevelNumber(int levelNumber)
         {
             _levelNumberText.text = LevelNumberTextHelper.Format(levelNumber);
         }
 
-        public void SetMoneyAmount(int amount)
+        void IHudView.SetMoneyAmount(int amount)
         {
             _moneyAmountText.text = amount.ToString();
         }
 
-        public void SetWealthFillBar(float normalizedFill)
+        void IHudView.SetWealthFillBar(float normalizedFill)
         {
             _wealthFillBarImage.fillAmount = normalizedFill;
         }
 
-        public void SetRunProgressFillBar(float normalizedFill)
+        void IHudView.SetRunProgressFillBar(float normalizedFill)
         {
             _runProgressFillBarImage.fillAmount = normalizedFill;
         }
 
-        public void SetWealthStage(WealthStage stage)
+        void IHudView.SetWealthStage(WealthStage stage)
         {
             WealthStageAppearance appearance = _config.AppearanceOf(stage);
 

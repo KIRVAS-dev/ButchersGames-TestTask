@@ -21,13 +21,20 @@ namespace ViewComponents.Level
           ITransformRotatorsRegistry,
           ITrackProvider
     {
-        public IReadOnlyCollection<IObstacle> Obstacles { get; private set; } = Array.Empty<IObstacle>();
-        public IReadOnlyCollection<ILaneBarrier> Barriers { get; private set; } = Array.Empty<ILaneBarrier>();
-        public IReadOnlyCollection<IWealthPointsModifier> Modifiers { get; private set; } = Array.Empty<IWealthPointsModifier>();
-        public IReadOnlyCollection<ITransformRotatorView> Rotators { get; private set; } = Array.Empty<ITransformRotatorView>();
-        public float StartCoordinate { get; private set; }
-        public float FinishCoordinate { get; private set; }
-        public float RunLength => FinishCoordinate - StartCoordinate;
+        private IReadOnlyCollection<IObstacle> _obstacles = Array.Empty<IObstacle>();
+        private IReadOnlyCollection<ILaneBarrier> _barriers = Array.Empty<ILaneBarrier>();
+        private IReadOnlyCollection<IWealthPointsModifier> _modifiers = Array.Empty<IWealthPointsModifier>();
+        private IReadOnlyCollection<ITransformRotatorView> _rotators = Array.Empty<ITransformRotatorView>();
+        private float _startCoordinate;
+        private float _finishCoordinate;
+
+        IReadOnlyCollection<IObstacle> IObstacleRegistry.Obstacles => _obstacles;
+        IReadOnlyCollection<ILaneBarrier> ILaneBarrierRegistry.Barriers => _barriers;
+        IReadOnlyCollection<IWealthPointsModifier> IWealthPointsModifierRegistry.Modifiers => _modifiers;
+        IReadOnlyCollection<ITransformRotatorView> ITransformRotatorsRegistry.Rotators => _rotators;
+        float ITrackProvider.StartCoordinate => _startCoordinate;
+        float ITrackProvider.FinishCoordinate => _finishCoordinate;
+        float ITrackProvider.RunLength => _finishCoordinate - _startCoordinate;
         internal TrackPath Track { get; private set; }
 
         internal void Set(Level level)
@@ -55,12 +62,12 @@ namespace ViewComponents.Level
             }
 
             Track = track;
-            StartCoordinate = startCoordinate;
-            FinishCoordinate = finishCoordinate;
-            Obstacles = obstacles;
-            Barriers = barriers;
-            Modifiers = modifiers;
-            Rotators = rotators;
+            _startCoordinate = startCoordinate;
+            _finishCoordinate = finishCoordinate;
+            _obstacles = obstacles;
+            _barriers = barriers;
+            _modifiers = modifiers;
+            _rotators = rotators;
         }
     }
 }

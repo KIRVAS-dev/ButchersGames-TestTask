@@ -28,17 +28,17 @@ namespace UI.StartScreen
             _startButton.onClick.RemoveListener(OnStartButtonClicked);
         }
 
-        public void Show()
+        void IStartScreenView.Show()
         {
             _root.gameObject.SetActive(true);
         }
 
-        public void Hide()
+        void IStartScreenView.Hide()
         {
             _root.gameObject.SetActive(false);
         }
 
-        public void SetLevelNumber(int levelNumber)
+        void IStartScreenView.SetLevelNumber(int levelNumber)
         {
             _levelNumberText.text = LevelNumberTextHelper.Format(levelNumber);
         }

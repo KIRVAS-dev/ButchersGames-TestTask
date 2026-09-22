@@ -23,7 +23,7 @@ namespace ViewComponents.Obstacles
         public event Action Hit;
         public event Action Released;
 
-        public IWealthPointsModifier Modifier => _modifier;
+        IWealthPointsModifier IObstacle.Modifier => _modifier;
 
         private void Awake()
         {

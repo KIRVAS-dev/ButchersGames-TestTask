@@ -34,29 +34,29 @@ namespace UI.ResultScreen
             _nextButton.onClick.RemoveListener(OnNextButtonClicked);
         }
 
-        public void Show()
+        void IResultScreenView.Show()
         {
             _root.gameObject.SetActive(true);
         }
 
-        public void Hide()
+        void IResultScreenView.Hide()
         {
             _root.gameObject.SetActive(false);
         }
 
-        public void SetWinResult()
+        void IResultScreenView.SetWinResult()
         {
             _winVisualRoot.gameObject.SetActive(true);
             _loseVisualRoot.gameObject.SetActive(false);
         }
 
-        public void SetLoseResult()
+        void IResultScreenView.SetLoseResult()
         {
             _winVisualRoot.gameObject.SetActive(false);
             _loseVisualRoot.gameObject.SetActive(true);
         }
 
-        public void SetMoneyAmount(int amount)
+        void IResultScreenView.SetMoneyAmount(int amount)
         {
             _moneyAmountText.text = amount.ToString();
         }

@@ -38,17 +38,14 @@ namespace ViewComponents.CharacterTurn
             transform.localRotation = Quaternion.AngleAxis(_appliedAngle, Vector3.up) * _baseLocalRotation;
         }
 
-        public void SetTurn(CharacterTurnSide side)
+        void ICharacterTurnView.SetTurn(CharacterTurnSide side)
         {
             _turnAnimator.SetSide(side);
         }
 
         private void Validate()
         {
-            Guard.AgainstNull(
-                _config,
-                () => new MissingCharacterTurnConfigException(nameof(_config), gameObject.name)
-            );
+            Guard.AgainstNull(_config, () => new MissingCharacterTurnConfigException(nameof(_config), gameObject.name));
 
             _config.Validate();
         }

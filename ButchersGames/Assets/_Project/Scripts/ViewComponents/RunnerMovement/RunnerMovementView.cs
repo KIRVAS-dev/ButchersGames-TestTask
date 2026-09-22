@@ -40,13 +40,13 @@ namespace ViewComponents.RunnerMovement
             transform.SetPositionAndRotation(position, rotation);
         }
 
-        public void SetCoordinate(float coordinate)
+        void IRunnerMovementView.SetCoordinate(float coordinate)
         {
             _coordinate = coordinate;
             _isTransformDirty = true;
         }
 
-        public void SetLateralOffset(float lateralOffset)
+        void IRunnerMovementView.SetLateralOffset(float lateralOffset)
         {
             _lateralOffset = lateralOffset;
             _isTransformDirty = true;

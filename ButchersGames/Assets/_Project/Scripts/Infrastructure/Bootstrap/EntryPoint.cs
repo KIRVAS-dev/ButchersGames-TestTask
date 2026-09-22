@@ -16,7 +16,7 @@ namespace Infrastructure.Bootstrap
             _sceneLoader = sceneLoader;
         }
 
-        public void Start()
+        void IStartable.Start()
         {
             LoadCoreAsync().Forget();
         }

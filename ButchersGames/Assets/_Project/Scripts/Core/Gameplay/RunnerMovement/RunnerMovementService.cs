@@ -58,7 +58,7 @@ namespace Core.Gameplay.RunnerMovement
             UnsubscribeAllLaneBarriers();
         }
 
-        public void AddNormalizedLateralOffsetDelta(float normalizedDelta)
+        void IRunnerMovementService.AddNormalizedLateralOffsetDelta(float normalizedDelta)
         {
             _simulator.AddNormalizedLateralOffsetDelta(normalizedDelta);
         }

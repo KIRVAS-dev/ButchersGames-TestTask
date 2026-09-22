@@ -16,17 +16,32 @@ namespace ViewComponents.RunnerMovement
         [SerializeField] private float _lateralCorrectionSpeed;
         [SerializeField] private float _lateralDragSensitivity;
 
-        public float ForwardSpeed => _forwardSpeed;
-        public float LateralRange => _lateralRange;
-        public float LateralDragSensitivity => _lateralDragSensitivity;
-        public float LateralCorrectionSpeed => _lateralCorrectionSpeed;
+        float IRunnerMovementSettings.ForwardSpeed => _forwardSpeed;
+        float IRunnerMovementSettings.LateralRange => _lateralRange;
+        float IRunnerMovementSettings.LateralCorrectionSpeed => _lateralCorrectionSpeed;
+        float IRunnerMovementInputSettings.LateralDragSensitivity => _lateralDragSensitivity;
 
         public void Validate()
         {
-            Guard.AgainstNonPositive(_forwardSpeed, () => new InvalidRunnerMovementValueException(nameof(_forwardSpeed), _forwardSpeed));
-            Guard.AgainstNonPositive(_lateralRange, () => new InvalidRunnerMovementValueException(nameof(_lateralRange), _lateralRange));
-            Guard.AgainstNonPositive(_lateralCorrectionSpeed, () => new InvalidRunnerMovementValueException(nameof(_lateralCorrectionSpeed), _lateralCorrectionSpeed));
-            Guard.AgainstNonPositive(_lateralDragSensitivity, () => new InvalidRunnerMovementValueException(nameof(_lateralDragSensitivity), _lateralDragSensitivity));
+            Guard.AgainstNonPositive(
+                _forwardSpeed,
+                () => new InvalidRunnerMovementValueException(nameof(_forwardSpeed), _forwardSpeed)
+            );
+
+            Guard.AgainstNonPositive(
+                _lateralRange,
+                () => new InvalidRunnerMovementValueException(nameof(_lateralRange), _lateralRange)
+            );
+
+            Guard.AgainstNonPositive(
+                _lateralCorrectionSpeed,
+                () => new InvalidRunnerMovementValueException(nameof(_lateralCorrectionSpeed), _lateralCorrectionSpeed)
+            );
+
+            Guard.AgainstNonPositive(
+                _lateralDragSensitivity,
+                () => new InvalidRunnerMovementValueException(nameof(_lateralDragSensitivity), _lateralDragSensitivity)
+            );
         }
     }
 }

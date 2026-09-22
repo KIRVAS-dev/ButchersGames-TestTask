@@ -33,12 +33,12 @@ namespace ViewComponents.CharacterAnimation
             _reactionTriggers = BuildReactionTriggers();
         }
 
-        public void Play(CharacterAnimationSlot slot)
+        void ICharacterAnimationView.Play(CharacterAnimationSlot slot)
         {
             _animator.CrossFadeInFixedTime(_stateHashes[slot], _crossFadeDuration);
         }
 
-        public void SetReaction(CharacterAnimationSlot slot)
+        void ICharacterAnimationView.SetReaction(CharacterAnimationSlot slot)
         {
             foreach (int triggerHash in _reactionTriggers.Values)
             {
@@ -55,11 +55,15 @@ namespace ViewComponents.CharacterAnimation
 
             foreach (StateNamesMapItem mapItem in _rawStatesMap)
             {
-                Guard.AgainstTrue(stateHashes.ContainsKey(mapItem.AnimationSlot), () =>
-                    new DuplicateCharacterAnimationSlotException(mapItem.AnimationSlot, gameObject.name));
+                Guard.AgainstTrue(
+                    stateHashes.ContainsKey(mapItem.AnimationSlot),
+                    () => new DuplicateCharacterAnimationSlotException(mapItem.AnimationSlot, gameObject.name)
+                );
 
-                Guard.AgainstTrue(string.IsNullOrWhiteSpace(mapItem.StateName), () =>
-                    new CharacterAnimationStateNameMissingException(mapItem.AnimationSlot, gameObject.name));
+                Guard.AgainstTrue(
+                    string.IsNullOrWhiteSpace(mapItem.StateName),
+                    () => new CharacterAnimationStateNameMissingException(mapItem.AnimationSlot, gameObject.name)
+                );
 
                 stateHashes.Add(mapItem.AnimationSlot, Animator.StringToHash(mapItem.StateName));
             }

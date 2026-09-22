@@ -7,16 +7,18 @@ namespace Core.Gameplay.GameFlow
         : IGameplayInputBlock,
           IDisposable
     {
+        private readonly ReadOnlyReactiveProperty<bool> _isBlocked;
+
         public GameplayInputBlock(GameStateModel model)
         {
-            IsBlocked = model.State.Select(state => state != GameState.Run).ToReadOnlyReactiveProperty();
+            _isBlocked = model.State.Select(state => state != GameState.Run).ToReadOnlyReactiveProperty();
         }
 
-        public ReadOnlyReactiveProperty<bool> IsBlocked { get; }
+        ReadOnlyReactiveProperty<bool> IGameplayInputBlock.IsBlocked => _isBlocked;
 
         void IDisposable.Dispose()
         {
-            IsBlocked.Dispose();
+            _isBlocked.Dispose();
         }
     }
 }
