@@ -69,11 +69,12 @@ namespace Core.Gameplay.WealthMeter
 
         private bool SetValue(int value)
         {
+            int clampedValue = Math.Max(0, value);
             bool wasDepleted = _model.WealthPoints.Value <= 0;
-            bool isDepleted = value <= 0;
+            bool isDepleted = clampedValue <= 0;
 
-            _model.WealthPoints.Value = value;
-            _model.Stage.Value = StageFor(value);
+            _model.WealthPoints.Value = clampedValue;
+            _model.Stage.Value = StageFor(clampedValue);
 
             return isDepleted && !wasDepleted;
         }

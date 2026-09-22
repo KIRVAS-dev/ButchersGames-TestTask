@@ -17,7 +17,13 @@ namespace ViewComponents.Level
     internal sealed class MissingLevelFieldException : ExtendedException
     {
         public MissingLevelFieldException(string fieldName, string objectName)
-            : base("level-5", $"Missing field {fieldName} on {objectName}") { }
+            : base("level-3", $"Missing field {fieldName} on {objectName}") { }
+    }
+
+    internal sealed class EmptyLevelListException : ExtendedException
+    {
+        public EmptyLevelListException(string configName)
+            : base("level-4", $"Level list {configName} is empty") { }
     }
 
     internal sealed class InvalidLevelRunException : ExtendedException
@@ -27,14 +33,8 @@ namespace ViewComponents.Level
             float startCoordinate,
             float finishCoordinate)
             : base(
-                "level-6",
+                "level-5",
                 $"Finish coordinate {finishCoordinate} must be greater than start coordinate {startCoordinate} on {objectName}"
             ) { }
-    }
-
-    internal sealed class EmptyLevelListException : ExtendedException
-    {
-        public EmptyLevelListException(string configName)
-            : base("level-4", $"Level list {configName} is empty") { }
     }
 }

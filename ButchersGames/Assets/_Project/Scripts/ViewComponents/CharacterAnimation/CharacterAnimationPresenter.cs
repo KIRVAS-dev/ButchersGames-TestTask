@@ -60,11 +60,6 @@ namespace ViewComponents.CharacterAnimation
 
         private void UnsubscribeObstacles()
         {
-            if (_obstacleRegistry.Obstacles == null)
-            {
-                return;
-            }
-
             foreach (IObstacle obstacle in _obstacleRegistry.Obstacles)
             {
                 obstacle.Modifier.Triggered -= OnObstacleModifierTriggered;

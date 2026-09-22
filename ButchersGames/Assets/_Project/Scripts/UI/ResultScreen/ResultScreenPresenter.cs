@@ -3,7 +3,6 @@ using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthMeter;
 using R3;
-using UnityEngine;
 
 namespace UI.ResultScreen
 {
@@ -83,7 +82,7 @@ namespace UI.ResultScreen
 
         private void ShowResult()
         {
-            int moneyAmount = Mathf.Max(0, _wealthMeterModel.WealthPoints.CurrentValue);
+            int moneyAmount = _wealthMeterModel.WealthPoints.CurrentValue;
 
             _view.SetMoneyAmount(moneyAmount);
             _view.Show();

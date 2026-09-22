@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.WealthMeter;
 
@@ -9,7 +8,6 @@ namespace Core.Gameplay.WealthPointsModifier
         private readonly ILevelLoader _levelLoader;
         private readonly IWealthPointsModifierRegistry _registry;
         private readonly IWealthMeterService _wealthMeter;
-        private readonly List<IWealthPointsModifier> _subscribed = new List<IWealthPointsModifier>();
 
         public WealthPointsModifierService(
             ILevelLoader levelLoader,
@@ -35,11 +33,7 @@ namespace Core.Gameplay.WealthPointsModifier
 
         private void OnLevelLoaded()
         {
-            UnsubscribeAllModifiers();
-
-            _subscribed.AddRange(_registry.Modifiers);
-
-            foreach (IWealthPointsModifier modifier in _subscribed)
+            foreach (IWealthPointsModifier modifier in _registry.Modifiers)
             {
                 modifier.Triggered += OnTriggered;
             }
@@ -47,12 +41,10 @@ namespace Core.Gameplay.WealthPointsModifier
 
         private void UnsubscribeAllModifiers()
         {
-            foreach (IWealthPointsModifier modifier in _subscribed)
+            foreach (IWealthPointsModifier modifier in _registry.Modifiers)
             {
                 modifier.Triggered -= OnTriggered;
             }
-
-            _subscribed.Clear();
         }
 
         private void OnTriggered(WealthPointsModifierType type, int amount)
