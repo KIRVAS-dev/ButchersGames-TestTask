@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.Track;
+using Core.Gameplay.TransformRotator;
 using Core.Gameplay.WealthPointsModifier;
 using Infrastructure.ExtendedExceptions;
 using ViewComponents.LaneBarriers;
 using ViewComponents.Obstacles;
 using ViewComponents.Track;
+using ViewComponents.TransformRotators;
 using ViewComponents.WealthPointsModifier;
 
 namespace ViewComponents.Level
@@ -16,11 +18,13 @@ namespace ViewComponents.Level
         : IObstacleRegistry,
           ILaneBarrierRegistry,
           IWealthPointsModifierRegistry,
+          ITransformRotatorsRegistry,
           ITrackProvider
     {
         public IReadOnlyCollection<IObstacle> Obstacles { get; private set; } = Array.Empty<IObstacle>();
         public IReadOnlyCollection<ILaneBarrier> Barriers { get; private set; } = Array.Empty<ILaneBarrier>();
         public IReadOnlyCollection<IWealthPointsModifier> Modifiers { get; private set; } = Array.Empty<IWealthPointsModifier>();
+        public IReadOnlyCollection<ITransformRotatorView> Rotators { get; private set; } = Array.Empty<ITransformRotatorView>();
         public float StartCoordinate { get; private set; }
         public float FinishCoordinate { get; private set; }
         public float RunLength => FinishCoordinate - StartCoordinate;
@@ -31,6 +35,7 @@ namespace ViewComponents.Level
             Obstacle[] obstacles = level.GetComponentsInChildren<Obstacle>();
             LaneBarrierZone[] barriers = level.GetComponentsInChildren<LaneBarrierZone>();
             WealthPointsModifierCollider[] modifiers = level.GetComponentsInChildren<WealthPointsModifierCollider>();
+            TransformRotator[] rotators = level.GetComponentsInChildren<TransformRotator>();
 
             TrackPath track = new TrackPath(level.SplineContainer);
 
@@ -55,6 +60,7 @@ namespace ViewComponents.Level
             Obstacles = obstacles;
             Barriers = barriers;
             Modifiers = modifiers;
+            Rotators = rotators;
         }
     }
 }

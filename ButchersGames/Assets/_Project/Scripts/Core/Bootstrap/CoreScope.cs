@@ -5,6 +5,7 @@ using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
+using Core.Gameplay.TransformRotator;
 using Core.Gameplay.WealthMeter;
 using Core.Gameplay.WealthPointsModifier;
 using Core.Input;
@@ -22,6 +23,7 @@ using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
+using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
 using VContainer;
 using VContainer.Unity;
@@ -111,6 +113,7 @@ namespace Core.Bootstrap
                .As<IObstacleRegistry>()
                .As<ILaneBarrierRegistry>()
                .As<IWealthPointsModifierRegistry>()
+               .As<ITransformRotatorsRegistry>()
                .As<ITrackProvider>()
                .AsSelf();
 
@@ -118,6 +121,7 @@ namespace Core.Bootstrap
             builder.Register<LevelModel>(Lifetime.Singleton);
             builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
             builder.Register<WealthPointsModifierService>(Lifetime.Singleton).AsSelf();
+            builder.Register<TransformRotatorsTicker>(Lifetime.Singleton).As<IPresentationTickable>();
         }
 
         private static void RegisterCharacterPresentation(IContainerBuilder builder)
