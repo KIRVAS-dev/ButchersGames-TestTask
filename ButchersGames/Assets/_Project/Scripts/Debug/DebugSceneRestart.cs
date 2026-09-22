@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace ProjectDebug
 {
-    public sealed class DebugSceneRestart : MonoBehaviour
+    internal sealed class DebugSceneRestart : MonoBehaviour
     {
         [SerializeField] private Key _hotkey = Key.R;
 
