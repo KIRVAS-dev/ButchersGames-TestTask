@@ -3238,6 +3238,53 @@ MonoBehaviour:
   _gainPrefab: {fileID: 1433980976037863138, guid: b42a3dfdd73d69749b0aa936996976cd, type: 3}
   _lossPrefab: {fileID: 5358219964627808175, guid: 10934e2d324cbc84890ad84ae0e7ce9d, type: 3}
   _config: {fileID: 11400000, guid: 34c77fc3ca9f11149a32cdf96504a6c4, type: 2}
+--- !u!1 &1735168857
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1735168859}
+  - component: {fileID: 1735168858}
+  m_Layer: 0
+  m_Name: CelebrationCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1735168858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735168857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffdc8c1ebed4c89448cf2602d3b2bf07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.CelebrationCamera.CelebrationCameraView
+  _config: {fileID: 11400000, guid: fd054ea487b8bf24691a8bbb43abd4c2, type: 2}
+  _follow: {fileID: 917712562}
+  _target: {fileID: 2028415063}
+--- !u!4 &1735168859
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735168857}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1785228033
 GameObject:
   m_ObjectHideFlags: 0
@@ -3878,6 +3925,7 @@ SceneRoots:
   - {fileID: 626349683}
   - {fileID: 659169233}
   - {fileID: 917712560}
+  - {fileID: 1735168859}
   - {fileID: 1979827867}
   - {fileID: 663580181}
   - {fileID: 2121053847}

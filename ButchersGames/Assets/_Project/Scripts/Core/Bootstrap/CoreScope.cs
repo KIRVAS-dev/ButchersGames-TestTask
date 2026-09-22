@@ -25,6 +25,7 @@ using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
+using ViewComponents.CelebrationCamera;
 using VContainer;
 using VContainer.Unity;
 using UnityEngine;
@@ -130,6 +131,8 @@ namespace Core.Bootstrap
             builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton);
             builder.RegisterComponentInHierarchy<CharacterTurnView>().As<ICharacterTurnView>().As<IPresentationTickable>();
             builder.Register<CharacterTurnPresenter>(Lifetime.Singleton);
+            builder.RegisterComponentInHierarchy<CelebrationCameraView>().As<ICelebrationCameraView>();
+            builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton);
         }
 
         private static void RegisterFeedbackPresentation(IContainerBuilder builder)

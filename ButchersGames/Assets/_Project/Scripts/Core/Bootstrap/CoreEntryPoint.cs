@@ -14,6 +14,7 @@ using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.RunnerMovement;
 using ViewComponents.WealthMeter;
+using ViewComponents.CelebrationCamera;
 
 namespace Core.Bootstrap
 {
@@ -29,6 +30,7 @@ namespace Core.Bootstrap
         private readonly CharacterAppearancePresenter _characterAppearancePresenter;
         private readonly CharacterAnimationPresenter _characterAnimationPresenter;
         private readonly CharacterTurnPresenter _characterTurnPresenter;
+        private readonly CelebrationCameraPresenter _celebrationCameraPresenter;
         private readonly FeedbackPresenter _feedbackPresenter;
         private readonly FloatingTextPresenter _floatingTextPresenter;
         private readonly StartScreenPresenter _startScreenPresenter;
@@ -46,6 +48,7 @@ namespace Core.Bootstrap
             CharacterAppearancePresenter characterAppearancePresenter,
             CharacterAnimationPresenter characterAnimationPresenter,
             CharacterTurnPresenter characterTurnPresenter,
+            CelebrationCameraPresenter celebrationCameraPresenter,
             FeedbackPresenter feedbackPresenter,
             FloatingTextPresenter floatingTextPresenter,
             StartScreenPresenter startScreenPresenter,
@@ -62,6 +65,7 @@ namespace Core.Bootstrap
             _characterAppearancePresenter = characterAppearancePresenter;
             _characterAnimationPresenter = characterAnimationPresenter;
             _characterTurnPresenter = characterTurnPresenter;
+            _celebrationCameraPresenter = celebrationCameraPresenter;
             _feedbackPresenter = feedbackPresenter;
             _floatingTextPresenter = floatingTextPresenter;
             _startScreenPresenter = startScreenPresenter;
@@ -83,6 +87,7 @@ namespace Core.Bootstrap
             _characterAppearancePresenter.StartListening();
             _characterAnimationPresenter.StartListening();
             _characterTurnPresenter.StartListening();
+            _celebrationCameraPresenter.StartListening();
             _feedbackPresenter.StartListening();
             _floatingTextPresenter.StartListening();
             _startScreenPresenter.StartListening();
@@ -106,6 +111,7 @@ namespace Core.Bootstrap
             _characterAppearancePresenter.StopListening();
             _characterAnimationPresenter.StopListening();
             _characterTurnPresenter.StopListening();
+            _celebrationCameraPresenter.StopListening();
             _feedbackPresenter.StopListening();
             _floatingTextPresenter.StopListening();
             _startScreenPresenter.StopListening();

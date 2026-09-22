@@ -8,14 +8,17 @@
         "FMODUnity",
         "VContainer",
         "Unity.InputSystem",
-        "Unity.Splines"
+        "Unity.Splines",
+        "Unity.Cinemachine",
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "R3.dll"
+        "R3.dll",
+        "DOTween.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
