@@ -1,5 +1,4 @@
 using Core.Audio;
-using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using VContainer;
 
@@ -16,21 +15,10 @@ namespace ViewComponents.Audio
             _anchor = anchor;
         }
 
-        private void Awake()
-        {
-            Validate();
-        }
-
         private void LateUpdate()
         {
             Transform listener = _anchor.Transform;
             listener.SetPositionAndRotation(transform.position, transform.rotation);
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_anchor, () => new MissingStudioListenerAnchorException(gameObject.name));
-            Guard.AgainstNull(_anchor.Transform, () => new MissingStudioListenerAnchorTransformException());
         }
     }
 }

@@ -1,13 +1,15 @@
 using Core.Gameplay.RunnerMovement;
 using Core.Input.RunnerMovement;
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace ViewComponents.RunnerMovement
 {
-    [CreateAssetMenu(menuName = "Configs/Runner Movement")]
+    [CreateAssetMenu(menuName = "Configs/Runner Movement Config")]
     public sealed class RunnerMovementConfig
         : ScriptableObject,
+          IValidatable,
           IRunnerMovementSettings,
           IRunnerMovementInputSettings
     {

@@ -1,4 +1,5 @@
 using System;
+using ContentValidation;
 using Core.Gameplay.LevelProgression;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -8,7 +9,8 @@ namespace ViewComponents.Level
 {
     public sealed class LevelLoader
         : MonoBehaviour,
-          ILevelLoader
+          ILevelLoader,
+          IValidatable
     {
         [SerializeField] private LevelListConfig _config;
 
@@ -25,9 +27,11 @@ namespace ViewComponents.Level
             _currentLevel = currentLevel;
         }
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(_config, () => new MissingLevelListConfigException(nameof(_config), gameObject.name));
+
+            _config.Validate();
         }
 
         void ILevelLoader.LoadLevel(int levelIndex)
@@ -50,15 +54,19 @@ namespace ViewComponents.Level
         {
             Level level = Instantiate(levelPrefab, transform);
             _currentLevel.Set(level);
+            ValidateLevelContent(level);
 
             LevelLoaded?.Invoke();
         }
 
-        private void Validate()
+        private void ValidateLevelContent(Level level)
         {
-            Guard.AgainstNull(_config, () => new MissingLevelListConfigException(nameof(_config), gameObject.name));
+            IValidatable[] validatables = level.GetComponentsInChildren<IValidatable>(true);
 
-            _config.Validate();
+            foreach (IValidatable validatable in validatables)
+            {
+                validatable.Validate();
+            }
         }
     }
 }

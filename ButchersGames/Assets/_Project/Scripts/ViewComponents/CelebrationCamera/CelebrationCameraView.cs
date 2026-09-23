@@ -1,4 +1,6 @@
 using DG.Tweening;
+using ContentValidation;
+using Core.Lifecycle;
 using Infrastructure.ExtendedExceptions;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -8,7 +10,9 @@ namespace ViewComponents.CelebrationCamera
     [DisallowMultipleComponent]
     public sealed class CelebrationCameraView
         : MonoBehaviour,
-          ICelebrationCameraView
+          ICelebrationCameraView,
+          IValidatable,
+          IWarmupLifecycle
     {
         private const float LeftArcSign = -1f;
         private const float MidpointBias = 0.5f;
@@ -25,15 +29,40 @@ namespace ViewComponents.CelebrationCamera
         private float _radius;
         private float _arc;
 
-        private void Awake()
-        {
-            Validate();
-            RememberRestPose();
-        }
-
         private void OnDestroy()
         {
             KillMotion();
+        }
+
+        void IValidatable.Validate()
+        {
+            Guard.AgainstNull(_config, () => new MissingCelebrationCameraConfigException(nameof(_config), gameObject.name));
+
+            Guard.AgainstNull(
+                _cinemachineFollow,
+                () => new MissingCelebrationCameraFollowException(nameof(_cinemachineFollow), gameObject.name)
+            );
+
+            Guard.AgainstNull(
+                _orbitPivot,
+                () => new MissingCelebrationCameraTargetException(nameof(_orbitPivot), gameObject.name)
+            );
+
+            _config.Validate();
+
+            float radius = HorizontalDistance();
+
+            Guard.AgainstNonPositive(radius, () => new InvalidCelebrationCameraRadiusException(gameObject.name, radius));
+
+            Guard.AgainstTrue(
+                _config.ArcDistance >= Mathf.PI * radius,
+                () => new CelebrationCameraArcTooLongException(_config.ArcDistance, radius)
+            );
+        }
+
+        void IWarmupLifecycle.Warmup()
+        {
+            RememberRestPose();
         }
 
         void ICelebrationCameraView.Play()
@@ -145,24 +174,6 @@ namespace ViewComponents.CelebrationCamera
         {
             _motion?.Kill();
             _motion = null;
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_config, () => new MissingCelebrationCameraConfigException(nameof(_config), gameObject.name));
-            Guard.AgainstNull(_cinemachineFollow, () => new MissingCelebrationCameraFollowException(nameof(_cinemachineFollow), gameObject.name));
-            Guard.AgainstNull(_orbitPivot, () => new MissingCelebrationCameraTargetException(nameof(_orbitPivot), gameObject.name));
-
-            _config.Validate();
-
-            float radius = HorizontalDistance();
-
-            Guard.AgainstNonPositive(radius, () => new InvalidCelebrationCameraRadiusException(gameObject.name, radius));
-
-            Guard.AgainstTrue(
-                _config.ArcDistance >= Mathf.PI * radius,
-                () => new CelebrationCameraArcTooLongException(_config.ArcDistance, radius)
-            );
         }
     }
 }

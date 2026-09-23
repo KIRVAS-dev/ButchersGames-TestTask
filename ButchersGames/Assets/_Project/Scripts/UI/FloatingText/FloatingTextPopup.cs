@@ -1,12 +1,15 @@
 using System;
 using DG.Tweening;
+using ContentValidation;
 using Infrastructure.ExtendedExceptions;
 using TMPro;
 using UnityEngine;
 
 namespace UI.FloatingText
 {
-    internal sealed class FloatingTextPopup : MonoBehaviour
+    internal sealed class FloatingTextPopup :
+        MonoBehaviour,
+        IValidatable
     {
         private const float HiddenAlpha = 0f;
         private const float VisibleAlpha = 1f;
@@ -18,9 +21,15 @@ namespace UI.FloatingText
 
         private Action<FloatingTextPopup> _completed;
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(_rectTransform, () => Missing(nameof(_rectTransform)));
+            Guard.AgainstNull(_canvasGroup, () => Missing(nameof(_canvasGroup)));
+            Guard.AgainstNull(_text, () => Missing(nameof(_text)));
+
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingFloatingTextFieldException(fieldName, gameObject.name);
         }
 
         public void Play(
@@ -63,17 +72,6 @@ namespace UI.FloatingText
         private void OnDisappeared()
         {
             _completed(this);
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_rectTransform, () => Missing(nameof(_rectTransform)));
-            Guard.AgainstNull(_canvasGroup, () => Missing(nameof(_canvasGroup)));
-            Guard.AgainstNull(_text, () => Missing(nameof(_text)));
-
-            return;
-
-            ExtendedException Missing(string fieldName) => new MissingFloatingTextFieldException(fieldName, gameObject.name);
         }
     }
 }

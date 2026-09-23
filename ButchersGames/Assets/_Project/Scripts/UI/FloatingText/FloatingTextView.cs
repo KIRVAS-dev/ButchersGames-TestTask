@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using ContentValidation;
+using Core.Lifecycle;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -8,7 +10,9 @@ namespace UI.FloatingText
 {
     public sealed class FloatingTextView
         : MonoBehaviour,
-          IFloatingTextView
+          IFloatingTextView,
+          IValidatable,
+          IWarmupLifecycle
     {
         private const string GainAmountTextFormat = "+{0}";
         private const string LossAmountTextFormat = "-{0}";
@@ -26,12 +30,25 @@ namespace UI.FloatingText
         private Action<FloatingTextPopup> _releaseGain;
         private Action<FloatingTextPopup> _releaseLoss;
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(_canvas, () => Missing(nameof(_canvas)));
+            Guard.AgainstNull(_container, () => Missing(nameof(_container)));
+            Guard.AgainstNull(_worldCamera, () => Missing(nameof(_worldCamera)));
+            Guard.AgainstNull(_anchor, () => Missing(nameof(_anchor)));
+            Guard.AgainstNull(_gainPrefab, () => Missing(nameof(_gainPrefab)));
+            Guard.AgainstNull(_lossPrefab, () => Missing(nameof(_lossPrefab)));
+            Guard.AgainstNull(_config, () => Missing(nameof(_config)));
 
             _config.Validate();
 
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingFloatingTextFieldException(fieldName, gameObject.name);
+        }
+
+        void IWarmupLifecycle.Warmup()
+        {
             _gainPool = CreatePool(_gainPrefab);
             _lossPool = CreatePool(_lossPrefab);
 
@@ -62,6 +79,31 @@ namespace UI.FloatingText
                 amount,
                 -_config.SideOffset
             );
+        }
+
+        private ObjectPool<FloatingTextPopup> CreatePool(FloatingTextPopup prefab)
+        {
+            return new ObjectPool<FloatingTextPopup>(
+                () => Instantiate(prefab, _container),
+                floatingText => floatingText.gameObject.SetActive(true),
+                floatingText => floatingText.gameObject.SetActive(false),
+                defaultCapacity: _config.PrewarmCount
+            );
+        }
+
+        private void Prewarm(ObjectPool<FloatingTextPopup> pool)
+        {
+            List<FloatingTextPopup> prewarmedTexts = new List<FloatingTextPopup>(_config.PrewarmCount);
+
+            for (int i = 0; i < _config.PrewarmCount; i++)
+            {
+                prewarmedTexts.Add(pool.Get());
+            }
+
+            foreach (FloatingTextPopup prewarmedText in prewarmedTexts)
+            {
+                pool.Release(prewarmedText);
+            }
         }
 
         private void Show(
@@ -96,46 +138,6 @@ namespace UI.FloatingText
             RectTransformUtility.ScreenPointToLocalPointInRectangle(_container, screenPoint, uiCamera, out Vector2 localPoint);
 
             return localPoint;
-        }
-
-        private ObjectPool<FloatingTextPopup> CreatePool(FloatingTextPopup prefab)
-        {
-            return new ObjectPool<FloatingTextPopup>(
-                () => Instantiate(prefab, _container),
-                floatingText => floatingText.gameObject.SetActive(true),
-                floatingText => floatingText.gameObject.SetActive(false),
-                defaultCapacity: _config.PrewarmCount
-            );
-        }
-
-        private void Prewarm(ObjectPool<FloatingTextPopup> pool)
-        {
-            List<FloatingTextPopup> prewarmedTexts = new List<FloatingTextPopup>(_config.PrewarmCount);
-
-            for (int i = 0; i < _config.PrewarmCount; i++)
-            {
-                prewarmedTexts.Add(pool.Get());
-            }
-
-            foreach (FloatingTextPopup prewarmedText in prewarmedTexts)
-            {
-                pool.Release(prewarmedText);
-            }
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_canvas, () => Missing(nameof(_canvas)));
-            Guard.AgainstNull(_container, () => Missing(nameof(_container)));
-            Guard.AgainstNull(_worldCamera, () => Missing(nameof(_worldCamera)));
-            Guard.AgainstNull(_anchor, () => Missing(nameof(_anchor)));
-            Guard.AgainstNull(_gainPrefab, () => Missing(nameof(_gainPrefab)));
-            Guard.AgainstNull(_lossPrefab, () => Missing(nameof(_lossPrefab)));
-            Guard.AgainstNull(_config, () => Missing(nameof(_config)));
-
-            return;
-
-            ExtendedException Missing(string fieldName) => new MissingFloatingTextFieldException(fieldName, gameObject.name);
         }
     }
 }

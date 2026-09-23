@@ -2,7 +2,8 @@
     "name": "Core",
     "rootNamespace": "Core",
     "references": [
-        "ExtendedExceptions"
+        "ExtendedExceptions",
+        "ContentValidation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

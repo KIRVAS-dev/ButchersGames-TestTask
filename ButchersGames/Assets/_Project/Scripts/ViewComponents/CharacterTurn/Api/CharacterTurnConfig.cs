@@ -1,10 +1,11 @@
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace ViewComponents.CharacterTurn
 {
-    [CreateAssetMenu(menuName = "Configs/Character Turn")]
-    internal sealed class CharacterTurnConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/Character Turn Config")]
+    internal sealed class CharacterTurnConfig : ScriptableObject, IValidatable
     {
         [SerializeField] [Min(0f)] private float _maxAngle = 35f;
         [SerializeField] [Min(0f)] private float _turnSpeed = 200f;

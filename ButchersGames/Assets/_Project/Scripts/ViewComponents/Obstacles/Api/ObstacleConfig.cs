@@ -1,10 +1,11 @@
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace ViewComponents.Obstacles
 {
-    [CreateAssetMenu(menuName = "Configs/Obstacle")]
-    internal sealed class ObstacleConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/Obstacle Config")]
+    internal sealed class ObstacleConfig : ScriptableObject, IValidatable
     {
         [SerializeField] [Min(0f)] private float _stopDuration;
 

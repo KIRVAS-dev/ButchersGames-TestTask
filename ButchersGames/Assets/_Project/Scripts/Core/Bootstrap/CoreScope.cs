@@ -1,3 +1,4 @@
+using ContentValidation;
 using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
@@ -12,6 +13,7 @@ using Core.Input;
 using Core.Input.RunnerMovement;
 using Core.Lifecycle;
 using Core.Loop;
+using Core.Validation;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
@@ -22,13 +24,13 @@ using UI.StartScreen;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using ViewComponents.Audio;
 using ViewComponents.CelebrationCamera;
 using ViewComponents.CharacterAnimation;
 using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerMovement;
-using ViewComponents.Audio;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
 
@@ -60,6 +62,7 @@ namespace Core.Bootstrap
         {
             builder.RegisterEntryPoint<CoreEntryPoint>();
             builder.RegisterEntryPoint<GameLoop>();
+            builder.Register<SessionValidation>(Lifetime.Singleton);
         }
 
         private static void RegisterGameFlow(IContainerBuilder builder)
@@ -78,12 +81,10 @@ namespace Core.Bootstrap
                 () => new MissingWealthMeterConfigException(nameof(_wealthMeterConfig), gameObject.name)
             );
 
-            _wealthMeterConfig.Validate();
-
-            builder.RegisterInstance<IWealthMeterSettings>(_wealthMeterConfig);
+            builder.RegisterInstance(_wealthMeterConfig).As<IWealthMeterSettings>().As<IValidatable>();
             builder.Register<WealthMeterModel>(Lifetime.Singleton);
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>().As<ISubscriptionLifecycle>();
-            builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>();
+            builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>().As<IValidatable>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
@@ -94,10 +95,12 @@ namespace Core.Bootstrap
                 () => new MissingRunnerMovementConfigException(nameof(_runnerMovementConfig), gameObject.name)
             );
 
-            _runnerMovementConfig.Validate();
+            builder
+               .RegisterInstance(_runnerMovementConfig)
+               .As<IRunnerMovementSettings>()
+               .As<IRunnerMovementInputSettings>()
+               .As<IValidatable>();
 
-            builder.RegisterInstance<IRunnerMovementSettings>(_runnerMovementConfig);
-            builder.RegisterInstance<IRunnerMovementInputSettings>(_runnerMovementConfig);
             builder.Register<DragInput>(Lifetime.Singleton).As<IDragInput>().As<IInputTickable>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().As<IRunnerMovementView>().As<IPresentationTickable>();
             builder.Register<RunnerMovementModel>(Lifetime.Singleton);
@@ -114,7 +117,7 @@ namespace Core.Bootstrap
 
         private static void RegisterLevel(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().AsSelf();
+            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().AsSelf().As<IValidatable>();
 
             builder
                .Register<CurrentLevel>(Lifetime.Singleton)
@@ -142,19 +145,35 @@ namespace Core.Bootstrap
 
         private static void RegisterCharacterAnimation(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<CharacterAnimationView>().As<ICharacterAnimationView>();
+            builder
+               .RegisterComponentInHierarchy<CharacterAnimationView>()
+               .As<ICharacterAnimationView>()
+               .As<IValidatable>()
+               .As<IWarmupLifecycle>();
+
             builder.Register<CharacterAnimationPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterCharacterTurn(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<CharacterTurnView>().As<ICharacterTurnView>().As<IPresentationTickable>();
+            builder
+               .RegisterComponentInHierarchy<CharacterTurnView>()
+               .As<ICharacterTurnView>()
+               .As<IPresentationTickable>()
+               .As<IValidatable>()
+               .As<IWarmupLifecycle>();
+
             builder.Register<CharacterTurnPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterCelebrationCamera(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<CelebrationCameraView>().As<ICelebrationCameraView>();
+            builder
+               .RegisterComponentInHierarchy<CelebrationCameraView>()
+               .As<ICelebrationCameraView>()
+               .As<IValidatable>()
+               .As<IWarmupLifecycle>();
+
             builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
@@ -165,19 +184,41 @@ namespace Core.Bootstrap
 
         private static void RegisterFeedbackPresentation(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<FeedbackPerformer>().As<IFeedbackPerformer>();
+            builder
+               .RegisterComponentInHierarchy<FeedbackPerformer>()
+               .As<IFeedbackPerformer>()
+               .As<IValidatable>()
+               .As<IWarmupLifecycle>();
+
             builder.Register<FeedbackPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterUi(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<StartScreenView>().As<IStartScreenView>();
+            builder
+               .RegisterComponentInHierarchy<StartScreenView>()
+               .As<IStartScreenView>()
+               .As<IValidatable>()
+               .As<ISubscriptionLifecycle>();
+
             builder.Register<StartScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
-            builder.RegisterComponentInHierarchy<HudView>().As<IHudView>();
+            builder.RegisterComponentInHierarchy<HudView>().As<IHudView>().As<IValidatable>();
             builder.Register<HudPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
-            builder.RegisterComponentInHierarchy<ResultScreenView>().As<IResultScreenView>();
+
+            builder
+               .RegisterComponentInHierarchy<ResultScreenView>()
+               .As<IResultScreenView>()
+               .As<IValidatable>()
+               .As<ISubscriptionLifecycle>();
+
             builder.Register<ResultScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
-            builder.RegisterComponentInHierarchy<FloatingTextView>().As<IFloatingTextView>();
+
+            builder
+               .RegisterComponentInHierarchy<FloatingTextView>()
+               .As<IFloatingTextView>()
+               .As<IValidatable>()
+               .As<IWarmupLifecycle>();
+
             builder.Register<FloatingTextPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
     }

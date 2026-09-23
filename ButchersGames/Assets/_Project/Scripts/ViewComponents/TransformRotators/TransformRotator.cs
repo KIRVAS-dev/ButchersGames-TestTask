@@ -1,3 +1,4 @@
+using ContentValidation;
 using Core.Gameplay.TransformRotator;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -6,7 +7,8 @@ namespace ViewComponents.TransformRotators
 {
     internal sealed class TransformRotator
         : MonoBehaviour,
-          ITransformRotatorView
+          ITransformRotatorView,
+          IValidatable
     {
         [SerializeField] private Transform _targetTransform;
         [SerializeField] private Vector3 _speed;
@@ -16,9 +18,12 @@ namespace ViewComponents.TransformRotators
             ? -1f
             : 1f;
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(
+                _targetTransform,
+                () => new MissingTransformRotatorFieldException(nameof(_targetTransform), gameObject.name)
+            );
         }
 
         void ITransformRotatorView.Rotate()
@@ -29,14 +34,6 @@ namespace ViewComponents.TransformRotators
             }
 
             _targetTransform.Rotate(_speed * DirectionSign * Time.deltaTime);
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(
-                _targetTransform,
-                () => new MissingTransformRotatorFieldException(nameof(_targetTransform), gameObject.name)
-            );
         }
     }
 }

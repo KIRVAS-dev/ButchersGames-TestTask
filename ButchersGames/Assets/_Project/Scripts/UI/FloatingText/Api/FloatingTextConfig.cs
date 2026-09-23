@@ -1,11 +1,12 @@
 using DG.Tweening;
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace UI.FloatingText
 {
     [CreateAssetMenu(menuName = "Configs/Floating Text Config")]
-    internal sealed class FloatingTextConfig : ScriptableObject
+    internal sealed class FloatingTextConfig : ScriptableObject, IValidatable
     {
         [SerializeField] private float _sideOffset = 120f;
         [SerializeField] private int _prewarmCount = 8;
