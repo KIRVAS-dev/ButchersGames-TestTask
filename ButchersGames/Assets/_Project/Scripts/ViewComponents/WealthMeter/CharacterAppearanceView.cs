@@ -1,3 +1,4 @@
+using ContentValidation;
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -6,7 +7,8 @@ namespace ViewComponents.WealthMeter
 {
     public sealed class CharacterAppearanceView
         : MonoBehaviour,
-          ICharacterAppearanceView
+          ICharacterAppearanceView,
+          IValidatable
     {
         [SerializeField] private GameObject _poor;
         [SerializeField] private GameObject _casual;
@@ -14,21 +16,7 @@ namespace ViewComponents.WealthMeter
         [SerializeField] private GameObject _business;
         [SerializeField] private GameObject _rich;
 
-        private void Awake()
-        {
-            Validate();
-        }
-
-        void ICharacterAppearanceView.SetActiveStage(WealthStage stage)
-        {
-            _poor.SetActive(stage == WealthStage.Poor);
-            _casual.SetActive(stage == WealthStage.Casual);
-            _middle.SetActive(stage == WealthStage.Middle);
-            _business.SetActive(stage == WealthStage.Business);
-            _rich.SetActive(stage == WealthStage.Rich);
-        }
-
-        private void Validate()
+        void IValidatable.Validate()
         {
             Guard.AgainstNull(_poor, () => Missing(nameof(_poor)));
             Guard.AgainstNull(_casual, () => Missing(nameof(_casual)));
@@ -40,6 +28,15 @@ namespace ViewComponents.WealthMeter
 
             ExtendedException Missing(string fieldName) =>
                 new MissingCharacterAppearanceViewFieldException(fieldName, gameObject.name);
+        }
+
+        void ICharacterAppearanceView.SetActiveStage(WealthStage stage)
+        {
+            _poor.SetActive(stage == WealthStage.Poor);
+            _casual.SetActive(stage == WealthStage.Casual);
+            _middle.SetActive(stage == WealthStage.Middle);
+            _business.SetActive(stage == WealthStage.Business);
+            _rich.SetActive(stage == WealthStage.Rich);
         }
     }
 }

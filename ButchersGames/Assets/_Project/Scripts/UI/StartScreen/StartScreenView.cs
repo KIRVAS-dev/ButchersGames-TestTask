@@ -1,4 +1,6 @@
 using System;
+using ContentValidation;
+using Core.Lifecycle;
 using Infrastructure.ExtendedExceptions;
 using TMPro;
 using UnityEngine;
@@ -8,7 +10,9 @@ namespace UI.StartScreen
 {
     public sealed class StartScreenView
         : MonoBehaviour,
-          IStartScreenView
+          IStartScreenView,
+          IValidatable,
+          ISubscriptionLifecycle
     {
         [SerializeField] private RectTransform _root;
         [SerializeField] private TextMeshProUGUI _levelNumberText;
@@ -16,14 +20,23 @@ namespace UI.StartScreen
 
         public event Action StartClicked;
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(_root, () => Missing(nameof(_root)));
+            Guard.AgainstNull(_levelNumberText, () => Missing(nameof(_levelNumberText)));
+            Guard.AgainstNull(_startButton, () => Missing(nameof(_startButton)));
 
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingStartScreenFieldException(fieldName, gameObject.name);
+        }
+
+        void ISubscriptionLifecycle.Start()
+        {
             _startButton.onClick.AddListener(OnStartButtonClicked);
         }
 
-        private void OnDestroy()
+        void ISubscriptionLifecycle.Stop()
         {
             _startButton.onClick.RemoveListener(OnStartButtonClicked);
         }
@@ -46,17 +59,6 @@ namespace UI.StartScreen
         private void OnStartButtonClicked()
         {
             StartClicked?.Invoke();
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_root, () => Missing(nameof(_root)));
-            Guard.AgainstNull(_levelNumberText, () => Missing(nameof(_levelNumberText)));
-            Guard.AgainstNull(_startButton, () => Missing(nameof(_startButton)));
-
-            return;
-
-            ExtendedException Missing(string fieldName) => new MissingStartScreenFieldException(fieldName, gameObject.name);
         }
     }
 }

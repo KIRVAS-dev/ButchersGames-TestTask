@@ -1,11 +1,12 @@
 using DG.Tweening;
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace ViewComponents.CelebrationCamera
 {
-    [CreateAssetMenu(menuName = "Configs/Celebration Camera")]
-    internal sealed class CelebrationCameraConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/Celebration Camera Config")]
+    internal sealed class CelebrationCameraConfig : ScriptableObject, IValidatable
     {
         [SerializeField] [Min(0f)]
         private float _arcDistance = 1.5f;
@@ -21,7 +22,7 @@ namespace ViewComponents.CelebrationCamera
         internal Ease AccelerationEase => _accelerationEase;
         internal Ease DecelerationEase => _decelerationEase;
 
-        internal void Validate()
+        public void Validate()
         {
             Guard.AgainstNonPositive(_arcDistance, () => Invalid(nameof(_arcDistance), _arcDistance));
             Guard.AgainstNonPositive(_arcSpeed, () => Invalid(nameof(_arcSpeed), _arcSpeed));

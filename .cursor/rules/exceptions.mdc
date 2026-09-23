@@ -40,7 +40,10 @@ MonoBehaviour, SerializeField, сцена.
 | Не назначено поле | `Missing{Feature}FieldException` | `fieldName`, `objectName` |
 | Невалидное число на MB | `Invalid{Feature}ValueException` | `fieldName`, `objectName`, `value` |
 
-- `Awake()` → `Validate()`; в `Validate()` только проверки, без side effects
+- Типы с authored wiring / config реализуют `IValidatable` (`ContentValidation` package); `Validate()` только проверки, без side effects
+- **Когда вызывается:** session — `SessionValidation` из DI до `PrepareGame`; level content — после `LoadLevel` / `CurrentLevel.Set`; Editor — `Tools/ContentValidation` (collect-all)
+- Init, которому нужны уже проверенные поля (пулы, словари, `TurnAnimator` и т.п.) — `IWarmupLifecycle.Warmup()` после session в `CoreEntryPoint`, не `Awake → Validate`
+- View/MB: предпочитать `void IValidatable.Validate()` (explicit); `public void Validate()` — только если нужен вызов с concrete
 - Ссылки: `Guard.AgainstNull` / `AgainstNullOrEmpty` + typed factory
 - Числа: `Guard.AgainstNegative` / `AgainstNonPositive` / `AgainstLessThan` / … → `Invalid{Feature}ValueException`
 - В message View допускается `gameObject.name` как `objectName`
@@ -55,7 +58,7 @@ Model, Service, ScriptableObject-config без привязки к сцене.
 | Домен / контекст | `Missing/Invalid{Feature}{Topic}Exception` | по смыслу фичи |
 
 - Model **без** `UnityEngine.*`
-- Config: `public void Validate()`; вызывающий сначала `Guard.AgainstNull` на ссылку config
+- Config (owned SO): `IValidatable` через **`public void Validate()`** (не explicit) — владелец зовёт `_config.Validate()` после `Guard.AgainstNull`; session/Editor тоже через `IValidatable`. Explicit на config даёт лишний `((IValidatable)_config)` без выигрыша
 - Политика soft-checks (запрет soft return / LogWarning вместо throw) — см. `architecture-core.mdc`
 
 ## Guard

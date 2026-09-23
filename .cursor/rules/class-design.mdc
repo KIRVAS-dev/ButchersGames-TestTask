@@ -59,6 +59,8 @@ Finding: утечка реализации; жёсткая связь через
 
 **События (`event`) — исключение:** всегда **implicit** (`public event …`). Explicit для events в C# требует `add`/`remove` + backing и даёт шум без выигрыша — под правило explicit не попадают.
 
+**`IValidatable` на owned config (SO) — исключение:** всегда **`public void Validate()`**. Владелец держит concrete `_config` и зовёт напрямую; explicit даёт только `((IValidatable)_config)`. View/MB — explicit (`exceptions.mdc`).
+
 Implicit (`public Bar`) также — когда explicit ломает удобство или требует переписывания: вызовы через concrete-тип, Unity/сериализация, заметно более громоздкий код ради одной формальности.
 
 Finding: public-метод/свойство интерфейса на concrete, хотя все потребители ходят через порт и explicit был бы безболезненным; либо explicit-event с backing ради формальности.

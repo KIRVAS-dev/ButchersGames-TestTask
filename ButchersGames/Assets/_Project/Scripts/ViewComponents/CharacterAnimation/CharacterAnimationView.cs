@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using ContentValidation;
+using Core.Lifecycle;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
@@ -8,7 +10,9 @@ namespace ViewComponents.CharacterAnimation
     [DisallowMultipleComponent]
     public sealed class CharacterAnimationView
         : MonoBehaviour,
-          ICharacterAnimationView
+          ICharacterAnimationView,
+          IValidatable,
+          IWarmupLifecycle
     {
         [Serializable]
         private struct StateNamesMapItem
@@ -24,12 +28,31 @@ namespace ViewComponents.CharacterAnimation
         private Dictionary<CharacterAnimationSlot, int> _stateHashes;
         private Dictionary<CharacterAnimationSlot, int> _reactionTriggers;
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(_animator, () => Missing(nameof(_animator)));
+            Guard.AgainstNullOrEmpty(_rawStatesMap, () => Missing(nameof(_rawStatesMap)));
 
+            Guard.AgainstNegative(
+                _crossFadeDuration,
+                () => new InvalidCharacterAnimationViewValueException(
+                    nameof(_crossFadeDuration),
+                    gameObject.name,
+                    _crossFadeDuration
+                )
+            );
+
+            ValidateStateMap();
+
+            return;
+
+            ExtendedException Missing(string fieldName) =>
+                new MissingCharacterAnimationViewFieldException(fieldName, gameObject.name);
+        }
+
+        void IWarmupLifecycle.Warmup()
+        {
             _stateHashes = BuildStateHashes();
-            EnsureAllSlotsMapped(_stateHashes);
             _reactionTriggers = BuildReactionTriggers();
         }
 
@@ -48,15 +71,14 @@ namespace ViewComponents.CharacterAnimation
             _animator.SetTrigger(_reactionTriggers[slot]);
         }
 
-        private Dictionary<CharacterAnimationSlot, int> BuildStateHashes()
+        private void ValidateStateMap()
         {
-            Dictionary<CharacterAnimationSlot, int> stateHashes =
-                new Dictionary<CharacterAnimationSlot, int>(_rawStatesMap.Length);
+            HashSet<CharacterAnimationSlot> mappedSlots = new HashSet<CharacterAnimationSlot>();
 
             foreach (StateNamesMapItem mapItem in _rawStatesMap)
             {
                 Guard.AgainstTrue(
-                    stateHashes.ContainsKey(mapItem.AnimationSlot),
+                    !mappedSlots.Add(mapItem.AnimationSlot),
                     () => new DuplicateCharacterAnimationSlotException(mapItem.AnimationSlot, gameObject.name)
                 );
 
@@ -64,22 +86,28 @@ namespace ViewComponents.CharacterAnimation
                     string.IsNullOrWhiteSpace(mapItem.StateName),
                     () => new CharacterAnimationStateNameMissingException(mapItem.AnimationSlot, gameObject.name)
                 );
+            }
 
+            foreach (CharacterAnimationSlot slot in Enum.GetValues(typeof(CharacterAnimationSlot)))
+            {
+                Guard.AgainstTrue(
+                    !mappedSlots.Contains(slot),
+                    () => new CharacterAnimationSlotNotMappedException(slot, gameObject.name)
+                );
+            }
+        }
+
+        private Dictionary<CharacterAnimationSlot, int> BuildStateHashes()
+        {
+            Dictionary<CharacterAnimationSlot, int> stateHashes =
+                new Dictionary<CharacterAnimationSlot, int>(_rawStatesMap.Length);
+
+            foreach (StateNamesMapItem mapItem in _rawStatesMap)
+            {
                 stateHashes.Add(mapItem.AnimationSlot, Animator.StringToHash(mapItem.StateName));
             }
 
             return stateHashes;
-        }
-
-        private void EnsureAllSlotsMapped(Dictionary<CharacterAnimationSlot, int> stateHashes)
-        {
-            foreach (CharacterAnimationSlot slot in Enum.GetValues(typeof(CharacterAnimationSlot)))
-            {
-                Guard.AgainstTrue(
-                    !stateHashes.ContainsKey(slot),
-                    () => new CharacterAnimationSlotNotMappedException(slot, gameObject.name)
-                );
-            }
         }
 
         private Dictionary<CharacterAnimationSlot, int> BuildReactionTriggers()
@@ -89,26 +117,6 @@ namespace ViewComponents.CharacterAnimation
                 [CharacterAnimationSlot.Happy] = _stateHashes[CharacterAnimationSlot.Happy],
                 [CharacterAnimationSlot.Sad] = _stateHashes[CharacterAnimationSlot.Sad]
             };
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_animator, () => Missing(nameof(_animator)));
-            Guard.AgainstNullOrEmpty(_rawStatesMap, () => Missing(nameof(_rawStatesMap)));
-
-            Guard.AgainstNegative(
-                _crossFadeDuration,
-                () => new InvalidCharacterAnimationViewValueException(
-                    nameof(_crossFadeDuration),
-                    gameObject.name,
-                    _crossFadeDuration
-                )
-            );
-
-            return;
-
-            ExtendedException Missing(string fieldName) =>
-                new MissingCharacterAnimationViewFieldException(fieldName, gameObject.name);
         }
     }
 }

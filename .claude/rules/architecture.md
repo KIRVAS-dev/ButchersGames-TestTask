@@ -19,7 +19,8 @@ Assets/_Project/Scripts/
 │   └── Persistence/         Infrastructure.Persistence — PlayerPrefs и пр. адаптеры хранения
 ├── Core/
 │   ├── Loop/Api/            Core                      — порты цикла (namespace Core.Loop): IInputTickable, IGameplayTickable, IPresentationTickable
-│   ├── Lifecycle/           Core                      — жизненный цикл scope (namespace Core.Lifecycle): CoreScopeCancellationSource; `Api/` — ICoreScopeCancellation, ISubscriptionLifecycle
+│   ├── Lifecycle/           Core                      — жизненный цикл scope (namespace Core.Lifecycle): CoreScopeCancellationSource; `Api/` — ICoreScopeCancellation, ISubscriptionLifecycle, IWarmupLifecycle
+│   ├── Validation/          Core                      — SessionValidation (обход IValidatable из DI до PrepareGame)
 │   ├── Bootstrap/           Bootstrap                 — CoreScope, CoreEntryPoint, GameLoop; `Scene/` — CoreLoader + `Api/` ISceneLoader, LoadSceneMode (Core.Bootstrap.Scene)
 │   ├── Gameplay/{Feature}/  Core                      — Model, Service, Api (в т.ч. I*Settings)
 │   └── Input/               Core                      — порты ввода `Api/` (IDragInput, namespace Core.Input) и `{Feature}/` InputHandler → Service (namespace Core.Input.{Feature})
@@ -45,11 +46,11 @@ Rendering  — изолирован от gameplay (URP only)
 |---|---|---|
 | **ExtendedExceptions** | — | `ExtendedException`, `Guard` |
 | **Infrastructure.Persistence** | Core | Адаптеры persistence (PlayerPrefs и т.п.) |
-| **Core** | ExtendedExceptions, R3 | Gameplay, порты `Api/` (без SO Config), фазы цикла |
+| **Core** | ExtendedExceptions, ContentValidation, R3 | Gameplay, порты `Api/` (без SO Config), фазы цикла, SessionValidation |
 | **Input** | Core, Unity.InputSystem | Адаптеры устройств: `DragInput` и т.п. (plain C#, реализуют порты Core), `ITrigger` |
-| **ViewComponents** | Core, ExtendedExceptions, UniTask, VContainer, FMOD, Splines, R3 | View, Providers, SO Config |
-| **UI** | Core, ExtendedExceptions, DOTween, TMP, uGUI, R3 | Экраны UI: View, Presenter, Config |
-| **Bootstrap** | Core, Input, UI, ViewComponents, Infrastructure.Persistence, ExtendedExceptions, VContainer, UniTask | CoreScope, CoreEntryPoint, GameLoop |
+| **ViewComponents** | Core, ExtendedExceptions, ContentValidation, UniTask, VContainer, FMOD, Splines, R3 | View, Providers, SO Config |
+| **UI** | Core, ExtendedExceptions, ContentValidation, DOTween, TMP, uGUI, R3 | Экраны UI: View, Presenter, Config |
+| **Bootstrap** | Core, Input, UI, ViewComponents, Infrastructure.Persistence, ExtendedExceptions, ContentValidation, VContainer, UniTask | CoreScope, CoreEntryPoint, GameLoop |
 | **Debug** | Unity.InputSystem | Editor-only отладка |
 | **Infrastructure.Bootstrap** | Bootstrap, VContainer, UniTask | ProjectScope, загрузка Core |
 | **Rendering** | URP | Пост-эффекты |
@@ -93,15 +94,15 @@ VContainer, UniTask, R3 — пакеты; в asmdef вручную не доба
 | EntryPoint | Scope | Start | Dispose |
 |---|---|---|---|
 | Infrastructure Bootstrap EntryPoint | Project | additive load Core | — |
-| `CoreEntryPoint` | Core | `ISubscriptionLifecycle.Start()` у всех зарегистрированных реализаций (в любом порядке), затем `IGameFlowService.PrepareGame()` — подготовка игры после всех подписок | `ISubscriptionLifecycle.Stop()` |
+| `CoreEntryPoint` | Core | `SessionValidation` → `IWarmupLifecycle.Warmup()` → `ISubscriptionLifecycle.Start()` → `PrepareGame()` | `ISubscriptionLifecycle.Stop()` |
 | `GameLoop` | Core | — (только `ITickable`) | — |
 
 `RegisterEntryPoint<T>()` в VContainer — это способ получить колбэки жизненного цикла (`IStartable`, `ITickable`, `IDisposable`), а не отдельное архитектурное понятие. В Core-scope их две:
 
-- `CoreEntryPoint` (`RegisterEntryPoint<CoreEntryPoint>()`) — **единственный стартер** Core-геймплея: через DI получает `IReadOnlyList<ISubscriptionLifecycle>` и `IGameFlowService`, не перечисляет concrete Presenter/сервисы в ctor.
+- `CoreEntryPoint` (`RegisterEntryPoint<CoreEntryPoint>()`) — **единственный стартер** Core-геймплея: через DI получает `SessionValidation`, `IReadOnlyList<IWarmupLifecycle>`, `IReadOnlyList<ISubscriptionLifecycle>` и `IGameFlowService`, не перечисляет concrete Presenter/сервисы в ctor.
 - `GameLoop` (`RegisterEntryPoint<GameLoop>()`) — только тик кадра. Через DI получает списки всех реализаций `IInputTickable` (чтение ввода), `IGameplayTickable` (симуляция, `Tick(deltaTime)`) и `IPresentationTickable` (применение итога кадра к сцене) и на каждом кадре обходит их в этом порядке: «ввод → геймплей → отображение». Отдельных классов-фаз нет: реализация регистрируется как `.As<I*Tickable>()` (например, `DragInput` — `IInputTickable`, `RunnerMovementService` — `IGameplayTickable`, `RunnerMovementView` — `IPresentationTickable`). Для View, которому дорого применять каждое изменение, `Set*` от Presenter только запоминают значения, а `IPresentationTickable.Tick()` применяет их один раз за кадр. GameLoop не запускает фичи и не содержит логики. `IGameplayInputBlock` — флаг блокировки геймплейного ввода, `GameplayInputBlock` вычисляет его из `GameStateModel.State` (заблокирован везде, кроме `Run`), читает InputHandler.
 
-Новый участник цикла реализует `I*Tickable` и регистрируется через `.As<I*Tickable>()`, а не отдельными `ITickable`/`RegisterEntryPoint`. Новая фича с долгоживущими подписками (InputHandler, Presenter, сервис-наблюдатель без потребителя через ctor — как `GameResultDetector`, `WealthPointsModifierService`) — реализует `ISubscriptionLifecycle` (`Start`/`Stop`), регистрируется `.As<ISubscriptionLifecycle>()`; **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`. `CoreEntryPoint` обходит весь список сам. Единый паттерн на все такие типы.
+Новый участник цикла реализует `I*Tickable` и регистрируется через `.As<I*Tickable>()`, а не отдельными `ITickable`/`RegisterEntryPoint`. Новая фича с долгоживущими подписками (InputHandler, Presenter, сервис-наблюдатель без потребителя через ctor — как `GameResultDetector`, `WealthPointsModifierService`) — реализует `ISubscriptionLifecycle` (`Start`/`Stop`), регистрируется `.As<ISubscriptionLifecycle>()`; **не** получает свой `IStartable`/`RegisterEntryPoint`/`RegisterBuildCallback`. Init после session Validate (пулы, словари и т.п.) — `IWarmupLifecycle` (`.As<IWarmupLifecycle>()`). `CoreEntryPoint` обходит списки сам. Единый паттерн на все такие типы.
 
 ## Эталон фичи `{Feature}`
 
@@ -196,7 +197,7 @@ private void RegisterFeature(IContainerBuilder builder)
 3. `ViewComponents/{Feature}/` — View, Providers, `{Feature}Config` SO; `Api/Exceptions.cs` для view-ошибок
 4. `Core/Input/{Feature}/` — InputHandler, если есть низкоуровневый ввод без экрана (drag, клавиши). Ввод UI-экрана (клики кнопок) — через Presenter, см. **UI-экраны (GameUI, MVP)**
 5. `CoreScope` — `Register{Feature}`, SerializeField для config/providers
-6. `CoreEntryPoint` — `ISubscriptionLifecycle.Start()`/`Stop()` (через `IReadOnlyList<>`) + `PrepareGame()`; регистрация `.As<ISubscriptionLifecycle>()`
+6. `CoreEntryPoint` — `SessionValidation` → `IWarmupLifecycle.Warmup()` → `ISubscriptionLifecycle.Start()`/`Stop()` (через `IReadOnlyList<>`) → `PrepareGame()`; warmup — `.As<IWarmupLifecycle>()`, подписки — `.As<ISubscriptionLifecycle>()`
 7. Сцена Core — View, Providers; ссылки на CoreScope
 
 Проверка на Core: happy path + edge cases (busy, cancel, invalid data → exception).
@@ -219,7 +220,7 @@ UX-гейты во InputHandler (например busy → игнор клика
 |---|---|
 | **Model** | Pure C# state. Без `UnityEngine.*` |
 | **Service** | Вся бизнес-логика фичи. Bad data — по **Soft-checks** |
-| **View** | Отображение. `Awake` → `Validate()` через Guard — см. [exceptions.md](exceptions.md) |
+| **View** | Отображение. `IValidatable.Validate()` через Guard — session/level/Editor gate, не канон «только Awake»; см. [exceptions.md](exceptions.md) |
 | **InputHandler** | Тонкий адаптер. Guard только на UX-гейты (busy и т.п.) |
 | **Provider** | Читает сцену, отдаёт данные в Core. Конфиг-ошибки → view-исключения |
 

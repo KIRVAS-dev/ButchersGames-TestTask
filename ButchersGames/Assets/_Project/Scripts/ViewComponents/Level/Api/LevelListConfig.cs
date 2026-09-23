@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using ContentValidation;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.Level
 {
-    [CreateAssetMenu(menuName = "Configs/Level List")]
-    internal sealed class LevelListConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/Level List Config")]
+    internal sealed class LevelListConfig : ScriptableObject, IValidatable
     {
         [SerializeField] private bool _isRandomized;
         [SerializeField] private List<Level> _levels;

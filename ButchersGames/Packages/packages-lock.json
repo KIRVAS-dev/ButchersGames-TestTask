@@ -43,6 +43,12 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "com.kirvas.content-validation": {
+      "version": "file:ContentValidation",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.sungeargames.perfmeter": {
       "version": "https://github.com/romanilyin/sgg-perfmeter.git?path=/Assets/Scripts/SGG.PerfMeter#2026.8.19-1",
       "depth": 0,

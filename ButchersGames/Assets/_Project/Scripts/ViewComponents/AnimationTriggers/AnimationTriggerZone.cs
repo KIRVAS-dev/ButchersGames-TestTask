@@ -1,20 +1,17 @@
+using ContentValidation;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
 namespace ViewComponents.AnimationTriggers
 {
-    internal sealed class AnimationTriggerZone : MonoBehaviour
+    internal sealed class AnimationTriggerZone : MonoBehaviour,
+          IValidatable
     {
         [SerializeField] private Collider _collider;
         [SerializeField] private Animator _animator;
         [SerializeField] private string _animationName;
 
         private bool _isTriggered;
-
-        private void Awake()
-        {
-            Validate();
-        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -28,7 +25,7 @@ namespace ViewComponents.AnimationTriggers
             _animator.Play(_animationName);
         }
 
-        private void Validate()
+        void IValidatable.Validate()
         {
             Guard.AgainstNull(_collider, () => new MissingAnimationTriggerZoneFieldException(nameof(_collider), gameObject.name));
             Guard.AgainstNull(_animator, () => new MissingAnimationTriggerZoneFieldException(nameof(_animator), gameObject.name));

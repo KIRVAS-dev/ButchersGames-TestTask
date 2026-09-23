@@ -1,12 +1,13 @@
 using System;
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace UI.Hud
 {
     [CreateAssetMenu(menuName = "Configs/Hud Config")]
-    internal sealed class HudConfig : ScriptableObject
+    internal sealed class HudConfig : ScriptableObject, IValidatable
     {
         [SerializeField] private WealthStageAppearance[] _stageAppearances;
 

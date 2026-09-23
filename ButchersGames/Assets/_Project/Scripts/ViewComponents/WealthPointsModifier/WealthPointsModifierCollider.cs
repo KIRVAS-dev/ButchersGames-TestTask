@@ -1,5 +1,6 @@
 using System;
 using Core.Gameplay.WealthPointsModifier;
+using ContentValidation;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using ViewComponents.Common;
@@ -8,7 +9,8 @@ namespace ViewComponents.WealthPointsModifier
 {
     internal sealed class WealthPointsModifierCollider
         : MonoBehaviour,
-          IWealthPointsModifier
+          IWealthPointsModifier,
+          IValidatable
     {
         [SerializeField] private Collider _collider;
         [SerializeField] private WealthPointsModifierConfig _config;
@@ -16,11 +18,6 @@ namespace ViewComponents.WealthPointsModifier
         public event Action<WealthPointsModifierType, int> Triggered;
 
         private bool _isTriggered;
-
-        private void Awake()
-        {
-            Validate();
-        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -39,7 +36,7 @@ namespace ViewComponents.WealthPointsModifier
             }
         }
 
-        private void Validate()
+        void IValidatable.Validate()
         {
             Guard.AgainstNull(
                 _collider,

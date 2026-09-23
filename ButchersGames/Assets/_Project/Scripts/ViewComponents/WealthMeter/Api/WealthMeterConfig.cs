@@ -1,5 +1,6 @@
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
+using ContentValidation;
 using UnityEngine;
 
 namespace ViewComponents.WealthMeter
@@ -7,6 +8,7 @@ namespace ViewComponents.WealthMeter
     [CreateAssetMenu(menuName = "Configs/Wealth Meter Config")]
     public sealed class WealthMeterConfig
         : ScriptableObject,
+          IValidatable,
           IWealthMeterSettings
     {
         [SerializeField] private int _startValue;

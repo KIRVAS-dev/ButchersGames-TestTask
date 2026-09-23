@@ -1,3 +1,5 @@
+using ContentValidation;
+using Core.Lifecycle;
 using Core.Loop;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -8,7 +10,9 @@ namespace ViewComponents.CharacterTurn
     public sealed class CharacterTurnView
         : MonoBehaviour,
           ICharacterTurnView,
-          IPresentationTickable
+          IPresentationTickable,
+          IValidatable,
+          IWarmupLifecycle
     {
         [SerializeField] private CharacterTurnConfig _config;
 
@@ -16,10 +20,15 @@ namespace ViewComponents.CharacterTurn
         private Quaternion _baseLocalRotation;
         private float _appliedAngle;
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            Guard.AgainstNull(_config, () => new MissingCharacterTurnConfigException(nameof(_config), gameObject.name));
 
+            _config.Validate();
+        }
+
+        void IWarmupLifecycle.Warmup()
+        {
             _turnAnimator = new TurnAnimator(_config);
             _baseLocalRotation = transform.localRotation;
         }
@@ -41,13 +50,6 @@ namespace ViewComponents.CharacterTurn
         void ICharacterTurnView.SetTurn(CharacterTurnSide side)
         {
             _turnAnimator.SetSide(side);
-        }
-
-        private void Validate()
-        {
-            Guard.AgainstNull(_config, () => new MissingCharacterTurnConfigException(nameof(_config), gameObject.name));
-
-            _config.Validate();
         }
     }
 }

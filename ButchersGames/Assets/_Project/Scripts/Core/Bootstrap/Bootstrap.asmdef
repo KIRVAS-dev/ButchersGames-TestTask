@@ -9,7 +9,8 @@
         "Input",
         "UI",
         "ViewComponents",
-        "Infrastructure.Persistence"
+        "Infrastructure.Persistence",
+        "ContentValidation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

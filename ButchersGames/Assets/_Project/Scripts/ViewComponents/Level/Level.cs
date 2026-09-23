@@ -1,3 +1,4 @@
+using ContentValidation;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -5,7 +6,9 @@ using ViewComponents.Track;
 
 namespace ViewComponents.Level
 {
-    public sealed class Level : MonoBehaviour
+    public sealed class Level
+        : MonoBehaviour,
+          IValidatable
     {
         [SerializeField] private StartMarker _start;
         [SerializeField] private FinishMarker _finish;
@@ -15,12 +18,7 @@ namespace ViewComponents.Level
         public Vector3 FinishPosition => _finish.transform.position;
         public SplineContainer SplineContainer => _splineContainer;
 
-        private void Awake()
-        {
-            Validate();
-        }
-
-        private void Validate()
+        void IValidatable.Validate()
         {
             Guard.AgainstNull(_start, () => Missing(nameof(_start)));
             Guard.AgainstNull(_finish, () => Missing(nameof(_finish)));

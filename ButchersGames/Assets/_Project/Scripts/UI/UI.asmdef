@@ -6,7 +6,8 @@
         "Core",
         "DOTween.Modules",
         "Unity.TextMeshPro",
-        "Unity.ugui"
+        "Unity.ugui",
+        "ContentValidation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

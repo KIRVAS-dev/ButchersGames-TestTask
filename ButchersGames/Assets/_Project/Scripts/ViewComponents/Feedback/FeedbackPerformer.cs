@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using ContentValidation;
 using Core.Gameplay.Feedback;
+using Core.Lifecycle;
 using FMODUnity;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
@@ -8,16 +10,29 @@ namespace ViewComponents.Feedback
 {
     public sealed class FeedbackPerformer
         : MonoBehaviour,
-          IFeedbackPerformer
+          IFeedbackPerformer,
+          IValidatable,
+          IWarmupLifecycle
     {
         [SerializeField] private List<FeedbackEntry> _entries;
 
         private readonly Dictionary<FeedbackType, FeedbackEntry> _entriesByType = new Dictionary<FeedbackType, FeedbackEntry>();
 
-        private void Awake()
+        void IValidatable.Validate()
         {
-            Validate();
+            HashSet<FeedbackType> seenTypes = new HashSet<FeedbackType>();
 
+            foreach (FeedbackEntry entry in _entries)
+            {
+                Guard.AgainstTrue(
+                    !seenTypes.Add(entry.Type),
+                    () => new DuplicateFeedbackEntryException(entry.Type, gameObject.name)
+                );
+            }
+        }
+
+        void IWarmupLifecycle.Warmup()
+        {
             foreach (FeedbackEntry entry in _entries)
             {
                 _entriesByType.Add(entry.Type, entry);
@@ -45,19 +60,6 @@ namespace ViewComponents.Feedback
 
                 particle.Stop();
                 particle.Play();
-            }
-        }
-
-        private void Validate()
-        {
-            HashSet<FeedbackType> seenTypes = new HashSet<FeedbackType>();
-
-            foreach (FeedbackEntry entry in _entries)
-            {
-                Guard.AgainstTrue(
-                    !seenTypes.Add(entry.Type),
-                    () => new DuplicateFeedbackEntryException(entry.Type, gameObject.name)
-                );
             }
         }
     }

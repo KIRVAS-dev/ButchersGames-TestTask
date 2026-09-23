@@ -10,7 +10,8 @@
         "Unity.InputSystem",
         "Unity.Splines",
         "Unity.Cinemachine",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "ContentValidation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
