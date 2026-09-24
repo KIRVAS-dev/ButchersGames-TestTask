@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{af3e5d2e-e221-423e-be83-2af89415ac13}">
+		<property name="assetPath">
+			<value>SFX/HighHeels_1.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.47746031746031747</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b10dbed6-5c80-48a8-a4fb-47aed200e30d}</destination>
+		</relationship>
+	</object>
+</objects>

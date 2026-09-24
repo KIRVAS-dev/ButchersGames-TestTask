@@ -406,8 +406,6 @@ MonoBehaviour:
   MasterBanks:
   - Master
   Banks:
-  - Ambience
-  - Character
   - Music
   - SFX
   - UI
