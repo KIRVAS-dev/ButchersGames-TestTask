@@ -1,115 +1,78 @@
 ---
 paths:
-  - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
   - "**/*.unity"
   - "**/*.prefab"
 ---
 
 # Unity MCP
 
-Когда читать: правки `ButchersGames/Assets/_Project/Scripts/**/*.cs`, сцены, `**/*.prefab`.
+Auto-loads only for `.unity` / `.prefab`. Any scene, prefab, component, asset or project-settings work — read this file first even if no such file was read. C# post-edit sequence (format, lint, compile, console) — [rider-mcp.md](rider-mcp.md).
 
-Проект: `ButchersGames/`. Скрипты: `Assets/_Project/Scripts/`. Сцены: `Assets/_Project/Scenes/` (Bootstrap, Core).
+Project: `ButchersGames/`. Scripts: `Assets/_Project/Scripts/`. Scenes: `Assets/_Project/Scenes/` (Bootstrap, Core). Paths relative to `Assets/` (forward slashes) unless a tool needs absolute.
 
-Server: `unityMCP`, tools — `mcp__unityMCP__*`. Перед вызовом непривычного тула — свериться со схемой тула, не угадывать аргументы. C# rename/format — **не здесь**; см. [rider-mcp.md](rider-mcp.md). Архитектура — [architecture.md](architecture.md).
+## Tools and when to use which
 
-## Обязательно через Unity MCP
+- **Coplay MCP** (MCP for Unity, package `com.coplaydev.unity-mcp`, server `unityMCP`, tools `mcp__unityMCP__*`). Group `core` is enabled; other groups (`testing`, `scripting_ext`, `profiling`, `docs`, `ui`, `vfx`, `animation`, …) are off — do not enable without need
+- **Unity Pipeline** (official Unity plugin: `unity command <name>` via Bash, package `com.unity.pipeline`). Command list — `unity command --query <word> --detail compact`; parameters of an unfamiliar command — `unity command <name> --help`, never guess
+- **`unity:*` skills** of the official plugin — knowledge and procedures, not actions
 
-| Задача | Tool | Зачем MCP |
-|---|---|---|
-| Сцена (load/save/hierarchy/selection) | `mcp__unityMCP__manage_scene`, `mcp__unityMCP__find_gameobjects` | бинарный/YAML scene state |
-| GameObject / компоненты / свойства | `mcp__unityMCP__manage_gameobject`, `mcp__unityMCP__manage_components` | Inspector-эквивалент |
-| Prefab create/edit/apply | `mcp__unityMCP__manage_prefabs` | не править `.prefab` «вслепую» |
-| Play mode / editor state | `mcp__unityMCP__manage_editor` | контроль play mode |
-| Console после скриптов / domain reload | `mcp__unityMCP__read_console` | проверка compile errors |
-| Asset search (shader, prefab, и т.п.) | `mcp__unityMCP__manage_asset` | поиск ассетов |
-
-## Запрещено
-
-- Большой ручной diff / переписывание `.unity`, `.prefab`, `.asset` вместо Unity MCP
-- Угадывать содержимое сцены или hierarchy без запроса к MCP
-- Продолжать после правок скриптов без проверки console на compile errors
-- Подменять Unity MCP «креативным» YAML, если MCP доступен
-
-## Must после C#
-
-1. `reformat_file` (Rider) — один вызов за задачу, [rider-mcp.md](rider-mcp.md); format меняет файлы и может вызвать повторную компиляцию, поэтому он **до** refresh
-2. `mcp__unityMCP__refresh_unity` (`compile`, `wait_for_ready`) — дождаться конца компиляции (`isCompiling` в состоянии editor)
-3. `mcp__unityMCP__read_console` — Errors; исправить до шага, зависящего от новых типов
-4. При необходимости — EditMode-тесты: `mcp__unityMCP__run_tests` (при открытом Editor) или `unity test` (только при закрытом)
-5. Новые компоненты / play mode — только после чистой компиляции
-
-## Инстанс
-
-Несколько Unity → `mcp__unityMCP__set_active_instance` с точным `Name@hash` до остальных вызовов.
-
-## Последовательности
-
-**A. Осмотреть сцену** — `manage_scene` (active/load) → hierarchy (`page_size` ~50, paging) → find target → `manage_components` с `include_properties=false` сначала.
-
-**B. Изменить объект** — find target → `manage_gameobject` / `manage_components` → при пачке `batch_execute` → save сцены при необходимости → `read_console`.
-
-**C. Prefab** — `manage_prefabs` / `manage_asset` → правки через MCP (не YAML) → apply/save → `read_console`.
-
-**D. После C#** — `reformat_file` → `refresh_unity` (`isCompiling == false`) → `read_console` Errors → при необходимости тесты → затем компоненты / play.
-
-**E. Play mode** — `manage_editor` enter → проверка → exit перед структурными правками сцены/ассетов (если требует editor) → `read_console`.
-
-## Payload / токены
-
-- Hierarchy и components — paging, summary-first
-- `include_properties=true` — только когда нужны значения
-- Asset search — скромный `page_size`; `generate_preview=false` по умолчанию
-- Однотипные мутации — `mcp__unityMCP__batch_execute`
-
-## Tools (ориентир)
-
-| Область | Tools |
+| Task | With |
 |---|---|
-| Сцена | `manage_scene` |
-| Объекты | `manage_gameobject`, `find_gameobjects` |
-| Компоненты | `manage_components` |
-| Prefab / assets | `manage_prefabs`, `manage_asset` |
-| Editor / play | `manage_editor` |
-| Console | `read_console` |
-| Пачки | `batch_execute` |
-| Инстанс | `set_active_instance` |
+| How to do it right (UI, URP, WebGL, audio, …) | `unity:*` skill — follow its procedure |
+| Scene, GameObject, components, prefabs, materials, assets | **Coplay** |
+| Serialized fields and object references | **Pipeline** `get_serialized_fields` / `set_serialized_field` |
+| Project settings (Player, Quality, Physics, Time, Audio, Tags) | **Pipeline** `get_*_settings` / `set_*_settings` (`dry_run` first) |
+| Build with BuildReport, `switch_build_target`, Project Auditor (`audit`), `get_performance_stats`, `capture_game_view` / `capture_scene_view`, Animator / Timeline, lighting / NavMesh / occlusion bake | **Pipeline** |
+| Arbitrary C# | **Pipeline** `unity command eval '<code>'` |
+| Tests and build with the Editor closed | `unity test` / `unity build` |
 
-(Полные имена — с префиксом `mcp__unityMCP__`.) Перед вызовом непривычного тула — свериться со схемой, не угадывать аргументы.
+Do not connect the second Unity MCP server (`unity mcp`) — it duplicates Coplay.
 
-## Coplay MCP vs Pipeline (`unity command eval`)
+## Only through MCP / Pipeline, never by hand
 
-В проекте доступны два независимых моста к Editor: **Coplay MCP** (`mcp__unityMCP__*`, описан выше; включает `mcp__unityMCP__execute_code`) и **Unity CLI + `com.unity.pipeline`** (пакет `0.7.0-exp.1` есть в `ButchersGames/Packages/manifest.json`; `unity command eval` — произвольный C# в живом Editor, порт 7800 по умолчанию). Транспорты разные и не конфликтуют, но выбор между ними — «какой инструмент подходит задаче», а не «какой подключён». Перед первым использованием CLI в сессии — `unity status` (состояние `ready`, нужный проект); `unity pipeline list` — если Editor не отвечает (Safe Mode из-за ошибок компиляции).
-
-**По умолчанию — типизированный тул.** Любая задача, которая укладывается в существующий `manage_*` / `find_gameobjects` / `read_console` / `batch_execute`, — только через него: у тула фиксированная схема параметров, вызов ревьюабелен (понятная строка для запроса одобрения — [../../CLAUDE.md](../../CLAUDE.md) §1.4), тул физически не может сделать больше, чем описано в схеме.
-
-**`execute_code` / `unity command eval` — точечно, когда типизированного тула нет:**
-
-1. Специфичный API движка / внутреннее состояние без готового `manage_*`-тула (пример: `SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.*` — [perfmeter.md](perfmeter.md))
-2. Read-only диагностика, для которой нет своего тула
-3. Разовый скрипт для узкой задачи, явно не покрываемой существующими тулами
-4. Официальные `unity:*` skills, жёстко зашитые на `eval` — там выбора нет
-
-**`unity test` / `unity build` — только при закрытом Editor.** При открытом Editor на этом проекте они падают: `already open in a running Editor`, код выхода 6 (проверено `unity test` на этом проекте). При открытом Editor — `mcp__unityMCP__run_tests` и `mcp__unityMCP__manage_build`. `unity run --command` переиспользует уже открытый Editor и оставляет его работать.
-
-**Без проговаривания (read-only):** MCP — `read_console`, чтение сцены и hierarchy, `find_gameobjects`, ресурсы редактора; CLI — `unity status`, `unity logs`, `unity doctor`, `unity pipeline list`, `unity command` без имени (листинг).
-
-**Не использовать `execute_code` / `eval`, если то же самое покрывает typed-тул.** Мутирующий `execute_code` — произвольный код с полным доступом к `UnityEditor.*`/`UnityEngine.*` без ограничений схемы; даже когда permission mode пропускает такой вызов без вопроса, проговорить его отдельно ([../../CLAUDE.md](../../CLAUDE.md) §1.2, §1.4) — в отличие от именованного `manage_*` с фиксированными параметрами, по коду заранее не видно, что именно он сделает.
-
-Если `unity status` не видит Editor, хотя он открыт, — не подменять это скрытым обходом (например, отдельным headless-Editor): сказать пользователю и уточнить (возможные причины: Safe Mode, песочница агента).
-
-## Если Unity MCP недоступен
-
-Остановиться и сказать пользователю. Не эмулировать сцену точечным diff «наугад».
-
-## Пути
-
-Относительно `Assets/` (forward slashes), если tool не требует абсолютный путь.
-
-## Разделение
-
-| Задача | MCP |
+| Task | Tool (Coplay) |
 |---|---|
-| Сцена, prefab, components, play mode, console | **Unity** |
-| Rename C# | **rider** `rename_refactoring` |
-| Format C# | **rider** `reformat_file` |
+| Scene load / save / hierarchy / selection | `manage_scene`, `find_gameobjects` |
+| GameObject / components / properties | `manage_gameobject`, `manage_components` |
+| Prefab create / edit / apply | `manage_prefabs` |
+| Play mode / editor state | `manage_editor` |
+| Console after scripts / domain reload | `read_console` |
+| Asset search | `manage_asset` |
+| Many similar mutations | `batch_execute` (one call instead of many) |
+| Several Unity instances open | `set_active_instance` (exact `Name@hash`) before other calls |
+
+Never rewrite `.unity`, `.prefab`, `.asset` with a manual diff, and never guess scene or hierarchy contents without querying the Editor. Neither Coplay nor Pipeline available → stop and tell the user.
+
+## Sequences
+
+- **Inspect a scene** — `manage_scene` (active / load) → hierarchy (`page_size` ~50, paging) → find target → `manage_components` with `include_properties=false` first
+- **Change an object** — find target → `manage_gameobject` / `manage_components` → `batch_execute` for batches → save the scene if needed → `read_console`
+- **Prefab** — `manage_prefabs` / `manage_asset` → edits through MCP (not YAML) → apply / save → `read_console`
+- **Play mode** — `manage_editor` enter → check → exit before structural scene / asset edits (if the editor requires) → `read_console`
+
+## Payload / tokens
+
+- Hierarchy and components — paging, summary first
+- `include_properties=true` — only when values are needed
+- Asset search — small `page_size`; `generate_preview=false` by default
+
+## Pipeline and arbitrary C#
+
+Before the first CLI use in a session — `unity status` (state `ready`, right project); `unity pipeline list` if the Editor does not answer (Safe Mode due to compile errors).
+
+**Default — a typed command** (Coplay tool or named Pipeline command): fixed parameter schema, reviewable call, cannot do more than described.
+
+**`unity command eval` — only when no typed command exists:**
+
+1. Engine-specific API / internal state without a command (e.g. `SGG.PerfMeter.Editor.Mcp.PerfMeterMcpCommands.*` — skill `perfmeter`)
+2. Read-only diagnostics with no command of its own
+3. A one-off script for a narrow task clearly not covered by existing commands
+4. Official `unity:*` skills hard-wired to `eval`
+
+A mutating `eval` is arbitrary code with full `UnityEditor.*` / `UnityEngine.*` access: even if the permission mode lets it through, state it separately — the code does not show in advance what it will do.
+
+**`unity test` / `unity build` — only with the Editor closed.** With the Editor open they fail here: `already open in a running Editor`, exit code 6. With the Editor open — `unity command run_tests` and `unity command build` (+ `build_status`). `unity run --command` reuses the open Editor and leaves it running.
+
+**No need to announce (read-only):** Coplay — `read_console`, scene and hierarchy reads, `find_gameobjects`; Pipeline — `get_*`, `find_*`, `list_*`, `console`, `console_status`, `editor_status`; CLI — `unity status`, `unity logs`, `unity doctor`, `unity pipeline list`, `unity command` without a name (listing), `unity command <name> --help`.
+
+If `unity status` does not see an open Editor — do not work around it (e.g. with a separate headless Editor): tell the user and clarify (possible causes: Safe Mode, agent sandbox).

@@ -3,13 +3,11 @@ paths:
   - "ButchersGames/Assets/_Project/Scripts/**/*.cs"
 ---
 
-# Typed exceptions и Guard
+# Typed exceptions and Guard
 
-Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
+Infrastructure: `ExtendedException`, `Guard`, namespace `ExtendedExceptions`.
 
-Инфраструктура: `ExtendedException`, `Guard`, namespace `ExtendedExceptions`.
-
-## База
+## Base
 
 ```csharp
 public class ExtendedException : Exception
@@ -19,60 +17,56 @@ public class ExtendedException : Exception
 }
 ```
 
-- Message в консоли: `{id}: {text}`
-- **id** — kebab-case, префикс фичи + порядковый номер с 1 в файле (`feature-1`, `feature-2`)
-- Message **без** точки в конце
-- `base(id, message)` — одна строка в конструкторе
+- Console message: `{id}: {text}`
+- **id** — kebab-case, feature prefix + sequence number from 1 within the file (`feature-1`, `feature-2`)
+- Message **without** a trailing period
+- `base(id, message)` — one line in the ctor
 
-## Организация
+## Organization
 
-- Один файл `Exceptions.cs` на фичу (обычно `{Layer}/{Feature}/Api/`)
-- Namespace фичи **без** суффикса `.Api`
-- `sealed class … : ExtendedException` — `public`, если тип создают или ловят в другой сборке; иначе `internal` ([class-design.md](class-design.md))
-- Отдельный файл на каждый тип — **не** создавать
-- **Запрещено:** generic-исключение с произвольной строкой `reason`
+- One `Exceptions.cs` per feature (usually `{Layer}/{Feature}/Api/`); namespace of the feature **without** `.Api`
+- `sealed class … : ExtendedException` — `public` if created or caught in another assembly, else `internal` ([design.md](design.md))
+- **No** separate file per type
+- **Forbidden:** a generic exception with an arbitrary `reason` string
 
 ## View / Inspector
 
-MonoBehaviour, SerializeField, сцена.
+MonoBehaviour, SerializeField, scene.
 
-| Ситуация | Тип | Конструктор |
+| Case | Type | Ctor |
 |---|---|---|
-| Не назначено поле | `Missing{Feature}FieldException` | `fieldName`, `objectName` |
-| Невалидное число на MB | `Invalid{Feature}ValueException` | `fieldName`, `objectName`, `value` |
+| Field not assigned | `Missing{Feature}FieldException` | `fieldName`, `objectName` |
+| Invalid number on an MB | `Invalid{Feature}ValueException` | `fieldName`, `objectName`, `value` |
 
-- Типы с authored wiring / config реализуют `IValidatable` (`ContentValidation` package); `Validate()` только проверки, без side effects
-- **Когда вызывается:** session — `SessionValidation` из DI до `PrepareGame`; level content — после `LoadLevel` / `CurrentLevel.Set`; Editor — `Tools/ContentValidation` (collect-all)
-- Init, которому нужны уже проверенные поля (пулы, словари, `TurnAnimator` и т.п.) — `IWarmupLifecycle.Warmup()` после session в `CoreEntryPoint`, не `Awake → Validate`
-- View/MB: предпочитать `void IValidatable.Validate()` (explicit); `public void Validate()` — только если нужен вызов с concrete
-- Ссылки: `Guard.AgainstNull` / `AgainstNullOrEmpty` + typed factory
-- Числа: `Guard.AgainstNegative` / `AgainstNonPositive` / `AgainstLessThan` / … → `Invalid{Feature}ValueException`
-- В message View допускается `gameObject.name` как `objectName`
+- Types with authored wiring / config implement `IValidatable` (`ContentValidation` package); `Validate()` only checks, no side effects
+- **When called:** session — `SessionValidation` from DI before `PrepareGame`; level content — after `LoadLevel` / `CurrentLevel.Set`; Editor — `Tools/ContentValidation` (collect-all)
+- Init that needs already validated fields (pools, dictionaries, `TurnAnimator` etc.) — `IWarmupLifecycle.Warmup()` after session in `CoreEntryPoint`, not `Awake → Validate`
+- View / MB: prefer explicit `void IValidatable.Validate()`; `public void Validate()` only if a call through the concrete type is needed
+- References: `Guard.AgainstNull` / `AgainstNullOrEmpty` + typed factory
+- Numbers: `Guard.AgainstNegative` / `AgainstNonPositive` / `AgainstLessThan` / … → `Invalid{Feature}ValueException`
+- A View message may use `gameObject.name` as `objectName`
 
 ## Core / domain
 
-Model, Service, ScriptableObject-config без привязки к сцене.
+Model, Service, ScriptableObject config without scene binding.
 
-| Ситуация | Тип | Конструктор |
+| Case | Type | Ctor |
 |---|---|---|
-| Невалидное значение в SO config | `Invalid{Feature}ValueException` | `fieldName`, `value` — **без** `objectName` |
-| Домен / контекст | `Missing/Invalid{Feature}{Topic}Exception` | по смыслу фичи |
+| Invalid value in SO config | `Invalid{Feature}ValueException` | `fieldName`, `value` — **no** `objectName` |
+| Domain / context | `Missing/Invalid{Feature}{Topic}Exception` | per feature |
 
-- Model **без** `UnityEngine.*`
-- Config (owned SO): `IValidatable` через **`public void Validate()`** (не explicit) — владелец зовёт `_config.Validate()` после `Guard.AgainstNull`; session/Editor тоже через `IValidatable`. Explicit на config даёт лишний `((IValidatable)_config)` без выигрыша
-- Политика soft-checks (запрет soft return / LogWarning вместо throw) — см. [architecture.md](architecture.md)
+- Config (owned SO): `IValidatable` via **`public void Validate()`** (not explicit) — the owner calls `_config.Validate()` after `Guard.AgainstNull`; session / Editor also go through `IValidatable`. Explicit on a config only adds a `((IValidatable)_config)` cast
+- Soft-check policy (no soft return / LogWarning instead of throw) — [architecture.md](architecture.md)
 
 ## Guard
 
-- API: `Guard.Against*(…, Func<ExtendedException> exceptionFactory)`
-- Factory ленивая — исключение создаётся только при нарушении
-- Проверки через `Guard`, не через inline `if` + `throw` с сырым текстом
+- API: `Guard.Against*(…, Func<ExtendedException> exceptionFactory)`; the factory is lazy — the exception is created only on violation
+- Checks go through `Guard`, not inline `if` + `throw` with raw text
+- Typical methods: `AgainstNull` (`object` and `UnityEngine.Object`), `AgainstNullOrEmpty`, `AgainstNegative`, `AgainstNonPositive`, `AgainstLessThan`, `AgainstGreaterThan`, `AgainstInvalidRange`, `AgainstTrue`
 
-Типичные методы: `AgainstNull` (`object` и `UnityEngine.Object`), `AgainstNullOrEmpty`, `AgainstNegative`, `AgainstNonPositive`, `AgainstLessThan`, `AgainstGreaterThan`, `AgainstInvalidRange`, `AgainstTrue`.
+## Local factory (call site)
 
-## Локальная фабрика (call site)
-
-При **≥2** проверках с **одним** типом исключения и одной формой аргументов — вынести factory в **локальную функцию** (не в `Func<…>`-переменную):
+**≥2** checks with **one** exception type and the same argument shape → move the factory into a **local function** (not a `Func<…>` variable):
 
 ```csharp
 Guard.AgainstNull(_a, () => Missing(nameof(_a)));
@@ -83,8 +77,8 @@ return;
 ExtendedException Missing(string fieldName) => new MissingFooFieldException(fieldName, gameObject.name);
 ```
 
-- Локальная функция — в **конце** метода, после явного `return;`; имя в `PascalCase` (`Missing`, `Invalid`) — так требуют инспекции Rider («Use local function», «Local functions» naming, «Separate local function with explicit return»)
-- `Func<string, ExtendedException> missing = …` не использовать
-- Одиночный `Guard` — inline `() => new …`, без локальной функции
-- Разные типы в одном методе — отдельная локальная функция на тип или inline
-- `nameof` обязателен; `CallerArgumentExpression` в этот rule не входит
+- Local function at the **end** of the method, after an explicit `return;`; PascalCase name (`Missing`, `Invalid`) — required by Rider inspections ("Use local function", "Local functions" naming, "Separate local function with explicit return")
+- No `Func<string, ExtendedException> missing = …`
+- Single `Guard` — inline `() => new …`, no local function
+- Different types in one method — a local function per type, or inline
+- `nameof` is mandatory; `CallerArgumentExpression` is out of scope

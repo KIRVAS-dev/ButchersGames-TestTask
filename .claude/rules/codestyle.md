@@ -5,124 +5,79 @@ paths:
 
 # C# Code Style
 
-Когда читать: `ButchersGames/Assets/_Project/Scripts/**/*.cs`.
-
-Кодстайл WebGL-Template. Principles — [../../CLAUDE.md](../../CLAUDE.md) §3. Exceptions — [exceptions.md](exceptions.md). Слои — [architecture.md](architecture.md). Class / method / variable design — соответствующие файлы: [class-design.md](class-design.md), [method-design.md](method-design.md), [variable-design.md](variable-design.md).
+Layers and roles — [architecture.md](architecture.md); classes / methods / variables and assembly visibility — [design.md](design.md); exceptions — [exceptions.md](exceptions.md).
 
 ## Namespace
 
-Путь от корня `Scripts/` **без** префикса `_Project.`. **Block-scoped:** `namespace X { }`, не file-scoped.
+Path from the `Scripts/` root **without** the `_Project.` prefix. **Block-scoped** `namespace X { }`, not file-scoped.
 
-| Слой | Паттерн | Пример |
+| Layer | Pattern | Example |
 |---|---|---|
 | Core Gameplay | `Core.Gameplay.{Feature}` | `Core.Gameplay.Movement` |
-| Core Bootstrap | `Core.Bootstrap` | `Core.Bootstrap` |
+| Core Bootstrap | `Core.Bootstrap` | |
 | Core Input | `Core.Input.{Feature}` | `Core.Input.Movement` |
 | ViewComponents | `ViewComponents.{Feature}` | `ViewComponents.Hud` |
-| Input | `Input` | адаптеры устройств ввода |
-| Infrastructure Bootstrap | `Infrastructure.Bootstrap` | `Infrastructure.Bootstrap` |
-| Infrastructure Persistence | `Infrastructure.Persistence` | `Infrastructure.Persistence` |
+| Input | `Input` | device input adapters |
+| Infrastructure | `Infrastructure.Bootstrap`, `Infrastructure.Persistence` | |
 | ExtendedExceptions | `ExtendedExceptions` | shared base |
-| Rendering | `Rendering` | URP features |
 
-Исключения фичи: namespace `{Layer}.{Feature}`, файл в `Api/` — [exceptions.md](exceptions.md).
+Feature exceptions: namespace `{Layer}.{Feature}`, file in `Api/` — [exceptions.md](exceptions.md).
 
-## Структура по слоям
+## Class layout
 
-Model / Service / View / InputHandler — см. [architecture.md](architecture.md). Здесь только формат типов:
+- Order: Fields → Constructor → Properties → Methods; inside a block `public` → `internal` → `protected` → `private`
+- Events above other fields
+- Fields and ctor parameters: interfaces (`I…`) first, then concrete classes; parameter order matches field order
+- Access modifiers **explicit** (except in interfaces); default `internal` — [design.md](design.md)
+- Ctor assignment `_field = field` when names match the parameter
 
-- **Core:** Model pure C#; Service — ctor DI; Api-ports наружу
-- **ViewComponents:** MonoBehaviour + `[SerializeField]`; View реализует `I*View` (отображение одной сущности/экрана), Performer реализует `I*Performer` (эффекты по типу события), Loader реализует `I*Loader` (спавн контента в сцене по команде Core, событие о готовности, счётчик и настройки списка)
-- **InputHandler:** тонкий адаптер, ctor DI на `I*Service`
+## Naming
 
-## Структура класса
+- `camelCase` — locals, parameters; `_camelCase` — private fields
+- `PascalCase` — public / internal / protected fields, properties, methods, **local functions**, types, `const` (never UPPER_SNAKE_CASE)
+- `static readonly` / `readonly` — named like fields, not like const
+- Bool methods `IsX` / `CanX` / `HasX`; `TryX` for the try pattern
+- Events in past tense (`Killed`); handlers `OnX`
+- Precise names, no abbreviations; collections plural
+- No tautology with the type name: in `Player` — `Score`, not `PlayerScore`; `Character.Move()`, not `Character.CharacterMove()`
+- **Identifiers:** no special or Unicode characters — they break some Unity CLI tools
 
-- Порядок: Поля → Конструктор → Свойства → Методы
-- Внутри блока: `public` → `internal` → `protected` → `private`
-- Доступ по умолчанию — `internal`. `public` только если член или тип именует другая сборка ([class-design.md](class-design.md))
-- **Порядок полей и параметров конструктора:** сначала интерфейсы (`I…`), потом конкретные классы. Порядок параметров совпадает с порядком полей
-- События — выше остальных полей
-- Модификаторы доступа **явно** (кроме интерфейсов)
-- `static` для методов — **только при строгой необходимости** (factory без состояния, `RuntimeInitializeOnLoad`, extension-методы). Приватные хелперы класса — instance, не `static`
-- **Математические Helper-классы** — `internal static class {Feature}Helper` в `{ViewLayer}/{Feature}/` (view-math); domain-math без Unity presentation — `{CoreLayer}/{Feature}/`. `public` только если helper зовёт другая сборка. Stateless pure functions. Суффикс `Helper` **разрешён**. Без MonoBehaviour, DOTween и FMOD
-- **`[SerializeField]`** — порядок полей **не менять** (Inspector)
-
-После правок `.cs` — `reformat_file` ([rider-mcp.md](rider-mcp.md)). Порядок членов после Rider — доверять результату reorder, не переставлять вручную обратно.
-
-## Именование
-
-- `camelCase` — локальные переменные, параметры
-- `_camelCase` — private поля
-- `PascalCase` — public/internal/protected поля, свойства, методы, **локальные функции**, типы
-- `PascalCase` — `const` (как и остальные члены типа)
-- `static readonly` / `readonly` — по правилам полей, не как const
-- Bool-методы: `IsX` / `CanX` / `HasX`; `TryX` для try-паттерна
-- События — прошедшее время (`Killed`); хендлеры — `OnX`
-- Точные имена, без сокращений; коллекции во множественном числе
-- Без тавтологии (`Character.Move()`, не `Character.CharacterMove()`)
-
-### Роли имён
-
-| Имя | Где | Смысл |
+| Name | Where | Meaning |
 |---|---|---|
-| `I*Service` | Core Api | единственная точка вызова фичи |
-| `I*View` | Core Api | порт отображения **одной конкретной сущности или экрана** сцены |
-| `I*Performer` | Core Api | порт проигрывания эффектов (звук/VFX) по смысловому типу события; реализация без собственной сущности — `*Performer` во ViewComponents |
-| `I*Loader` | Core Api | порт загрузки контента в сцену по команде Core: `Load*`, событие `*Loaded`, счётчик и настройки списка; реализация — `*Loader` во ViewComponents |
-| `I*Provider` | Core Api | данные сцены для Core |
-| `*InputHandler` | Core (`Core.Input.{Feature}`) | порт ввода → Service |
-| `*Helper` | Core / ViewComponents | `static class`, stateless functions; `internal`, если нет вызова из другой сборки |
-| `*Manager` | — | **не вводить** без явного ok пользователя |
-| `*Controller` | — | допустим; уточнить у пользователя соответствие роли |
-
-Присвоение в ctor: `_field = field` когда имена совпадают с параметром.
-
-**Идентификаторы:** без спецсимволов и Unicode — мешают части Unity CLI-тулов.
-
-**Избыточность:** в классе `Player` — поле `Score`, не `PlayerScore`. Методы — [method-design.md](method-design.md).
+| `I*Service` | Core Api | the feature's only entry point |
+| `I*View` | Core Api | display port of **one concrete entity or screen** |
+| `I*Performer` | Core Api | effect playback port (sound / VFX) by semantic event type; impl `*Performer` in ViewComponents |
+| `I*Loader` | Core Api | content loading port: `Load*`, event `*Loaded`, list count and settings; impl `*Loader` in ViewComponents |
+| `I*Provider` | Core Api | scene data for Core |
+| `*InputHandler` | Core (`Core.Input.{Feature}`) | input port → Service |
+| `*Helper` | Core / ViewComponents | stateless static class, see **Static** |
+| `*Manager` | — | **do not introduce** without the user's explicit ok |
+| `*Controller` | — | allowed; confirm the role with the user |
 
 ## Enums
 
-- PascalCase для имени enum и значений
-- Имя enum — **единственное число** (`WeaponType`, не `WeaponTypes`)
-- `[Flags]` — имя во **множественном числе**
+- PascalCase for the enum name and values; name **singular** (`WeaponType`); `[Flags]` — **plural**
+- **Every member gets an explicit int value** (`Poor = 0, Descent = 1, Casual = 2`), never implicit numbering — for new and edited enums
+- `switch` over an enum — aim for **exhaustiveness**
 
 ## Properties
 
-- Однострочный read-only — expression-bodied (`=>`)
-- Простой get/set — `{ get; set; }` или `{ get; private set; }`
-- Операция с нетривиальной логикой — метод, не property
+- One-line read-only — expression-bodied (`=>`)
+- Plain get / set — `{ get; set; }` or `{ get; private set; }`
+- Operation with non-trivial logic — a method, not a property
 
-## Rider / форматирование
+## Formatting
 
-После правок `.cs` — `reformat_file` ([rider-mcp.md](rider-mcp.md)). Не править отступы/переносы вручную в споре с Rider.
+Format and lint after `.cs` edits — [rider-mcp.md](rider-mcp.md). Trust Rider's indentation, wrapping and member order; do not revert it by hand.
 
-- **Скобки обязательны** для `if` / `for` / `foreach` / `while` / `else`
-- **Wrap limit** ~130 символов
-- Не более **одной** пустой строки подряд
-- **`switch`:** пустая строка **между** `case` блоками
-- **`#region`** — не использовать
-- Named arguments на call site — когда без них легко перепутать соседние параметры
-
-## Комментарии
-
-- Production-код **без** `//` и `///`
-- XML-doc не писать
-- Исключение: generated code, Unity templates, Editor-only — не трогать стиль генератора
-
-## Типы и `var`
-
-**Явные типы**, **`var` запрещён**.
-
-## Форматирование
-
-- `[SerializeField] private` для Inspector-полей
-- Default values inline: `[SerializeField] float duration = 0.2f;`
-- Проверка на false: `if (!x)`, не `if (x == false)`
-- `if` / `switch` / `for` / `while` — пустая строка **до и после** блока (жёстко)
-- Пустая строка между `case` в `switch`
-- Группировка логических блоков пустыми строками
-- **Параметры конструкторов/методов:** если параметров больше двух — каждый на отдельной строке:
+- **Braces required** for `if` / `for` / `foreach` / `while` / `else`
+- **Wrap limit** ~130 chars; at most **one** blank line in a row
+- Blank line **before and after** `if` / `switch` / `for` / `while` blocks; blank line **between** `case` blocks; group logical blocks with blank lines
+- **No `#region`**
+- False check: `if (!x)`, not `if (x == false)`
+- Each attribute on its **own line** above the member
+- Named arguments at call site — when adjacent parameters are easy to mix up
+- More than two ctor / method parameters — one per line:
 
 ```csharp
 public FooService(
@@ -132,51 +87,54 @@ public FooService(
 {
 ```
 
-## Содержимое
+## Comments
 
-- Без магических чисел (кроме очевидного `0`); defaults в SerializeField — ok
-- DRY — повторяющиеся блоки в методы
-- **`foreach`** — default для коллекций
-- **`for`** — когда нужен индекс, обратный проход, параллельные массивы
-- Имена в циклах — описательные (`interactableTarget`); `i` — только для индекса
-- `goto` — не использовать в новом коде
-- `switch` по enum — стремиться к **исчерпываемости**
-- Вызов event: `handler?.Invoke(...)`, не `handler(...)`
-- Attributes — каждый на **отдельной** строке над членом
-- LINQ: короткие цепочки; на hot path — не по умолчанию ([../../CLAUDE.md](../../CLAUDE.md) §3)
-- Extension methods — редко; static-класс `{Type}Extensions`
-- Публичный Api: named type / `record` вместо длинного `ValueTuple`
+Production code **without** `//` and `///`, no XML-doc. Exception: generated code, Unity templates, Editor-only — keep the generator's style.
 
-Дизайн циклов / nesting — [method-design.md](method-design.md).
+## Types and `var`
+
+**Explicit types**; **`var` is forbidden**.
+
+## Content
+
+- No magic numbers (except obvious `0`); defaults in SerializeField are ok
+- **`foreach`** by default; **`for`** when an index, reverse pass or parallel arrays are needed
+- Descriptive loop names (`interactableTarget`); `i` only for an index
+- No `goto` in new code
+- **Prefer `switch`** (statement or expression) over `if` / `else if` chains when other things are equal — including runtime thresholds via `_ when <condition>` arms. Several sequential `if (condition) return X;` → one `switch`, unless the branches differ in shape, not just in return value
+- Event invocation: `handler?.Invoke(...)`, not `handler(...)`
+- LINQ: short chains; not by default on hot paths ([design.md](design.md))
+- Extension methods — rarely; static class `{Type}Extensions`
+- Public Api: named type / `record` instead of a long `ValueTuple`
 
 ## `sealed`
 
-- **Обязательно:** `sealed class … : ExtendedException`; `public` только если тип виден другой сборке ([class-design.md](class-design.md))
-- **Рекомендуется:** новые leaf View / InputHandler
-- Service / Model — обычно **без** `sealed`, если не leaf
+- **Required:** `sealed class … : ExtendedException`; `sealed class *Config : ScriptableObject`
+- **Recommended:** new leaf View / InputHandler
+- Service / Model — usually **not** sealed unless leaf
 
 ## Async
 
-- Только **UniTask** / `UniTask<T>` / `UniTaskVoid`; не `Task`
-- Суффикс `Async` обязателен для async-методов
-- Fire-and-forget: `UniTaskVoid` или `.Forget()` на UniTask
-- `async void` запрещён (кроме event-handler с `try`/`catch`)
-- `CancellationToken cancellationToken` — последний параметр; пробрасывать вниз
+- **UniTask** / `UniTask<T>` / `UniTaskVoid` only, never `Task`
+- `Async` suffix required
+- Fire-and-forget: `UniTaskVoid` or `.Forget()`
+- `async void` forbidden (except an event handler with `try` / `catch`)
+- `CancellationToken cancellationToken` — last parameter; pass it down
 
 ## IDisposable
 
-- **Explicit** `void IDisposable.Dispose()` — cleanup только внутри типа
-- **Public** `void Dispose()` — когда dispose вызывается снаружи
-- Поле subscription — `IDisposable` где применимо
+- **Explicit** `void IDisposable.Dispose()` — cleanup only inside the type; **public** `void Dispose()` — when disposed from outside
+- Subscription field — `IDisposable` where applicable
 
 ## Static
 
-- `internal static class {Feature}Helper` — pure functions; `public`, только если helper зовёт другая сборка
-- `static void Register*(IContainerBuilder)` — DI registration в LifetimeScope
-- Static helpers внутри service/logic классов — **не** добавлять
+- `static` methods — **only when strictly necessary**: stateless factory, `RuntimeInitializeOnLoad`, extension methods, `static void Register*(IContainerBuilder)` in a LifetimeScope. Private class helpers are instance methods; no static helpers inside service / logic classes
+- **Helper classes** — `internal static class {Feature}Helper` (`public` only if another assembly calls it): stateless pure functions, no MonoBehaviour, DOTween, FMOD. View math → `{ViewLayer}/{Feature}/`, domain math without Unity presentation → `{CoreLayer}/{Feature}/`. The `Helper` suffix is **allowed**
 
-## SerializeField и MonoBehaviour
+## SerializeField and MonoBehaviour
 
-- `[SerializeField] private` — `_camelCase` для имён полей
-- Публичный доступ к serialized data — через properties, не public fields
-- Пояснение полю — `[Tooltip("...")]`, не комментарий
+- `[SerializeField] private` named `_camelCase` — every private field, including ScriptableObject Config fields; inline default: `[SerializeField] private float _duration = 0.2f;`
+- **Do not reorder** `[SerializeField]` fields (Inspector)
+- Public access to serialized data — through properties, not public fields
+- Field explanation — `[Tooltip("...")]`, not a comment
+- Config SO: `[CreateAssetMenu(menuName = "Data/...")]`

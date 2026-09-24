@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|mcp__unityMCP__create_script|mcp__unityMCP__apply_text_edits|mcp__unityMCP__script_apply_edits|mcp__unityMCP__manage_script",
+        "matcher": "Write|mcp__unityMCP__create_script|mcp__unityMCP__manage_script",
         "hooks": [
           {
             "type": "command",

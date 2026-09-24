@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 let raw = "";
 process.stdin.on("data", (chunk) => { raw += chunk; });
 process.stdin.on("end", () => {
@@ -12,17 +14,18 @@ process.stdin.on("end", () => {
   const toolInput = input.tool_input || {};
   const path = toolInput.file_path || toolInput.path || toolInput.uri || "";
 
-  // Edit/Write touch arbitrary files, so require an actual .cs path under a
-  // Scripts folder. The Unity script tools (create_script, apply_text_edits,
-  // script_apply_edits, manage_script) are C#-only by definition and some of
-  // them pass a directory in `path` with no .cs extension (name is separate),
-  // so for those a Scripts-folder path is enough.
-  const isGenericEdit = toolName === "Edit" || toolName === "Write";
-  const matchesPath = isGenericEdit
-    ? /scripts[\\/].*\.cs$/i.test(path)
-    : /scripts([\\/]|$)/i.test(path);
+  // Path-scoped rules load when Claude reads a matching file, so an edit of an
+  // existing .cs already has them in context. Only creating a new .cs can
+  // happen without that read: a Write to a path that does not exist yet, or
+  // the Unity script-creation tools (which may pass a directory in `path`).
+  const isNewFileWrite =
+    toolName === "Write" && /scripts[\\/].*\.cs$/i.test(path) && !fs.existsSync(path);
+  const isUnityCreate =
+    (toolName === "mcp__unityMCP__create_script" ||
+      (toolName === "mcp__unityMCP__manage_script" && toolInput.action === "create")) &&
+    /scripts([\\/]|$)/i.test(path);
 
-  if (!matchesPath) {
+  if (!isNewFileWrite && !isUnityCreate) {
     return;
   }
 
@@ -30,7 +33,7 @@ process.stdin.on("end", () => {
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       additionalContext:
-        "Перед правкой .cs в ButchersGames/Assets/_Project/Scripts проверь .claude/rules/codestyle.md, exceptions.md, architecture.md, class-design.md, method-design.md, variable-design.md, rider-mcp.md",
+        "Creating a new .cs: path-scoped rules load only on Read. If .claude/rules (architecture, design, codestyle, exceptions, rider-mcp) are not in context yet, read them and check the new file against them. New feature / Model / Service / View / Presenter / UI screen / Performer / Loader / Provider / InputHandler → also read .claude/reference/feature-anatomy.md",
     },
   }));
 });
