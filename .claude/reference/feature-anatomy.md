@@ -107,7 +107,7 @@ The Presenter owns **presentation logic**: subscribes to Core state (one or more
 
 ## UI screens (GameUI, MVP)
 
-A UI screen (start / HUD / result etc.) is a special case of the Presenter pattern: no gameplay model of its own, only display of existing Core state (`GameStateModel`, `WealthMeterModel`, …). Screens get a fixed file structure.
+A UI screen (start / HUD / result etc.) is a special case of the Presenter pattern: no gameplay model of its own, only display of existing Core state (`GameStateModel`, `WealthMeterModel`, …). Screens get a fixed file structure. Layout, prefabs, fonts, sprites and UI animation — [ui.md](../rules/ui.md).
 
 ```
 UI/{Screen}/

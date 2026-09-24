@@ -9,7 +9,7 @@
 - **Unity 6.5**; WebGL demo on GitHub Pages, built with Android (Google Play) in mind — keep code valid for both; OOP, **not ECS**
 - Scripts: `ButchersGames/Assets/_Project/Scripts/`; scenes **Bootstrap** (`ProjectScope`, loads Core) and **Core** (gameplay)
 - Stack: VContainer (DI), UniTask (async), R3 (Model → Presenter → View), DOTween / FMOD (animation and sound in View). Check Unity API against Unity 6.5 docs
-- `.claude/rules/` — auto-loaded when a `.cs` under `Scripts/` is read: architecture, design, codestyle, exceptions, rider-mcp. `unity-mcp.md` auto-loads only for `.unity` / `.prefab`; scene / prefab work through Coplay or Pipeline without reading those files → read `unity-mcp.md` manually first
+- `.claude/rules/` — auto-loaded when a `.cs` under `Scripts/` is read: architecture, design, codestyle, exceptions, rider-mcp. `unity-mcp.md` auto-loads only for `.unity` / `.prefab`; scene / prefab work through Coplay or Pipeline without reading those files → read `unity-mcp.md` manually first. `ui.md` auto-loads for `Scripts/UI`, `Prefabs/UI`, `Graphics/UI`, `Graphics/Fonts`; UI layout / sprites / fonts through Coplay or Pipeline → read `ui.md` manually first
 - `.claude/reference/` — not auto-loaded; read when a rule points to it (new feature, Presenter, UI screen, …)
 - Trigger-based procedures — skills in `.claude/skills/`: planning, review, refactor, perfmeter
 

@@ -36,11 +36,8 @@ namespace ViewComponents.CelebrationCamera
                     _view.Play();
                     break;
 
-                case GameState.Run:
-                    _view.Cancel();
-                    break;
-
                 case GameState.Tutorial:
+                case GameState.Run:
                 case GameState.Lose:
                     _view.Stop();
                     break;

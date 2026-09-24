@@ -1,6 +1,5 @@
 using DG.Tweening;
 using ContentValidation;
-using Core.Lifecycle;
 using Infrastructure.ExtendedExceptions;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -11,8 +10,7 @@ namespace ViewComponents.CelebrationCamera
     public sealed class CelebrationCameraView
         : MonoBehaviour,
           ICelebrationCameraView,
-          IValidatable,
-          IWarmupLifecycle
+          IValidatable
     {
         private const float LeftArcSign = -1f;
         private const float MidpointBias = 0.5f;
@@ -24,8 +22,6 @@ namespace ViewComponents.CelebrationCamera
         [SerializeField] private Transform _orbitPivot;
 
         private Tween _motion;
-        private Vector3 _restPosition;
-        private Quaternion _restRotation;
         private float _radius;
         private float _arc;
 
@@ -60,16 +56,10 @@ namespace ViewComponents.CelebrationCamera
             );
         }
 
-        void IWarmupLifecycle.Warmup()
-        {
-            RememberRestPose();
-        }
-
         void ICelebrationCameraView.Play()
         {
-            KillMotion();
-            RememberRestPose();
-            _arc = 0f;
+            ResetMotion();
+            CacheOrbitRadius();
             DisableFollow();
 
             float leftArc = LeftArcSign * _config.ArcDistance;
@@ -82,40 +72,18 @@ namespace ViewComponents.CelebrationCamera
 
         void ICelebrationCameraView.Stop()
         {
-            float arc = _arc;
-
-            KillMotion();
-
-            if (Mathf.Approximately(arc, 0f))
-            {
-                EnableFollow();
-
-                return;
-            }
-
-            DisableFollow();
-
-            Sequence returnLeg = CreateLeg(arc, 0f);
-            returnLeg.OnComplete(FinishReturn);
-            returnLeg.SetLink(_cinemachineFollow.gameObject);
-            _motion = returnLeg;
-            returnLeg.Play();
-        }
-
-        void ICelebrationCameraView.Cancel()
-        {
-            KillMotion();
-            _cinemachineFollow.transform.SetPositionAndRotation(_restPosition, _restRotation);
-            _arc = 0f;
+            ResetMotion();
             EnableFollow();
+            ResetFollowDamping();
         }
 
-        private void RememberRestPose()
-        {
-            _restPosition = _cinemachineFollow.transform.position;
-            _restRotation = _cinemachineFollow.transform.rotation;
-            _radius = HorizontalDistance();
-        }
+        private void CacheOrbitRadius() => _radius = HorizontalDistance();
+
+        private void EnableFollow() => _cinemachineFollow.enabled = true;
+
+        private void DisableFollow() => _cinemachineFollow.enabled = false;
+
+        private void ResetFollowDamping() => _cinemachineFollow.VirtualCamera.PreviousStateIsValid = false;
 
         private void BeginLeftRight()
         {
@@ -130,12 +98,6 @@ namespace ViewComponents.CelebrationCamera
             cycle.SetLink(_cinemachineFollow.gameObject);
             _motion = cycle;
             cycle.Play();
-        }
-
-        private void FinishReturn()
-        {
-            _motion = null;
-            EnableFollow();
         }
 
         private Sequence CreateLeg(float fromArc, float toArc)
@@ -166,9 +128,11 @@ namespace ViewComponents.CelebrationCamera
             return offset.magnitude;
         }
 
-        private void EnableFollow() => _cinemachineFollow.enabled = true;
-
-        private void DisableFollow() => _cinemachineFollow.enabled = false;
+        private void ResetMotion()
+        {
+            KillMotion();
+            _arc = 0f;
+        }
 
         private void KillMotion()
         {

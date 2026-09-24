@@ -55,6 +55,7 @@ Never rewrite `.unity`, `.prefab`, `.asset` with a manual diff, and never guess 
 - Hierarchy and components — paging, summary first
 - `include_properties=true` — only when values are needed
 - Asset search — small `page_size`; `generate_preview=false` by default
+- Do not read `TextMeshProUGUI` / `TMP_Text` through Coplay component resources: the getter touches `fontMaterial` and creates material instances that get saved into the scene. Read TMP values with a read-only `unity command eval` (`fontSharedMaterial`, `font`, `text`, …)
 
 ## Pipeline and arbitrary C#
 

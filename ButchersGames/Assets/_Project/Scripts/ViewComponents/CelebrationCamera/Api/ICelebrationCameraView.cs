@@ -5,7 +5,5 @@ namespace ViewComponents.CelebrationCamera
         void Play();
 
         void Stop();
-
-        void Cancel();
     }
 }

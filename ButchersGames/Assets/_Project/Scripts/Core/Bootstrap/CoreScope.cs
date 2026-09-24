@@ -21,6 +21,7 @@ using UI.FloatingText;
 using UI.Hud;
 using UI.ResultScreen;
 using UI.StartScreen;
+using UI.WealthIndicator;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -168,11 +169,7 @@ namespace Core.Bootstrap
 
         private static void RegisterCelebrationCamera(IContainerBuilder builder)
         {
-            builder
-               .RegisterComponentInHierarchy<CelebrationCameraView>()
-               .As<ICelebrationCameraView>()
-               .As<IValidatable>()
-               .As<IWarmupLifecycle>();
+            builder.RegisterComponentInHierarchy<CelebrationCameraView>().As<ICelebrationCameraView>().As<IValidatable>();
 
             builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
@@ -204,6 +201,8 @@ namespace Core.Bootstrap
             builder.Register<StartScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<HudView>().As<IHudView>().As<IValidatable>();
             builder.Register<HudPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+            builder.RegisterComponentInHierarchy<WealthIndicatorView>().As<IWealthIndicatorView>().As<IValidatable>();
+            builder.Register<WealthIndicatorPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
 
             builder
                .RegisterComponentInHierarchy<ResultScreenView>()
