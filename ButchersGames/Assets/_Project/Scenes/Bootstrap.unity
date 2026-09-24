@@ -152,8 +152,6 @@ MonoBehaviour:
   LoadEvent: 7
   UnloadEvent: 0
   Banks:
-  - Ambience
-  - Character
   - Master
   - Master.strings
   - Music
