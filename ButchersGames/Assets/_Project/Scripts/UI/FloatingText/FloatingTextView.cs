@@ -113,7 +113,8 @@ namespace UI.FloatingText
             int amount,
             float sideOffset)
         {
-            Vector2 position = ToContainerPoint(_anchor.position);
+            Vector2 position = CanvasPointHelper.WorldToContainerPoint(_anchor.position, _worldCamera, _canvas, _container);
+
             position.x += sideOffset;
 
             FloatingTextPopup floatingText = pool.Get();
@@ -125,19 +126,6 @@ namespace UI.FloatingText
                 _config,
                 release
             );
-        }
-
-        private Vector2 ToContainerPoint(Vector3 worldPosition)
-        {
-            Vector2 screenPoint = _worldCamera.WorldToScreenPoint(worldPosition);
-
-            Camera uiCamera = _canvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : _canvas.worldCamera;
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(_container, screenPoint, uiCamera, out Vector2 localPoint);
-
-            return localPoint;
         }
     }
 }

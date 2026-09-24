@@ -17,7 +17,6 @@ namespace UI.Hud
         private readonly IHudView _view;
         private readonly ILevelLoader _levelLoader;
         private readonly ILevelService _levelService;
-        private readonly IWealthMeterSettings _wealthMeterSettings;
         private readonly ITrackProvider _trackProvider;
         private readonly GameStateModel _gameStateModel;
         private readonly WealthMeterModel _wealthMeterModel;
@@ -25,14 +24,12 @@ namespace UI.Hud
 
         private IDisposable _stateSubscription;
         private IDisposable _valueSubscription;
-        private IDisposable _stageSubscription;
         private IDisposable _runProgressSubscription;
 
         public HudPresenter(
             IHudView view,
             ILevelLoader levelLoader,
             ILevelService levelService,
-            IWealthMeterSettings wealthMeterSettings,
             ITrackProvider trackProvider,
             GameStateModel gameStateModel,
             WealthMeterModel wealthMeterModel,
@@ -41,7 +38,6 @@ namespace UI.Hud
             _view = view;
             _levelLoader = levelLoader;
             _levelService = levelService;
-            _wealthMeterSettings = wealthMeterSettings;
             _trackProvider = trackProvider;
             _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
@@ -53,7 +49,6 @@ namespace UI.Hud
             _levelLoader.LevelLoaded += OnLevelLoaded;
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
             _valueSubscription = _wealthMeterModel.WealthPoints.Subscribe(OnValueChanged);
-            _stageSubscription = _wealthMeterModel.Stage.Subscribe(_view.SetWealthStage);
 
             _runProgressSubscription = _runnerMovementModel
                .CurrentRunnerCoordinate
@@ -66,7 +61,6 @@ namespace UI.Hud
             _levelLoader.LevelLoaded -= OnLevelLoaded;
             _stateSubscription?.Dispose();
             _valueSubscription?.Dispose();
-            _stageSubscription?.Dispose();
             _runProgressSubscription?.Dispose();
         }
 
@@ -89,13 +83,7 @@ namespace UI.Hud
 
         private void OnValueChanged(int value)
         {
-            int maxValue = _wealthMeterSettings.RichThreshold;
-
-            float wealthProgress = (float)value / maxValue;
-            float normalizedFill = Mathf.Clamp01(wealthProgress);
-
             _view.SetMoneyAmount(value);
-            _view.SetWealthFillBar(normalizedFill);
         }
 
         private void OnCurrentCoordinateChanged(float coordinate)

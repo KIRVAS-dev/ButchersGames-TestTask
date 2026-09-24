@@ -11,6 +11,7 @@ namespace UI.ResultScreen
         void Hide();
         void SetWinResult();
         void SetLoseResult();
+        void SetLevelNumber(int levelNumber);
         void SetMoneyAmount(int amount);
     }
 }

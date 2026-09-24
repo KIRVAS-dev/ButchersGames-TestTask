@@ -1,6 +1,7 @@
 using System;
 using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
+using Core.Gameplay.LevelProgression;
 using Core.Gameplay.WealthMeter;
 using Core.Lifecycle;
 using R3;
@@ -11,6 +12,7 @@ namespace UI.ResultScreen
     {
         private readonly IResultScreenView _view;
         private readonly IGameFlowService _gameFlowService;
+        private readonly ILevelService _levelService;
         private readonly IFeedbackPerformer _feedbackPerformer;
         private readonly GameStateModel _gameStateModel;
         private readonly WealthMeterModel _wealthMeterModel;
@@ -20,12 +22,14 @@ namespace UI.ResultScreen
         public ResultScreenPresenter(
             IResultScreenView view,
             IGameFlowService gameFlowService,
+            ILevelService levelService,
             IFeedbackPerformer feedbackPerformer,
             GameStateModel gameStateModel,
             WealthMeterModel wealthMeterModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
+            _levelService = levelService;
             _feedbackPerformer = feedbackPerformer;
             _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
@@ -62,6 +66,7 @@ namespace UI.ResultScreen
             switch (state)
             {
                 case GameState.Win:
+                    _view.SetLevelNumber(_levelService.CurrentLevelNumber);
                     _view.SetWinResult();
                     ShowResult();
                     break;

@@ -20,6 +20,7 @@ namespace UI.ResultScreen
         [SerializeField] private TextMeshProUGUI _moneyAmountText;
         [SerializeField] private Button _retryButton;
         [SerializeField] private Button _nextButton;
+        [SerializeField] private TextMeshProUGUI _levelNumberText;
 
         public event Action RetryClicked;
         public event Action NextClicked;
@@ -32,6 +33,7 @@ namespace UI.ResultScreen
             Guard.AgainstNull(_moneyAmountText, () => Missing(nameof(_moneyAmountText)));
             Guard.AgainstNull(_retryButton, () => Missing(nameof(_retryButton)));
             Guard.AgainstNull(_nextButton, () => Missing(nameof(_nextButton)));
+            Guard.AgainstNull(_levelNumberText, () => Missing(nameof(_levelNumberText)));
 
             return;
 
@@ -70,6 +72,11 @@ namespace UI.ResultScreen
         {
             _winVisualRoot.gameObject.SetActive(false);
             _loseVisualRoot.gameObject.SetActive(true);
+        }
+
+        void IResultScreenView.SetLevelNumber(int levelNumber)
+        {
+            _levelNumberText.text = LevelNumberTextHelper.Format(levelNumber);
         }
 
         void IResultScreenView.SetMoneyAmount(int amount)
