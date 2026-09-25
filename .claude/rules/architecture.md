@@ -27,7 +27,8 @@ Assets/_Project/Scripts/
 ├── Infrastructure/
 │   ├── Bootstrap/           Infrastructure.Bootstrap  — ProjectScope, EntryPoint
 │   ├── ExtendedExceptions/  ExtendedExceptions        — ExtendedException, Guard
-│   └── Persistence/         Infrastructure.Persistence — PlayerPrefs and other storage adapters
+│   ├── Persistence/         Infrastructure.Persistence — PlayerPrefs and other storage adapters
+│   └── Audio/               Infrastructure.Audio — FMOD adapters for Core audio ports (IAudioLoader)
 ├── Core/
 │   ├── Loop/Api/            Core — loop ports (ns Core.Loop): IInputTickable, IGameplayTickable, IPresentationTickable
 │   ├── Lifecycle/           Core — scope lifecycle (ns Core.Lifecycle): CoreScopeCancellationSource; Api/ — ICoreScopeCancellation, ISubscriptionLifecycle, IWarmupLifecycle
@@ -48,19 +49,21 @@ ExtendedExceptions  ←  Core  ←  ViewComponents
 Core  ←  Input  ←  Bootstrap  ←  Infrastructure.Bootstrap
 Core  ←  Infrastructure.Persistence  ←  Bootstrap
 Core  ←  UI  ←  Bootstrap
+Core  ←  Infrastructure.Audio  ←  Infrastructure.Bootstrap
 ```
 
 | Assembly | References | Contains |
 |---|---|---|
 | **ExtendedExceptions** | — | `ExtendedException`, `Guard` |
 | **Infrastructure.Persistence** | Core | persistence adapters (PlayerPrefs etc.) |
-| **Core** | ExtendedExceptions, ContentValidation, R3 | gameplay, `Api/` ports (no SO Config), loop phases, SessionValidation |
+| **Infrastructure.Audio** | Core, UniTask, FMOD | FMOD adapters for Core audio ports (`FmodAudioLoader`) |
+| **Core** | ExtendedExceptions, ContentValidation, UniTask, R3 | gameplay, `Api/` ports (no SO Config), loop phases, SessionValidation |
 | **Input** | Core, Unity.InputSystem | device adapters: `DragInput` etc. (plain C#, implement Core ports), `ITrigger` |
 | **ViewComponents** | Core, ExtendedExceptions, ContentValidation, UniTask, VContainer, FMOD, Splines, R3 | View, Providers, SO Config |
 | **UI** | Core, ExtendedExceptions, ContentValidation, DOTween, TMP, uGUI, R3 | UI screens: View, Presenter, Config |
 | **Bootstrap** | Core, Input, UI, ViewComponents, Infrastructure.Persistence, ExtendedExceptions, ContentValidation, VContainer, UniTask | CoreScope, CoreEntryPoint, GameLoop |
 | **Debug** | Unity.InputSystem | Editor-only debugging |
-| **Infrastructure.Bootstrap** | Bootstrap, VContainer, UniTask | ProjectScope, Core loading |
+| **Infrastructure.Bootstrap** | Bootstrap, Core, Infrastructure.Audio, VContainer, UniTask | ProjectScope, Core loading (waits for `IAudioLoader`) |
 
 **`Api/` everywhere.** Interfaces (ports), DTOs and `Exceptions.cs` of any folder live in its `Api/` subfolder — even when the folder holds nothing but interfaces. A folder with no ports (e.g. `GameLoop`) simply has no `Api/`. Namespace has no `.Api` suffix.
 

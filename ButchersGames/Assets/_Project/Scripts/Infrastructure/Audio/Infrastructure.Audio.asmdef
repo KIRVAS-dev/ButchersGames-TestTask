@@ -1,13 +1,10 @@
 {
-    "name": "Infrastructure.Bootstrap",
-    "rootNamespace": "Infrastructure.Bootstrap",
+    "name": "Infrastructure.Audio",
+    "rootNamespace": "Infrastructure.Audio",
     "references": [
-        "VContainer",
-        "UniTask",
-        "Bootstrap",
         "Core",
-        "Infrastructure.Audio",
-        "ExtendedExceptions"
+        "UniTask",
+        "FMODUnity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
