@@ -53,8 +53,8 @@ namespace ViewComponents.Level
         private void SpawnLevel(Level levelPrefab)
         {
             Level level = Instantiate(levelPrefab, transform);
-            _currentLevel.Set(level);
             ValidateLevelContent(level);
+            _currentLevel.Set(level);
 
             LevelLoaded?.Invoke();
         }

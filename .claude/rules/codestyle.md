@@ -25,8 +25,8 @@ Feature exceptions: namespace `{Layer}.{Feature}`, file in `Api/` — [exception
 
 ## Class layout
 
-- Order: Fields → Constructor → Properties → Methods; inside a block `public` → `internal` → `protected` → `private`
-- Events above other fields
+- Order: Fields → Events → Constructor → Properties → Methods; inside a block `public` → `internal` → `protected` → `private`
+- Events: own block right after fields, any access modifier
 - Fields and ctor parameters: interfaces (`I…`) first, then concrete classes; parameter order matches field order
 - Access modifiers **explicit** (except in interfaces); default `internal` — [design.md](design.md)
 - Ctor assignment `_field = field` when names match the parameter
@@ -137,4 +137,4 @@ Production code **without** `//` and `///`, no XML-doc. Exception: generated cod
 - **Do not reorder** `[SerializeField]` fields (Inspector)
 - Public access to serialized data — through properties, not public fields
 - Field explanation — `[Tooltip("...")]`, not a comment
-- Config SO: `[CreateAssetMenu(menuName = "Data/...")]`
+- Config SO: `[CreateAssetMenu(menuName = "Configs/...")]`

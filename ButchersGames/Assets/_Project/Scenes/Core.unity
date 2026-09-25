@@ -837,7 +837,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f706761a743a58d4da386030484f04a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Feedback.FeedbackView
-  _entries: []
+  _entries:
+  - _type: 0
+    _sound:
+      Guid:
+        Data1: -55556454
+        Data2: 1171862019
+        Data3: 1424023735
+        Data4: -26255127
+      Path: event:/UI/OnPointerDown
+    _particles: []
+  - _type: 2
+    _sound:
+      Guid:
+        Data1: -574602247
+        Data2: 1259898424
+        Data3: 938834326
+        Data4: 391991835
+      Path: event:/Music/WinMusic
+    _particles: []
+  - _type: 5
+    _sound:
+      Guid:
+        Data1: -385146895
+        Data2: 1267980554
+        Data3: -1779013487
+        Data4: 1763377042
+      Path: event:/SFX/OnWealthIncreased
+    _particles: []
+  - _type: 6
+    _sound:
+      Guid:
+        Data1: -1417670245
+        Data2: 1117546125
+        Data3: 1602482608
+        Data4: -302119267
+      Path: event:/SFX/OnWealthDecreased
+    _particles: []
 --- !u!1 &1295242498
 GameObject:
   m_ObjectHideFlags: 0

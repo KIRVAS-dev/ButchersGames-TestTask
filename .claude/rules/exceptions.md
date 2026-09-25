@@ -39,7 +39,7 @@ MonoBehaviour, SerializeField, scene.
 | Invalid number on an MB | `Invalid{Feature}ValueException` | `fieldName`, `objectName`, `value` |
 
 - Types with authored wiring / config implement `IValidatable` (`ContentValidation` package); `Validate()` only checks, no side effects
-- **When called:** session — `SessionValidation` from DI before `PrepareGame`; level content — after `LoadLevel` / `CurrentLevel.Set`; Editor — `Tools/ContentValidation` (collect-all)
+- **When called:** session — `SessionValidation` from DI before `PrepareGame`; level content — in `LoadLevel` right after instantiate, before `CurrentLevel.Set` (Set initializes content: `LaneBarrierZone.Initialize`, `Gate.Initialize`); Editor — `Tools/ContentValidation` (collect-all)
 - Init that needs already validated fields (pools, dictionaries, `TurnAnimator` etc.) — `IWarmupLifecycle.Warmup()` after session in `CoreEntryPoint`, not `Awake → Validate`
 - View / MB: prefer explicit `void IValidatable.Validate()`; `public void Validate()` only if a call through the concrete type is needed
 - References: `Guard.AgainstNull` / `AgainstNullOrEmpty` + typed factory
