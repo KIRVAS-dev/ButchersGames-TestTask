@@ -6,11 +6,11 @@ using Core.Gameplay.Track;
 using Core.Gameplay.TransformRotator;
 using Core.Gameplay.WealthPointsModifier;
 using Infrastructure.ExtendedExceptions;
+using ViewComponents.Gates;
 using ViewComponents.LaneBarriers;
 using ViewComponents.Obstacles;
 using ViewComponents.Track;
 using ViewComponents.TransformRotators;
-using ViewComponents.WealthPointsModifier;
 
 namespace ViewComponents.Level
 {
@@ -39,10 +39,11 @@ namespace ViewComponents.Level
 
         internal void Set(Level level)
         {
+            IWealthPointsModifier[] modifiers = level.GetComponentsInChildren<IWealthPointsModifier>();
             Obstacle[] obstacles = level.GetComponentsInChildren<Obstacle>();
             LaneBarrierZone[] barriers = level.GetComponentsInChildren<LaneBarrierZone>();
-            WealthPointsModifierCollider[] modifiers = level.GetComponentsInChildren<WealthPointsModifierCollider>();
             TransformRotator[] rotators = level.GetComponentsInChildren<TransformRotator>();
+            Gate[] gates = level.GetComponentsInChildren<Gate>();
 
             TrackPath track = new TrackPath(level.SplineContainer);
 
@@ -59,6 +60,11 @@ namespace ViewComponents.Level
             foreach (LaneBarrierZone barrier in barriers)
             {
                 barrier.Initialize(track);
+            }
+
+            foreach (Gate gate in gates)
+            {
+                gate.Initialize();
             }
 
             Track = track;

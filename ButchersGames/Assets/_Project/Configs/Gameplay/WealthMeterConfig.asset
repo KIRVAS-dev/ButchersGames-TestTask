@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c06df7ff4c2ca8a4da53efbd47e704e1, type: 3}
+  m_Name: WealthMeterConfig
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthMeter.WealthMeterConfig
+  _startValue: 40
+  _poorThreshold: 20
+  _casualThreshold: 90
+  _middleThreshold: 120
+  _businessThreshold: 160
+  _richThreshold: 200
