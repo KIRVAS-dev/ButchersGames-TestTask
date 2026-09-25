@@ -13,4 +13,10 @@ namespace Core.Bootstrap.Scene
         public SceneNotFoundException(string sceneName)
             : base("bootstrap-scene-2", $"Scene '{sceneName}' cannot be loaded, check Build Settings") { }
     }
+
+    internal sealed class SceneActivationException : ExtendedException
+    {
+        public SceneActivationException(string sceneName)
+            : base("bootstrap-scene-3", $"Scene '{sceneName}' cannot be set active, it must be loaded") { }
+    }
 }
