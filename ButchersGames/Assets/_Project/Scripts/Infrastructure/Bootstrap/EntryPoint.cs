@@ -1,3 +1,4 @@
+using Core.Audio;
 using Core.Bootstrap.Scene;
 using Cysharp.Threading.Tasks;
 using System.Threading;
@@ -9,10 +10,12 @@ namespace Infrastructure.Bootstrap
     {
         private const string CoreSceneName = "Core";
 
+        private readonly IAudioLoader _audioLoader;
         private readonly ISceneLoader _sceneLoader;
 
-        public EntryPoint(ISceneLoader sceneLoader)
+        public EntryPoint(IAudioLoader audioLoader, ISceneLoader sceneLoader)
         {
+            _audioLoader = audioLoader;
             _sceneLoader = sceneLoader;
         }
 
@@ -23,6 +26,7 @@ namespace Infrastructure.Bootstrap
 
         private async UniTaskVoid LoadCoreAsync()
         {
+            await _audioLoader.LoadAsync(CancellationToken.None);
             await _sceneLoader.LoadSceneAsync(CoreSceneName, LoadSceneMode.Additive, CancellationToken.None);
         }
     }

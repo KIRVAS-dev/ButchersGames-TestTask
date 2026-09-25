@@ -3,7 +3,8 @@
     "rootNamespace": "Core",
     "references": [
         "ExtendedExceptions",
-        "ContentValidation"
+        "ContentValidation",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
