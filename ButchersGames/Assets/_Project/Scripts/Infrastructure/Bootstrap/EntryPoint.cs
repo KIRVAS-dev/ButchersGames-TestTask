@@ -27,7 +27,9 @@ namespace Infrastructure.Bootstrap
         private async UniTaskVoid LoadCoreAsync()
         {
             await _audioLoader.LoadAsync(CancellationToken.None);
-            await _sceneLoader.LoadSceneAsync(CoreSceneName, LoadSceneMode.Additive, CancellationToken.None);
+            await _sceneLoader.LoadAsync(CoreSceneName, LoadSceneMode.Additive, CancellationToken.None);
+
+            _sceneLoader.SetActiveScene(CoreSceneName);
         }
     }
 }

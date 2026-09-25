@@ -5,19 +5,20 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CoreLoadSceneMode = Core.Bootstrap.Scene.LoadSceneMode;
 using UnityLoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
+using UnityScene = UnityEngine.SceneManagement.Scene;
 
 namespace Core.Bootstrap.Scene
 {
     public sealed class CoreLoader : ISceneLoader
     {
-        void ISceneLoader.LoadScene(string sceneName, CoreLoadSceneMode loadSceneMode)
+        void ISceneLoader.Load(string sceneName, CoreLoadSceneMode loadSceneMode)
         {
             UnityLoadSceneMode unityLoadSceneMode = ConvertLoadSceneMode(loadSceneMode);
 
             SceneManager.LoadScene(sceneName, unityLoadSceneMode);
         }
 
-        async UniTask ISceneLoader.LoadSceneAsync(
+        async UniTask ISceneLoader.LoadAsync(
             string sceneName,
             CoreLoadSceneMode loadSceneMode,
             CancellationToken cancellationToken)
@@ -29,6 +30,13 @@ namespace Core.Bootstrap.Scene
             Guard.AgainstNull(loadOperation, () => new SceneNotFoundException(sceneName));
 
             await loadOperation.ToUniTask(cancellationToken: cancellationToken);
+        }
+
+        void ISceneLoader.SetActiveScene(string sceneName)
+        {
+            UnityScene scene = SceneManager.GetSceneByName(sceneName);
+
+            Guard.AgainstTrue(!SceneManager.SetActiveScene(scene), () => new SceneActivationException(sceneName));
         }
 
         private UnityLoadSceneMode ConvertLoadSceneMode(CoreLoadSceneMode loadSceneMode)

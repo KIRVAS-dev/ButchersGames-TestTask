@@ -5,11 +5,13 @@ namespace Core.Bootstrap.Scene
 {
     public interface ISceneLoader
     {
-        void LoadScene(string sceneName, LoadSceneMode loadSceneMode);
+        void Load(string sceneName, LoadSceneMode loadSceneMode);
 
-        UniTask LoadSceneAsync(
+        UniTask LoadAsync(
             string sceneName,
             LoadSceneMode loadSceneMode,
             CancellationToken cancellationToken);
+
+        void SetActiveScene(string sceneName);
     }
 }

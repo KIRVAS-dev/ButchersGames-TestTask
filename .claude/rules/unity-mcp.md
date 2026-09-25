@@ -48,7 +48,7 @@ Never rewrite `.unity`, `.prefab`, `.asset` with a manual diff, and never guess 
 - **Inspect a scene** — `manage_scene` (active / load) → hierarchy (`page_size` ~50, paging) → find target → `manage_components` with `include_properties=false` first
 - **Change an object** — find target → `manage_gameobject` / `manage_components` → `batch_execute` for batches → save the scene if needed → `read_console`
 - **Prefab** — `manage_prefabs` / `manage_asset` → edits through MCP (not YAML) → apply / save → `read_console`
-- **Play mode** — `manage_editor` enter → check → exit before structural scene / asset edits (if the editor requires) → `read_console`
+- **Play mode** — `manage_editor` enter → `execute_code` `Application.runInBackground = true` (unfocused Editor does not tick) → check → exit before structural scene / asset edits (if the editor requires) → `read_console`. Never toggle `PlayerSettings.runInBackground` — writes `ProjectSettings.asset`, ships to WebGL
 
 ## Payload / tokens
 
