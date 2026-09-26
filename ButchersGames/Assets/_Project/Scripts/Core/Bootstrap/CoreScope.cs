@@ -31,6 +31,7 @@ using ViewComponents.CharacterAnimation;
 using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
+using ViewComponents.RunnerCollision;
 using ViewComponents.RunnerMovement;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
@@ -48,6 +49,7 @@ namespace Core.Bootstrap
             RegisterGameFlow(builder);
             RegisterWealthMeter(builder);
             RegisterRunnerMovement(builder);
+            RegisterRunnerCollision(builder);
             RegisterLevel(builder);
             RegisterWealthPointsModifier(builder);
             RegisterTransformRotators(builder);
@@ -68,7 +70,7 @@ namespace Core.Bootstrap
 
         private static void RegisterGameFlow(IContainerBuilder builder)
         {
-            builder.Register<GameStateModel>(Lifetime.Singleton);
+            builder.Register<GameStateModel>(Lifetime.Singleton).AsSelf().As<IReadOnlyGameStateModel>();
             builder.Register<GameplayInputBlock>(Lifetime.Singleton).As<IGameplayInputBlock>();
             builder.Register<GameStateMachine>(Lifetime.Singleton).As<IGameStateMachine>();
             builder.Register<GameResultDetector>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
@@ -83,7 +85,7 @@ namespace Core.Bootstrap
             );
 
             builder.RegisterInstance(_wealthMeterConfig).As<IWealthMeterSettings>().As<IValidatable>();
-            builder.Register<WealthMeterModel>(Lifetime.Singleton);
+            builder.Register<WealthMeterModel>(Lifetime.Singleton).AsSelf().As<IReadOnlyWealthMeterModel>();
             builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>().As<ISubscriptionLifecycle>();
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>().As<IValidatable>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
@@ -104,7 +106,7 @@ namespace Core.Bootstrap
 
             builder.Register<DragInput>(Lifetime.Singleton).As<IDragInput>().As<IInputTickable>();
             builder.RegisterComponentInHierarchy<RunnerMovementView>().As<IRunnerMovementView>().As<IPresentationTickable>();
-            builder.Register<RunnerMovementModel>(Lifetime.Singleton);
+            builder.Register<RunnerMovementModel>(Lifetime.Singleton).AsSelf().As<IReadOnlyRunnerMovementModel>();
 
             builder
                .Register<RunnerMovementService>(Lifetime.Singleton)
@@ -114,6 +116,13 @@ namespace Core.Bootstrap
 
             builder.Register<RunnerMovementInputHandler>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
             builder.Register<RunnerMovementPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterRunnerCollision(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<RunnerCollisionView>().As<IRunnerCollisionView>().As<IValidatable>();
+
+            builder.Register<RunnerCollisionPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterLevel(IContainerBuilder builder)

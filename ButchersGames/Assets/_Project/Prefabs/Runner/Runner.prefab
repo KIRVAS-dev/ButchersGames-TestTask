@@ -127,6 +127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6847868993372075092}
   - component: {fileID: 4591792567206359214}
+  - component: {fileID: 1613935969432420168}
   - component: {fileID: 1805493389426998789}
   m_Layer: 0
   m_Name: Runner
@@ -181,6 +182,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1613935969432420168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6189592153673374118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 847b8f12fe5b27d44b8909ff05190098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerCollision.RunnerCollisionView
+  _rigidbody: {fileID: 4591792567206359214}
 --- !u!114 &1805493389426998789
 MonoBehaviour:
   m_ObjectHideFlags: 0
