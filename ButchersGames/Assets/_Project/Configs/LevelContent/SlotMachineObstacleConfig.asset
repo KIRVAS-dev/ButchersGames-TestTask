@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d19f6c2c92809449b41562cb99c37e, type: 3}
   m_Name: SlotMachineObstacleConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Obstacles.ObstacleConfig
-  _stopDuration: 0.5
+  _stopDuration: 1.5

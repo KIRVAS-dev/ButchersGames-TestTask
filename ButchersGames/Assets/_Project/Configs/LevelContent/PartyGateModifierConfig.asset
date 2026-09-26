@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: PartyGateModifierConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthPointsModifier.WealthPointsModifierConfig
   _modifierType: 1
-  _wealthPoints: 20
+  _wealthPoints: 50

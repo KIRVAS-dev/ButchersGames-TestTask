@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SchoolGateModifierConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthPointsModifier.WealthPointsModifierConfig
   _modifierType: 0
-  _wealthPoints: 20
+  _wealthPoints: 50

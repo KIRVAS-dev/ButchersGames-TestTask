@@ -40,7 +40,7 @@ namespace ViewComponents.WealthMeter
             Guard.AgainstGreaterThan(
                 _middleThreshold,
                 _businessThreshold - 1,
-                () => Invalid(nameof(_middleThreshold), _businessThreshold)
+                () => Invalid(nameof(_middleThreshold), _middleThreshold)
             );
 
             Guard.AgainstGreaterThan(

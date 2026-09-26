@@ -235,7 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FMODUnity::FMODUnity.StudioEventEmitter
-  CollisionTag: Player
+  CollisionTag: 
   EventReference:
     Guid:
       Data1: -693093851
@@ -307,7 +307,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6.8, y: 3, z: 1}
+  m_Size: {x: 4.4605594, y: 3, z: 1}
   m_Center: {x: 0, y: 1.5, z: -2.5}
 --- !u!1 &5575209841510989441
 GameObject:

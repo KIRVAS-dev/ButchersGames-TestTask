@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42ef7a3531f8b104eac33d1eeb7b2584, type: 3}
   m_Name: CharacterTurnConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.CharacterTurn.CharacterTurnConfig
-  _maxAngle: 30
-  _turnSpeed: 150
-  _releaseDelay: 0.2
+  _maxAngle: 35
+  _turnSpeed: 300
+  _releaseDelay: 0.15

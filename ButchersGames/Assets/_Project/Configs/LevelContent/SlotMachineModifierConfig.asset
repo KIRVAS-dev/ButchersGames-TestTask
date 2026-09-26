@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SlotMachineModifierConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthPointsModifier.WealthPointsModifierConfig
   _modifierType: 1
-  _wealthPoints: 30
+  _wealthPoints: 100
