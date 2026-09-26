@@ -1,6 +1,6 @@
 namespace Core.Gameplay.RunnerBody
 {
-    public interface IRunnerBody
+    public interface IRunnerBodyProvider
     {
         float Width { get; }
     }

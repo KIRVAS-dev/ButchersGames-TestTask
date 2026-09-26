@@ -1,6 +1,6 @@
-namespace ViewComponents.RunnerCollision
+namespace Core.Gameplay.RunnerCollision
 {
-    public interface IRunnerCollisionView
+    public interface IRunnerCollision
     {
         void EnableCollisions();
 

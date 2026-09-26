@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-namespace Core.Audio
+namespace Infrastructure.Audio
 {
     public interface IAudioLoader
     {

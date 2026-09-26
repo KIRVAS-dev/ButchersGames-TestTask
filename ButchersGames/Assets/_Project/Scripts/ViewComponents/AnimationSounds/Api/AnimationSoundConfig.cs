@@ -12,7 +12,7 @@ namespace ViewComponents.AnimationSounds
     {
         [SerializeField] private EventReference _sound;
 
-        public EventReference Sound => _sound;
+        internal EventReference Sound => _sound;
 
         public void Validate()
         {

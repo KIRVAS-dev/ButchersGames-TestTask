@@ -3,18 +3,18 @@ using Core.Gameplay.GameFlow;
 using Core.Lifecycle;
 using R3;
 
-namespace ViewComponents.RunnerCollision
+namespace Core.Gameplay.RunnerCollision
 {
-    public sealed class RunnerCollisionPresenter : ISubscriptionLifecycle
+    public sealed class RunnerCollisionService : ISubscriptionLifecycle
     {
-        private readonly IRunnerCollisionView _view;
+        private readonly IRunnerCollision _runnerCollision;
         private readonly IReadOnlyGameStateModel _gameStateModel;
 
         private IDisposable _stateSubscription;
 
-        public RunnerCollisionPresenter(IRunnerCollisionView view, IReadOnlyGameStateModel gameStateModel)
+        public RunnerCollisionService(IRunnerCollision runnerCollision, IReadOnlyGameStateModel gameStateModel)
         {
-            _view = view;
+            _runnerCollision = runnerCollision;
             _gameStateModel = gameStateModel;
         }
 
@@ -33,13 +33,13 @@ namespace ViewComponents.RunnerCollision
             switch (state)
             {
                 case GameState.Run:
-                    _view.EnableCollisions();
+                    _runnerCollision.EnableCollisions();
                     break;
 
                 case GameState.Tutorial:
                 case GameState.Win:
                 case GameState.Lose:
-                    _view.DisableCollisions();
+                    _runnerCollision.DisableCollisions();
                     break;
 
                 default:

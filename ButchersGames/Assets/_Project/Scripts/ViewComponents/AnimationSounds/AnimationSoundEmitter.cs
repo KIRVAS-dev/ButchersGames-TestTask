@@ -21,6 +21,11 @@ namespace ViewComponents.AnimationSounds
                 () => new MissingAnimationSoundEmitterFieldException(nameof(_animator), gameObject.name)
             );
 
+            Guard.AgainstNull(
+                _animator.runtimeAnimatorController,
+                () => new MissingAnimationSoundControllerException(_animator.gameObject.name)
+            );
+
             ValidateClipEvents();
         }
 

@@ -43,6 +43,16 @@ namespace ViewComponents.Level
             SpawnLevel(levelPrefab);
         }
 
+        private static void ValidateLevelContent(Level level)
+        {
+            IValidatable[] validatables = level.GetComponentsInChildren<IValidatable>(true);
+
+            foreach (IValidatable validatable in validatables)
+            {
+                validatable.Validate();
+            }
+        }
+
         private void ClearChildren()
         {
             for (int i = transform.childCount - 1; i >= 0; i--)
@@ -58,16 +68,6 @@ namespace ViewComponents.Level
             _currentLevel.Set(level);
 
             LevelLoaded?.Invoke();
-        }
-
-        private void ValidateLevelContent(Level level)
-        {
-            IValidatable[] validatables = level.GetComponentsInChildren<IValidatable>(true);
-
-            foreach (IValidatable validatable in validatables)
-            {
-                validatable.Validate();
-            }
         }
     }
 }

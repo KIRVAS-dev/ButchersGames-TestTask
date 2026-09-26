@@ -1,10 +1,10 @@
-using Core.Audio;
 using Core.Bootstrap.Scene;
 using Infrastructure.Audio;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using ViewComponents.Audio;
 
 namespace Infrastructure.Bootstrap
 {

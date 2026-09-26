@@ -32,7 +32,7 @@ namespace Core.Gameplay.RunnerMovement
             ITrackProvider trackProvider,
             IObstacleRegistry obstacleRegistry,
             ILaneBarrierRegistry laneBarrierRegistry,
-            IRunnerBody runnerBody,
+            IRunnerBodyProvider runnerBodyProvider,
             RunnerMovementModel model)
         {
             _levelLoaderEvents = levelLoaderEvents;
@@ -40,7 +40,7 @@ namespace Core.Gameplay.RunnerMovement
             _trackProvider = trackProvider;
             _obstacleRegistry = obstacleRegistry;
             _laneBarrierRegistry = laneBarrierRegistry;
-            _simulator = new RunnerMovementSimulator(settings, runnerBody, model);
+            _simulator = new RunnerMovementSimulator(settings, runnerBodyProvider, model);
         }
 
         void IGameplayTickable.Tick(float deltaTime)

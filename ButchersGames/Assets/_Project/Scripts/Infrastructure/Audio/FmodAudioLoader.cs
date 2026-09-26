@@ -1,4 +1,3 @@
-using Core.Audio;
 using Cysharp.Threading.Tasks;
 using FMODUnity;
 using System.Threading;
@@ -12,7 +11,7 @@ namespace Infrastructure.Audio
             return UniTask.WaitUntil(IsLoaded, cancellationToken: cancellationToken);
         }
 
-        private bool IsLoaded()
+        private static bool IsLoaded()
         {
             return RuntimeManager.HaveAllBanksLoaded && !RuntimeManager.AnySampleDataLoading();
         }

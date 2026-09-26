@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Audio
+namespace ViewComponents.Audio
 {
     public interface IStudioListenerAnchor
     {

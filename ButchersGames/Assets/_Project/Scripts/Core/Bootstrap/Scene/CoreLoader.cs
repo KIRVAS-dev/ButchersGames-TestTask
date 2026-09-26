@@ -39,7 +39,7 @@ namespace Core.Bootstrap.Scene
             Guard.AgainstTrue(!SceneManager.SetActiveScene(scene), () => new SceneActivationException(sceneName));
         }
 
-        private UnityLoadSceneMode ConvertLoadSceneMode(CoreLoadSceneMode loadSceneMode)
+        private static UnityLoadSceneMode ConvertLoadSceneMode(CoreLoadSceneMode loadSceneMode)
         {
             return loadSceneMode switch
             {

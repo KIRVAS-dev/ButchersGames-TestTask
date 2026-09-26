@@ -5,6 +5,7 @@ using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
 using Core.Gameplay.RunnerBody;
+using Core.Gameplay.RunnerCollision;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
 using Core.Gameplay.TransformRotator;
@@ -34,7 +35,6 @@ using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerBody;
-using ViewComponents.RunnerCollision;
 using ViewComponents.RunnerMovement;
 using ViewComponents.TrackColor;
 using ViewComponents.TransformRotators;
@@ -106,7 +106,11 @@ namespace Core.Bootstrap
 
         private static void RegisterRunnerBody(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<RunnerBody>().As<IRunnerBody>().As<IValidatable>();
+            builder
+               .RegisterComponentInHierarchy<RunnerBody>()
+               .As<IRunnerBodyProvider>()
+               .As<IRunnerCollision>()
+               .As<IValidatable>();
         }
 
         private void RegisterRunnerMovement(IContainerBuilder builder)
@@ -139,9 +143,7 @@ namespace Core.Bootstrap
 
         private static void RegisterRunnerCollision(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<RunnerCollisionView>().As<IRunnerCollisionView>().As<IValidatable>();
-
-            builder.Register<RunnerCollisionPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+            builder.Register<RunnerCollisionService>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterLevel(IContainerBuilder builder)

@@ -37,7 +37,7 @@ namespace ViewComponents.CharacterTurn
             _sideSubscription?.Dispose();
         }
 
-        private CharacterTurnSide SideFor(
+        private static CharacterTurnSide SideFor(
             GameState gameState,
             RunnerMovementState movementState,
             RunnerLateralDirection direction)

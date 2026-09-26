@@ -127,9 +127,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6847868993372075092}
   - component: {fileID: 4591792567206359214}
-  - component: {fileID: 1613935969432420168}
-  - component: {fileID: 1805493389426998789}
   - component: {fileID: 5232940803711871102}
+  - component: {fileID: 1805493389426998789}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -183,31 +182,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1613935969432420168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6189592153673374118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 847b8f12fe5b27d44b8909ff05190098, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerCollision.RunnerCollisionView
-  _rigidbody: {fileID: 4591792567206359214}
---- !u!114 &1805493389426998789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6189592153673374118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 537a7a89f8783574180109adb204d153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.RunnerMovementView
 --- !u!114 &5232940803711871102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,6 +195,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerBody.RunnerBodyProvider
   _collider: {fileID: 3509806085489084475}
+  _rigidbody: {fileID: 4591792567206359214}
+--- !u!114 &1805493389426998789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6189592153673374118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 537a7a89f8783574180109adb204d153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.RunnerMovementView
 --- !u!1001 &6843584209967514946
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -276,52 +263,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7202127279673931545, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5337828829694556229}
-    - targetCorrespondingSourceObject: {fileID: 7202127279673931545, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5444364937577608693}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
 --- !u!4 &3909550684134648033 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7546001312843640227, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
-  m_PrefabInstance: {fileID: 6843584209967514946}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &4398419308721173083 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7202127279673931545, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
-  m_PrefabInstance: {fileID: 6843584209967514946}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5337828829694556229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4398419308721173083}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce0291e3d79d6e3458ed6f0cec1f4fc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.CharacterTurn.CharacterTurnView
-  _config: {fileID: 11400000, guid: af8655f9fa6d9d5428d1ff0a18581ca9, type: 2}
---- !u!114 &5444364937577608693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4398419308721173083}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac037b343c595104584784ddc065bf04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ViewComponents::ViewComponents.Footsteps.FootstepSoundView
-  _animator: {fileID: 6963039423089275547}
---- !u!95 &6963039423089275547 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 4492592288350926809, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
   m_PrefabInstance: {fileID: 6843584209967514946}
   m_PrefabAsset: {fileID: 0}

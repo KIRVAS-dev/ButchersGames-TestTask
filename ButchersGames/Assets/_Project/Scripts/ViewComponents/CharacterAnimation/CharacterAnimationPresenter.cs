@@ -53,6 +53,44 @@ namespace ViewComponents.CharacterAnimation
             _slotSubscription?.Dispose();
         }
 
+        private static CharacterAnimationSlot ReactionSlotFor(WealthPointsModifierType modifierType)
+        {
+            switch (modifierType)
+            {
+                case WealthPointsModifierType.Increase:
+                    return CharacterAnimationSlot.Happy;
+
+                case WealthPointsModifierType.Decrease:
+                    return CharacterAnimationSlot.Sad;
+
+                default:
+                    throw new UnhandledWealthPointsModifierTypeException(modifierType);
+            }
+        }
+
+        private static CharacterAnimationSlot PlaySlotFor(GameState gameState, RunnerMovementState movementState)
+        {
+            switch (gameState)
+            {
+                case GameState.Tutorial:
+                    return CharacterAnimationSlot.Idle;
+
+                case GameState.Run:
+                    return movementState == RunnerMovementState.Moving
+                        ? CharacterAnimationSlot.Run
+                        : CharacterAnimationSlot.GetHit;
+
+                case GameState.Win:
+                    return CharacterAnimationSlot.Victory;
+
+                case GameState.Lose:
+                    return CharacterAnimationSlot.Defeat;
+
+                default:
+                    throw new UnhandledCharacterAnimationStateException(gameState);
+            }
+        }
+
         private void OnLevelLoaded()
         {
             UnsubscribeObstacles();
@@ -78,44 +116,6 @@ namespace ViewComponents.CharacterAnimation
         private void OnObstacleModifierTriggered(WealthPointsModifierType modifierType, int wealthPoints)
         {
             _view.SetReaction(ReactionSlotFor(modifierType));
-        }
-
-        private CharacterAnimationSlot ReactionSlotFor(WealthPointsModifierType modifierType)
-        {
-            switch (modifierType)
-            {
-                case WealthPointsModifierType.Increase:
-                    return CharacterAnimationSlot.Happy;
-
-                case WealthPointsModifierType.Decrease:
-                    return CharacterAnimationSlot.Sad;
-
-                default:
-                    throw new UnhandledWealthPointsModifierTypeException(modifierType);
-            }
-        }
-
-        private CharacterAnimationSlot PlaySlotFor(GameState gameState, RunnerMovementState movementState)
-        {
-            switch (gameState)
-            {
-                case GameState.Tutorial:
-                    return CharacterAnimationSlot.Idle;
-
-                case GameState.Run:
-                    return movementState == RunnerMovementState.Moving
-                        ? CharacterAnimationSlot.Run
-                        : CharacterAnimationSlot.GetHit;
-
-                case GameState.Win:
-                    return CharacterAnimationSlot.Victory;
-
-                case GameState.Lose:
-                    return CharacterAnimationSlot.Defeat;
-
-                default:
-                    throw new UnhandledCharacterAnimationStateException(gameState);
-            }
         }
     }
 }
