@@ -3,6 +3,7 @@ using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
+using Core.Gameplay.RunnerBody;
 using Core.Gameplay.Track;
 using Core.Lifecycle;
 using Core.Loop;
@@ -31,6 +32,7 @@ namespace Core.Gameplay.RunnerMovement
             ITrackProvider trackProvider,
             IObstacleRegistry obstacleRegistry,
             ILaneBarrierRegistry laneBarrierRegistry,
+            IRunnerBody runnerBody,
             RunnerMovementModel model)
         {
             _levelLoaderEvents = levelLoaderEvents;
@@ -38,7 +40,7 @@ namespace Core.Gameplay.RunnerMovement
             _trackProvider = trackProvider;
             _obstacleRegistry = obstacleRegistry;
             _laneBarrierRegistry = laneBarrierRegistry;
-            _simulator = new RunnerMovementSimulator(settings, model);
+            _simulator = new RunnerMovementSimulator(settings, runnerBody, model);
         }
 
         void IGameplayTickable.Tick(float deltaTime)

@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 4591792567206359214}
   - component: {fileID: 1613935969432420168}
   - component: {fileID: 1805493389426998789}
+  - component: {fileID: 5232940803711871102}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -207,6 +208,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 537a7a89f8783574180109adb204d153, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerMovement.RunnerMovementView
+--- !u!114 &5232940803711871102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6189592153673374118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504e5476ece70464dbf24f75a9789db9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.RunnerBody.RunnerBodyProvider
+  _collider: {fileID: 3509806085489084475}
 --- !u!1001 &6843584209967514946
 PrefabInstance:
   m_ObjectHideFlags: 0

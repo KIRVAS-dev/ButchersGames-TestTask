@@ -17,7 +17,7 @@ namespace UI.StartScreen
 
     internal sealed class UnhandledStartScreenStateException : ExtendedException
     {
-        public UnhandledStartScreenStateException(GameState state)
+        internal UnhandledStartScreenStateException(GameState state)
             : base("start-screen-3", $"GameState '{state}' is not handled by the start screen presenter") { }
     }
 }

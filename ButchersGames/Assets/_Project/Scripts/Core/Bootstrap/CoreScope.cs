@@ -4,6 +4,7 @@ using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
+using Core.Gameplay.RunnerBody;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.Track;
 using Core.Gameplay.TransformRotator;
@@ -31,6 +32,7 @@ using ViewComponents.CharacterAnimation;
 using ViewComponents.CharacterTurn;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
+using ViewComponents.RunnerBody;
 using ViewComponents.RunnerCollision;
 using ViewComponents.RunnerMovement;
 using ViewComponents.TransformRotators;
@@ -48,10 +50,11 @@ namespace Core.Bootstrap
             RegisterEntryPoint(builder);
             RegisterGameFlow(builder);
             RegisterWealthMeter(builder);
+            RegisterWealthPointsModifier(builder);
+            RegisterLevel(builder);
+            RegisterRunnerBody(builder);
             RegisterRunnerMovement(builder);
             RegisterRunnerCollision(builder);
-            RegisterLevel(builder);
-            RegisterWealthPointsModifier(builder);
             RegisterTransformRotators(builder);
             RegisterCharacterAnimation(builder);
             RegisterCharacterTurn(builder);
@@ -95,6 +98,11 @@ namespace Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>().As<IValidatable>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterRunnerBody(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<RunnerBody>().As<IRunnerBody>().As<IValidatable>();
         }
 
         private void RegisterRunnerMovement(IContainerBuilder builder)

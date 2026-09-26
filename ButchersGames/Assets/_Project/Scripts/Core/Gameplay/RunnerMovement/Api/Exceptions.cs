@@ -13,4 +13,10 @@ namespace Core.Gameplay.RunnerMovement
         public MissingRunnerMovementConfigException(string fieldName, string objectName)
             : base("runner-movement-2", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
+
+    internal sealed class UnhandledRunnerLateralDirectionException : ExtendedException
+    {
+        internal UnhandledRunnerLateralDirectionException(RunnerLateralDirection direction)
+            : base("runner-movement-3", $"RunnerLateralDirection '{direction}' is not handled by the lane barrier clamp") { }
+    }
 }

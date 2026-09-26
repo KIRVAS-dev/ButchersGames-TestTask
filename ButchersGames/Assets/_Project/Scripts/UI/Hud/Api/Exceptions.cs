@@ -11,7 +11,7 @@ namespace UI.Hud
 
     internal sealed class UnhandledHudStateException : ExtendedException
     {
-        public UnhandledHudStateException(GameState state)
+        internal UnhandledHudStateException(GameState state)
             : base("hud-2", $"GameState '{state}' is not handled by the HUD presenter") { }
     }
 }

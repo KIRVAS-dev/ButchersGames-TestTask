@@ -31,7 +31,7 @@ namespace ViewComponents.Gates
 
     internal sealed class UninitializedGateSideException : ExtendedException
     {
-        public UninitializedGateSideException(string objectName)
+        internal UninitializedGateSideException(string objectName)
             : base("gate-5", $"Gate side '{objectName}' was triggered before its gate was initialized") { }
     }
 }

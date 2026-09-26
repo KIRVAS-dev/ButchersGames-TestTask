@@ -24,7 +24,7 @@ namespace UI.WealthIndicator
 
     internal sealed class UnhandledWealthIndicatorStateException : ExtendedException
     {
-        public UnhandledWealthIndicatorStateException(GameState state)
+        internal UnhandledWealthIndicatorStateException(GameState state)
             : base("wealth-indicator-4", $"GameState '{state}' is not handled by the wealth indicator presenter") { }
     }
 }

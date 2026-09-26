@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Gameplay.LaneBarrier;
+using Core.Gameplay.RunnerBody;
 
 namespace Core.Gameplay.RunnerMovement
 {
@@ -14,6 +15,7 @@ namespace Core.Gameplay.RunnerMovement
         private const float HalfFactor = 0.5f;
 
         private readonly IRunnerMovementSettings _settings;
+        private readonly IRunnerBody _runnerBody;
         private readonly RunnerMovementModel _model;
         private readonly Dictionary<ILaneBarrier, LateralClamp> _activeLaneBarrierClamps =
             new Dictionary<ILaneBarrier, LateralClamp>();
@@ -42,9 +44,13 @@ namespace Core.Gameplay.RunnerMovement
             public float Boundary { get; }
         }
 
-        public RunnerMovementSimulator(IRunnerMovementSettings settings, RunnerMovementModel model)
+        public RunnerMovementSimulator(
+            IRunnerMovementSettings settings,
+            IRunnerBody runnerBody,
+            RunnerMovementModel model)
         {
             _settings = settings;
+            _runnerBody = runnerBody;
             _model = model;
             _lateralHalfRange = settings.LateralRange * HalfFactor;
         }
@@ -75,6 +81,11 @@ namespace Core.Gameplay.RunnerMovement
 
         internal void AddNormalizedLateralOffsetDelta(float normalizedDelta)
         {
+            if (_model.State.Value != RunnerMovementState.Moving)
+            {
+                return;
+            }
+
             float currentNormalizedOffset = _model.LateralOffset.Value / _lateralHalfRange;
 
             SetNormalizedLateralOffset(currentNormalizedOffset + normalizedDelta);
@@ -101,26 +112,39 @@ namespace Core.Gameplay.RunnerMovement
 
         internal void EnterLaneBarrier(ILaneBarrier barrier)
         {
+            float halfBodyWidth = _runnerBody.Width * HalfFactor;
+
+            LateralClamp leftSideClamp = new LateralClamp(
+                LateralClampDirection.UpperBound,
+                barrier.MinLateralOffset - halfBodyWidth
+            );
+
+            LateralClamp rightSideClamp = new LateralClamp(
+                LateralClampDirection.LowerBound,
+                barrier.MaxLateralOffset + halfBodyWidth
+            );
+
             float currentOffset = _model.LateralOffset.Value;
 
-            if (currentOffset <= barrier.MinLateralOffset)
+            if (currentOffset <= leftSideClamp.Boundary)
             {
-                _activeLaneBarrierClamps[barrier] = new LateralClamp(LateralClampDirection.UpperBound, barrier.MinLateralOffset);
+                _activeLaneBarrierClamps[barrier] = leftSideClamp;
                 return;
             }
 
-            if (currentOffset >= barrier.MaxLateralOffset)
+            if (currentOffset >= rightSideClamp.Boundary)
             {
-                _activeLaneBarrierClamps[barrier] = new LateralClamp(LateralClampDirection.LowerBound, barrier.MaxLateralOffset);
+                _activeLaneBarrierClamps[barrier] = rightSideClamp;
                 return;
             }
 
-            float distanceToMin = currentOffset - barrier.MinLateralOffset;
-            float distanceToMax = barrier.MaxLateralOffset - currentOffset;
-
-            LateralClamp clamp = distanceToMin <= distanceToMax
-                ? new LateralClamp(LateralClampDirection.UpperBound, barrier.MinLateralOffset)
-                : new LateralClamp(LateralClampDirection.LowerBound, barrier.MaxLateralOffset);
+            LateralClamp clamp = _model.LateralDirection.Value switch
+            {
+                RunnerLateralDirection.Right => leftSideClamp,
+                RunnerLateralDirection.Left => rightSideClamp,
+                RunnerLateralDirection.None => NearestClamp(currentOffset, leftSideClamp, rightSideClamp),
+                _ => throw new UnhandledRunnerLateralDirectionException(_model.LateralDirection.Value)
+            };
 
             _activeLaneBarrierClamps[barrier] = clamp;
 
@@ -205,6 +229,19 @@ namespace Core.Gameplay.RunnerMovement
             }
 
             return current + Math.Sign(target - current) * maxDelta;
+        }
+
+        private LateralClamp NearestClamp(
+            float offset,
+            LateralClamp leftSideClamp,
+            LateralClamp rightSideClamp)
+        {
+            float distanceToLeftSide = offset - leftSideClamp.Boundary;
+            float distanceToRightSide = rightSideClamp.Boundary - offset;
+
+            return distanceToLeftSide <= distanceToRightSide
+                ? leftSideClamp
+                : rightSideClamp;
         }
 
         private float ClampOffset(float offset, LateralClamp clamp)
