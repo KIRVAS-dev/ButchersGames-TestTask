@@ -9,7 +9,7 @@ namespace Core.Gameplay.GameFlow
     {
         private readonly ReadOnlyReactiveProperty<bool> _isBlocked;
 
-        public GameplayInputBlock(GameStateModel model)
+        public GameplayInputBlock(IReadOnlyGameStateModel model)
         {
             _isBlocked = model.State.Select(state => state != GameState.Run).ToReadOnlyReactiveProperty();
         }

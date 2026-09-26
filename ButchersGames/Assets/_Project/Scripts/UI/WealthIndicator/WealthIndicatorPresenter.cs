@@ -11,8 +11,8 @@ namespace UI.WealthIndicator
     {
         private readonly IWealthIndicatorView _view;
         private readonly IWealthMeterSettings _wealthMeterSettings;
-        private readonly GameStateModel _gameStateModel;
-        private readonly WealthMeterModel _wealthMeterModel;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IReadOnlyWealthMeterModel _wealthMeterModel;
 
         private IDisposable _stateSubscription;
         private IDisposable _valueSubscription;
@@ -21,8 +21,8 @@ namespace UI.WealthIndicator
         public WealthIndicatorPresenter(
             IWealthIndicatorView view,
             IWealthMeterSettings wealthMeterSettings,
-            GameStateModel gameStateModel,
-            WealthMeterModel wealthMeterModel)
+            IReadOnlyGameStateModel gameStateModel,
+            IReadOnlyWealthMeterModel wealthMeterModel)
         {
             _view = view;
             _wealthMeterSettings = wealthMeterSettings;
@@ -46,13 +46,20 @@ namespace UI.WealthIndicator
 
         private void OnStateChanged(GameState state)
         {
-            if (state == GameState.Run)
+            switch (state)
             {
-                _view.Show();
-            }
-            else
-            {
-                _view.Hide();
+                case GameState.Run:
+                    _view.Show();
+                    break;
+
+                case GameState.Tutorial:
+                case GameState.Win:
+                case GameState.Lose:
+                    _view.Hide();
+                    break;
+
+                default:
+                    throw new UnhandledWealthIndicatorStateException(state);
             }
         }
 

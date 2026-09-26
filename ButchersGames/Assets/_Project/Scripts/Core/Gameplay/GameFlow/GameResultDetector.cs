@@ -10,30 +10,30 @@ namespace Core.Gameplay.GameFlow
     public sealed class GameResultDetector : ISubscriptionLifecycle
     {
         private readonly IGameFlowService _gameFlowService;
-        private readonly IGameStateMachine _gameStateMachine;
-        private readonly IWealthMeterService _wealthMeter;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IWealthMeterEvents _wealthMeterEvents;
         private readonly ITrackProvider _trackProvider;
-        private readonly RunnerMovementModel _runnerMovementModel;
+        private readonly IReadOnlyRunnerMovementModel _runnerMovementModel;
 
         private IDisposable _runnerCurrentCoordinateSubscription;
 
         public GameResultDetector(
             IGameFlowService gameFlowService,
-            IGameStateMachine gameStateMachine,
-            IWealthMeterService wealthMeter,
+            IReadOnlyGameStateModel gameStateModel,
+            IWealthMeterEvents wealthMeterEvents,
             ITrackProvider trackProvider,
-            RunnerMovementModel runnerMovementModel)
+            IReadOnlyRunnerMovementModel runnerMovementModel)
         {
             _gameFlowService = gameFlowService;
-            _gameStateMachine = gameStateMachine;
-            _wealthMeter = wealthMeter;
+            _gameStateModel = gameStateModel;
+            _wealthMeterEvents = wealthMeterEvents;
             _trackProvider = trackProvider;
             _runnerMovementModel = runnerMovementModel;
         }
 
         void ISubscriptionLifecycle.Start()
         {
-            _wealthMeter.Depleted += OnWealthDepleted;
+            _wealthMeterEvents.Depleted += OnWealthDepleted;
 
             _runnerCurrentCoordinateSubscription =
                 _runnerMovementModel.CurrentRunnerCoordinate.Subscribe(OnCurrentRunnerCoordinateChanged);
@@ -41,7 +41,7 @@ namespace Core.Gameplay.GameFlow
 
         void ISubscriptionLifecycle.Stop()
         {
-            _wealthMeter.Depleted -= OnWealthDepleted;
+            _wealthMeterEvents.Depleted -= OnWealthDepleted;
             _runnerCurrentCoordinateSubscription?.Dispose();
         }
 
@@ -52,7 +52,7 @@ namespace Core.Gameplay.GameFlow
 
         private void OnCurrentRunnerCoordinateChanged(float coordinate)
         {
-            if (_gameStateMachine.State != GameState.Run)
+            if (_gameStateModel.State.CurrentValue != GameState.Run)
             {
                 return;
             }
@@ -65,7 +65,7 @@ namespace Core.Gameplay.GameFlow
 
         private void FinishRun(GameState result)
         {
-            if (_gameStateMachine.State != GameState.Run)
+            if (_gameStateModel.State.CurrentValue != GameState.Run)
             {
                 return;
             }

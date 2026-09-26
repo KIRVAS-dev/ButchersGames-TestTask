@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.Obstacle;
@@ -12,22 +13,23 @@ namespace ViewComponents.CharacterAnimation
     public sealed class CharacterAnimationPresenter : ISubscriptionLifecycle
     {
         private readonly ICharacterAnimationView _view;
-        private readonly ILevelLoader _levelLoader;
+        private readonly ILevelLoaderEvents _levelLoaderEvents;
         private readonly IObstacleRegistry _obstacleRegistry;
-        private readonly GameStateModel _gameStateModel;
-        private readonly RunnerMovementModel _runnerMovementModel;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IReadOnlyRunnerMovementModel _runnerMovementModel;
 
         private IDisposable _slotSubscription;
+        private IReadOnlyCollection<IObstacle> _subscribedObstacles = Array.Empty<IObstacle>();
 
         public CharacterAnimationPresenter(
             ICharacterAnimationView view,
-            ILevelLoader levelLoader,
+            ILevelLoaderEvents levelLoaderEvents,
             IObstacleRegistry obstacleRegistry,
-            GameStateModel gameStateModel,
-            RunnerMovementModel runnerMovementModel)
+            IReadOnlyGameStateModel gameStateModel,
+            IReadOnlyRunnerMovementModel runnerMovementModel)
         {
             _view = view;
-            _levelLoader = levelLoader;
+            _levelLoaderEvents = levelLoaderEvents;
             _obstacleRegistry = obstacleRegistry;
             _gameStateModel = gameStateModel;
             _runnerMovementModel = runnerMovementModel;
@@ -35,7 +37,7 @@ namespace ViewComponents.CharacterAnimation
 
         void ISubscriptionLifecycle.Start()
         {
-            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
 
             _slotSubscription = Observable
                .CombineLatest(_gameStateModel.State, _runnerMovementModel.State, PlaySlotFor)
@@ -45,7 +47,7 @@ namespace ViewComponents.CharacterAnimation
 
         void ISubscriptionLifecycle.Stop()
         {
-            _levelLoader.LevelLoaded -= OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
 
             UnsubscribeObstacles();
             _slotSubscription?.Dispose();
@@ -53,7 +55,11 @@ namespace ViewComponents.CharacterAnimation
 
         private void OnLevelLoaded()
         {
-            foreach (IObstacle obstacle in _obstacleRegistry.Obstacles)
+            UnsubscribeObstacles();
+
+            _subscribedObstacles = _obstacleRegistry.Obstacles;
+
+            foreach (IObstacle obstacle in _subscribedObstacles)
             {
                 obstacle.Modifier.Triggered += OnObstacleModifierTriggered;
             }
@@ -61,10 +67,12 @@ namespace ViewComponents.CharacterAnimation
 
         private void UnsubscribeObstacles()
         {
-            foreach (IObstacle obstacle in _obstacleRegistry.Obstacles)
+            foreach (IObstacle obstacle in _subscribedObstacles)
             {
                 obstacle.Modifier.Triggered -= OnObstacleModifierTriggered;
             }
+
+            _subscribedObstacles = Array.Empty<IObstacle>();
         }
 
         private void OnObstacleModifierTriggered(WealthPointsModifierType modifierType, int wealthPoints)

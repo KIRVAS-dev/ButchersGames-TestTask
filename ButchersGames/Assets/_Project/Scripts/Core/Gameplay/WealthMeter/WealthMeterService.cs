@@ -6,9 +6,10 @@ namespace Core.Gameplay.WealthMeter
 {
     public sealed class WealthMeterService
         : IWealthMeterService,
+          IWealthMeterEvents,
           ISubscriptionLifecycle
     {
-        private readonly ILevelLoader _levelLoader;
+        private readonly ILevelLoaderEvents _levelLoaderEvents;
         private readonly IWealthMeterSettings _settings;
         private readonly WealthMeterModel _model;
 
@@ -17,26 +18,23 @@ namespace Core.Gameplay.WealthMeter
         public event Action<int> Decreased;
 
         public WealthMeterService(
-            ILevelLoader levelLoader,
+            ILevelLoaderEvents levelLoaderEvents,
             IWealthMeterSettings settings,
             WealthMeterModel model)
         {
-            _levelLoader = levelLoader;
+            _levelLoaderEvents = levelLoaderEvents;
             _settings = settings;
             _model = model;
         }
 
-        int IWealthMeterService.Value => _model.WealthPoints.Value;
-        WealthStage IWealthMeterService.Stage => _model.Stage.Value;
-
         void ISubscriptionLifecycle.Start()
         {
-            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
         }
 
         void ISubscriptionLifecycle.Stop()
         {
-            _levelLoader.LevelLoaded -= OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
         }
 
         void IWealthMeterService.Increase(int amount)

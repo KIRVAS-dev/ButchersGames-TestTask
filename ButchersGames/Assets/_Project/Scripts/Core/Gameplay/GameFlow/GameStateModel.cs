@@ -2,8 +2,10 @@ using R3;
 
 namespace Core.Gameplay.GameFlow
 {
-    public sealed class GameStateModel
+    public sealed class GameStateModel : IReadOnlyGameStateModel
     {
         public ReactiveProperty<GameState> State { get; } = new ReactiveProperty<GameState>(GameState.Tutorial);
+
+        ReadOnlyReactiveProperty<GameState> IReadOnlyGameStateModel.State => State;
     }
 }

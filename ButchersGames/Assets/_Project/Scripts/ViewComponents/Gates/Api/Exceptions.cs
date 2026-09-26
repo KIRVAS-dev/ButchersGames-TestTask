@@ -28,4 +28,10 @@ namespace ViewComponents.Gates
         public UnlistedGateSideException(string sideName, string gateName)
             : base("gate-4", $"Gate side '{sideName}' is not listed in sides of '{gateName}'") { }
     }
+
+    internal sealed class UninitializedGateSideException : ExtendedException
+    {
+        public UninitializedGateSideException(string objectName)
+            : base("gate-5", $"Gate side '{objectName}' was triggered before its gate was initialized") { }
+    }
 }

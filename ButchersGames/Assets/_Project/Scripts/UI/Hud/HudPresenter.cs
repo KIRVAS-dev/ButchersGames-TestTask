@@ -15,12 +15,12 @@ namespace UI.Hud
         private const int SkipInitialValue = 1;
 
         private readonly IHudView _view;
-        private readonly ILevelLoader _levelLoader;
-        private readonly ILevelService _levelService;
+        private readonly ILevelLoaderEvents _levelLoaderEvents;
+        private readonly ILevelProgress _levelProgress;
         private readonly ITrackProvider _trackProvider;
-        private readonly GameStateModel _gameStateModel;
-        private readonly WealthMeterModel _wealthMeterModel;
-        private readonly RunnerMovementModel _runnerMovementModel;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IReadOnlyWealthMeterModel _wealthMeterModel;
+        private readonly IReadOnlyRunnerMovementModel _runnerMovementModel;
 
         private IDisposable _stateSubscription;
         private IDisposable _valueSubscription;
@@ -28,16 +28,16 @@ namespace UI.Hud
 
         public HudPresenter(
             IHudView view,
-            ILevelLoader levelLoader,
-            ILevelService levelService,
+            ILevelLoaderEvents levelLoaderEvents,
+            ILevelProgress levelProgress,
             ITrackProvider trackProvider,
-            GameStateModel gameStateModel,
-            WealthMeterModel wealthMeterModel,
-            RunnerMovementModel runnerMovementModel)
+            IReadOnlyGameStateModel gameStateModel,
+            IReadOnlyWealthMeterModel wealthMeterModel,
+            IReadOnlyRunnerMovementModel runnerMovementModel)
         {
             _view = view;
-            _levelLoader = levelLoader;
-            _levelService = levelService;
+            _levelLoaderEvents = levelLoaderEvents;
+            _levelProgress = levelProgress;
             _trackProvider = trackProvider;
             _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
@@ -46,7 +46,7 @@ namespace UI.Hud
 
         void ISubscriptionLifecycle.Start()
         {
-            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
             _valueSubscription = _wealthMeterModel.WealthPoints.Subscribe(OnValueChanged);
 
@@ -58,7 +58,7 @@ namespace UI.Hud
 
         void ISubscriptionLifecycle.Stop()
         {
-            _levelLoader.LevelLoaded -= OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
             _stateSubscription?.Dispose();
             _valueSubscription?.Dispose();
             _runProgressSubscription?.Dispose();
@@ -66,18 +66,25 @@ namespace UI.Hud
 
         private void OnLevelLoaded()
         {
-            _view.SetLevelNumber(_levelService.CurrentLevelNumber);
+            _view.SetLevelNumber(_levelProgress.CurrentLevelNumber);
         }
 
         private void OnStateChanged(GameState state)
         {
-            if (state == GameState.Run)
+            switch (state)
             {
-                _view.Show();
-            }
-            else
-            {
-                _view.Hide();
+                case GameState.Run:
+                    _view.Show();
+                    break;
+
+                case GameState.Tutorial:
+                case GameState.Win:
+                case GameState.Lose:
+                    _view.Hide();
+                    break;
+
+                default:
+                    throw new UnhandledHudStateException(state);
             }
         }
 

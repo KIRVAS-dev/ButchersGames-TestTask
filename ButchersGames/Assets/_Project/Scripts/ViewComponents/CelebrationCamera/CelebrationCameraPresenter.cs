@@ -8,11 +8,11 @@ namespace ViewComponents.CelebrationCamera
     public sealed class CelebrationCameraPresenter : ISubscriptionLifecycle
     {
         private readonly ICelebrationCameraView _view;
-        private readonly GameStateModel _gameStateModel;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
 
         private IDisposable _stateSubscription;
 
-        public CelebrationCameraPresenter(ICelebrationCameraView view, GameStateModel gameStateModel)
+        public CelebrationCameraPresenter(ICelebrationCameraView view, IReadOnlyGameStateModel gameStateModel)
         {
             _view = view;
             _gameStateModel = gameStateModel;

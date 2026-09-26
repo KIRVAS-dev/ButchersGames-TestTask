@@ -12,9 +12,9 @@ namespace UI.StartScreen
         private readonly IStartScreenView _view;
         private readonly IGameFlowService _gameFlowService;
         private readonly IFeedbackPerformer _feedbackPerformer;
-        private readonly ILevelLoader _levelLoader;
-        private readonly ILevelService _levelService;
-        private readonly GameStateModel _gameStateModel;
+        private readonly ILevelLoaderEvents _levelLoaderEvents;
+        private readonly ILevelProgress _levelProgress;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
 
         private IDisposable _stateSubscription;
 
@@ -22,29 +22,29 @@ namespace UI.StartScreen
             IStartScreenView view,
             IGameFlowService gameFlowService,
             IFeedbackPerformer feedbackPerformer,
-            ILevelLoader levelLoader,
-            ILevelService levelService,
-            GameStateModel gameStateModel)
+            ILevelLoaderEvents levelLoaderEvents,
+            ILevelProgress levelProgress,
+            IReadOnlyGameStateModel gameStateModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
             _feedbackPerformer = feedbackPerformer;
-            _levelLoader = levelLoader;
-            _levelService = levelService;
+            _levelLoaderEvents = levelLoaderEvents;
+            _levelProgress = levelProgress;
             _gameStateModel = gameStateModel;
         }
 
         void ISubscriptionLifecycle.Start()
         {
             _view.StartClicked += OnStartClicked;
-            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
             _stateSubscription = _gameStateModel.State.Subscribe(OnStateChanged);
         }
 
         void ISubscriptionLifecycle.Stop()
         {
             _view.StartClicked -= OnStartClicked;
-            _levelLoader.LevelLoaded -= OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
             _stateSubscription?.Dispose();
         }
 
@@ -56,18 +56,25 @@ namespace UI.StartScreen
 
         private void OnLevelLoaded()
         {
-            _view.SetLevelNumber(_levelService.CurrentLevelNumber);
+            _view.SetLevelNumber(_levelProgress.CurrentLevelNumber);
         }
 
         private void OnStateChanged(GameState state)
         {
-            if (state == GameState.Tutorial)
+            switch (state)
             {
-                _view.Show();
-            }
-            else
-            {
-                _view.Hide();
+                case GameState.Tutorial:
+                    _view.Show();
+                    break;
+
+                case GameState.Run:
+                case GameState.Win:
+                case GameState.Lose:
+                    _view.Hide();
+                    break;
+
+                default:
+                    throw new UnhandledStartScreenStateException(state);
             }
         }
     }

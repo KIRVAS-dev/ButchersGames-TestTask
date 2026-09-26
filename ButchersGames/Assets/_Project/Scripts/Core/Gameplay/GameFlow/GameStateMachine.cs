@@ -11,8 +11,6 @@ namespace Core.Gameplay.GameFlow
             _model = model;
         }
 
-        GameState IGameStateMachine.State => _model.State.Value;
-
         void IGameStateMachine.EnterState(GameState state)
         {
             Guard.AgainstTrue(

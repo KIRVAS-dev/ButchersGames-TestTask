@@ -1,3 +1,4 @@
+using Core.Gameplay.GameFlow;
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
 
@@ -19,5 +20,11 @@ namespace UI.WealthIndicator
     {
         public EmptyWealthIndicatorStageNameException(WealthStage stage)
             : base("wealth-indicator-3", $"Display name for stage '{stage}' is empty") { }
+    }
+
+    internal sealed class UnhandledWealthIndicatorStateException : ExtendedException
+    {
+        public UnhandledWealthIndicatorStateException(GameState state)
+            : base("wealth-indicator-4", $"GameState '{state}' is not handled by the wealth indicator presenter") { }
     }
 }

@@ -10,37 +10,37 @@ namespace ViewComponents.Feedback
     public sealed class FeedbackPresenter : ISubscriptionLifecycle
     {
         private readonly IFeedbackPerformer _feedbackPerformer;
-        private readonly IWealthMeterService _wealthMeterService;
-        private readonly GameStateModel _gameStateModel;
-        private readonly WealthMeterModel _wealthMeterModel;
+        private readonly IWealthMeterEvents _wealthMeterEvents;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IReadOnlyWealthMeterModel _wealthMeterModel;
 
         private IDisposable _stageSubscription;
         private IDisposable _stateSubscription;
 
         public FeedbackPresenter(
             IFeedbackPerformer feedbackPerformer,
-            IWealthMeterService wealthMeterService,
-            GameStateModel gameStateModel,
-            WealthMeterModel wealthMeterModel)
+            IWealthMeterEvents wealthMeterEvents,
+            IReadOnlyGameStateModel gameStateModel,
+            IReadOnlyWealthMeterModel wealthMeterModel)
         {
             _feedbackPerformer = feedbackPerformer;
-            _wealthMeterService = wealthMeterService;
+            _wealthMeterEvents = wealthMeterEvents;
             _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
         }
 
         void ISubscriptionLifecycle.Start()
         {
-            _wealthMeterService.Increased += OnMoneyIncreased;
-            _wealthMeterService.Decreased += OnMoneyDecreased;
+            _wealthMeterEvents.Increased += OnMoneyIncreased;
+            _wealthMeterEvents.Decreased += OnMoneyDecreased;
             _stageSubscription = _wealthMeterModel.Stage.Subscribe(OnStageChanged);
             _stateSubscription = _gameStateModel.State.Subscribe(OnGameStateChanged);
         }
 
         void ISubscriptionLifecycle.Stop()
         {
-            _wealthMeterService.Increased -= OnMoneyIncreased;
-            _wealthMeterService.Decreased -= OnMoneyDecreased;
+            _wealthMeterEvents.Increased -= OnMoneyIncreased;
+            _wealthMeterEvents.Decreased -= OnMoneyDecreased;
             _stageSubscription?.Dispose();
             _stateSubscription?.Dispose();
         }

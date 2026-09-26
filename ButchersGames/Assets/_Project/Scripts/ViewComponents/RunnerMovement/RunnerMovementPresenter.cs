@@ -10,7 +10,7 @@ namespace ViewComponents.RunnerMovement
         private const int SkipInitialValue = 1;
 
         private readonly IRunnerMovementView _view;
-        private readonly IRunnerMovementService _movementService;
+        private readonly IRunnerMovementEvents _movementEvents;
         private readonly IReadOnlyRunnerMovementModel _model;
 
         private IDisposable _coordinateSubscription;
@@ -18,17 +18,17 @@ namespace ViewComponents.RunnerMovement
 
         public RunnerMovementPresenter(
             IRunnerMovementView view,
-            IRunnerMovementService movementService,
+            IRunnerMovementEvents movementEvents,
             IReadOnlyRunnerMovementModel model)
         {
             _view = view;
-            _movementService = movementService;
+            _movementEvents = movementEvents;
             _model = model;
         }
 
         void ISubscriptionLifecycle.Start()
         {
-            _movementService.PositionReset += OnPositionReset;
+            _movementEvents.PositionReset += OnPositionReset;
 
             _coordinateSubscription = _model.CurrentRunnerCoordinate.Skip(SkipInitialValue).Subscribe(_view.SetCoordinate);
             _lateralOffsetSubscription = _model.LateralOffset.Skip(SkipInitialValue).Subscribe(_view.SetLateralOffset);
@@ -36,7 +36,7 @@ namespace ViewComponents.RunnerMovement
 
         void ISubscriptionLifecycle.Stop()
         {
-            _movementService.PositionReset -= OnPositionReset;
+            _movementEvents.PositionReset -= OnPositionReset;
 
             _coordinateSubscription?.Dispose();
             _lateralOffsetSubscription?.Dispose();

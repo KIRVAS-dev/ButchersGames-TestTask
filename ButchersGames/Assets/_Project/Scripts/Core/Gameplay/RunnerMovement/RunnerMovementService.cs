@@ -1,3 +1,4 @@
+using System;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.LevelProgression;
@@ -10,27 +11,30 @@ namespace Core.Gameplay.RunnerMovement
 {
     public sealed class RunnerMovementService
         : IRunnerMovementService,
+          IRunnerMovementEvents,
           IGameplayTickable,
           ISubscriptionLifecycle
     {
-        private readonly ILevelLoader _levelLoader;
-        private readonly IGameStateMachine _gameStateMachine;
+        private readonly ILevelLoaderEvents _levelLoaderEvents;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
         private readonly ITrackProvider _trackProvider;
         private readonly IObstacleRegistry _obstacleRegistry;
         private readonly ILaneBarrierRegistry _laneBarrierRegistry;
         private readonly RunnerMovementSimulator _simulator;
 
+        public event Action PositionReset;
+
         public RunnerMovementService(
-            ILevelLoader levelLoader,
-            IGameStateMachine gameStateMachine,
+            ILevelLoaderEvents levelLoaderEvents,
+            IReadOnlyGameStateModel gameStateModel,
             IRunnerMovementSettings settings,
             ITrackProvider trackProvider,
             IObstacleRegistry obstacleRegistry,
             ILaneBarrierRegistry laneBarrierRegistry,
             RunnerMovementModel model)
         {
-            _levelLoader = levelLoader;
-            _gameStateMachine = gameStateMachine;
+            _levelLoaderEvents = levelLoaderEvents;
+            _gameStateModel = gameStateModel;
             _trackProvider = trackProvider;
             _obstacleRegistry = obstacleRegistry;
             _laneBarrierRegistry = laneBarrierRegistry;
@@ -39,7 +43,7 @@ namespace Core.Gameplay.RunnerMovement
 
         void IGameplayTickable.Tick(float deltaTime)
         {
-            if (_gameStateMachine.State != GameState.Run)
+            if (_gameStateModel.State.CurrentValue != GameState.Run)
             {
                 return;
             }
@@ -49,12 +53,12 @@ namespace Core.Gameplay.RunnerMovement
 
         void ISubscriptionLifecycle.Start()
         {
-            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
         }
 
         void ISubscriptionLifecycle.Stop()
         {
-            _levelLoader.LevelLoaded -= OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
 
             UnsubscribeAllObstacles();
             UnsubscribeAllLaneBarriers();
@@ -68,6 +72,7 @@ namespace Core.Gameplay.RunnerMovement
         private void OnLevelLoaded()
         {
             _simulator.Reset(_trackProvider.StartCoordinate);
+            PositionReset?.Invoke();
 
             SubscribeToObstacles();
             SubscribeToLaneBarriers();

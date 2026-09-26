@@ -24,6 +24,8 @@ namespace ViewComponents.Gates
 
         private void OnTriggerEnter(Collider other)
         {
+            Guard.AgainstNull(_entered, () => new UninitializedGateSideException(gameObject.name));
+
             _entered.Invoke(this);
         }
 

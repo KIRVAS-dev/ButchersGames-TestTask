@@ -6,28 +6,28 @@ namespace Core.Gameplay.WealthPointsModifier
 {
     public sealed class WealthPointsModifierService : ISubscriptionLifecycle
     {
-        private readonly ILevelLoader _levelLoader;
+        private readonly ILevelLoaderEvents _levelLoaderEvents;
         private readonly IWealthPointsModifierRegistry _registry;
         private readonly IWealthMeterService _wealthMeter;
 
         public WealthPointsModifierService(
-            ILevelLoader levelLoader,
+            ILevelLoaderEvents levelLoaderEvents,
             IWealthPointsModifierRegistry registry,
             IWealthMeterService wealthMeter)
         {
-            _levelLoader = levelLoader;
+            _levelLoaderEvents = levelLoaderEvents;
             _registry = registry;
             _wealthMeter = wealthMeter;
         }
 
         void ISubscriptionLifecycle.Start()
         {
-            _levelLoader.LevelLoaded += OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
         }
 
         void ISubscriptionLifecycle.Stop()
         {
-            _levelLoader.LevelLoaded -= OnLevelLoaded;
+            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
 
             UnsubscribeAllModifiers();
         }

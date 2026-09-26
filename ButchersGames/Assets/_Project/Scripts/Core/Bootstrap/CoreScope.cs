@@ -86,7 +86,13 @@ namespace Core.Bootstrap
 
             builder.RegisterInstance(_wealthMeterConfig).As<IWealthMeterSettings>().As<IValidatable>();
             builder.Register<WealthMeterModel>(Lifetime.Singleton).AsSelf().As<IReadOnlyWealthMeterModel>();
-            builder.Register<WealthMeterService>(Lifetime.Singleton).As<IWealthMeterService>().As<ISubscriptionLifecycle>();
+
+            builder
+               .Register<WealthMeterService>(Lifetime.Singleton)
+               .As<IWealthMeterService>()
+               .As<IWealthMeterEvents>()
+               .As<ISubscriptionLifecycle>();
+
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>().As<IValidatable>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
@@ -111,6 +117,7 @@ namespace Core.Bootstrap
             builder
                .Register<RunnerMovementService>(Lifetime.Singleton)
                .As<IRunnerMovementService>()
+               .As<IRunnerMovementEvents>()
                .As<IGameplayTickable>()
                .As<ISubscriptionLifecycle>();
 
@@ -127,7 +134,12 @@ namespace Core.Bootstrap
 
         private static void RegisterLevel(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().AsSelf().As<IValidatable>();
+            builder
+               .RegisterComponentInHierarchy<LevelLoader>()
+               .As<ILevelLoader>()
+               .As<ILevelLoaderEvents>()
+               .AsSelf()
+               .As<IValidatable>();
 
             builder
                .Register<CurrentLevel>(Lifetime.Singleton)
@@ -140,7 +152,7 @@ namespace Core.Bootstrap
 
             builder.Register<PlayerPrefsLevelProgressStore>(Lifetime.Singleton).As<ILevelProgressStore>();
             builder.Register<LevelModel>(Lifetime.Singleton);
-            builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>();
+            builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>().As<ILevelProgress>();
         }
 
         private static void RegisterWealthPointsModifier(IContainerBuilder builder)

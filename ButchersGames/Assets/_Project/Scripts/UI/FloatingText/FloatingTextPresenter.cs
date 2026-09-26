@@ -6,24 +6,24 @@ namespace UI.FloatingText
     public sealed class FloatingTextPresenter : ISubscriptionLifecycle
     {
         private readonly IFloatingTextView _view;
-        private readonly IWealthMeterService _wealthMeterService;
+        private readonly IWealthMeterEvents _wealthMeterEvents;
 
-        public FloatingTextPresenter(IFloatingTextView view, IWealthMeterService wealthMeterService)
+        public FloatingTextPresenter(IFloatingTextView view, IWealthMeterEvents wealthMeterEvents)
         {
             _view = view;
-            _wealthMeterService = wealthMeterService;
+            _wealthMeterEvents = wealthMeterEvents;
         }
 
         void ISubscriptionLifecycle.Start()
         {
-            _wealthMeterService.Increased += OnMoneyIncreased;
-            _wealthMeterService.Decreased += OnMoneyDecreased;
+            _wealthMeterEvents.Increased += OnMoneyIncreased;
+            _wealthMeterEvents.Decreased += OnMoneyDecreased;
         }
 
         void ISubscriptionLifecycle.Stop()
         {
-            _wealthMeterService.Increased -= OnMoneyIncreased;
-            _wealthMeterService.Decreased -= OnMoneyDecreased;
+            _wealthMeterEvents.Increased -= OnMoneyIncreased;
+            _wealthMeterEvents.Decreased -= OnMoneyDecreased;
         }
 
         private void OnMoneyIncreased(int amount)

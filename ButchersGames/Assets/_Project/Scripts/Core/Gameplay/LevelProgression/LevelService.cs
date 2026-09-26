@@ -3,7 +3,9 @@ using System;
 
 namespace Core.Gameplay.LevelProgression
 {
-    public sealed class LevelService : ILevelService
+    public sealed class LevelService
+        : ILevelService,
+          ILevelProgress
     {
         private readonly ILevelLoader _levelLoader;
         private readonly ILevelProgressStore _progressStore;
@@ -37,7 +39,7 @@ namespace Core.Gameplay.LevelProgression
             );
         }
 
-        int ILevelService.CurrentLevelNumber => _model.CompletedLevelCount + 1;
+        int ILevelProgress.CurrentLevelNumber => _model.CompletedLevelCount + 1;
 
         void ILevelService.LoadCurrentLevel()
         {

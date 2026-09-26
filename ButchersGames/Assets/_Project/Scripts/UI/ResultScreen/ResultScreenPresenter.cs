@@ -12,24 +12,24 @@ namespace UI.ResultScreen
     {
         private readonly IResultScreenView _view;
         private readonly IGameFlowService _gameFlowService;
-        private readonly ILevelService _levelService;
+        private readonly ILevelProgress _levelProgress;
         private readonly IFeedbackPerformer _feedbackPerformer;
-        private readonly GameStateModel _gameStateModel;
-        private readonly WealthMeterModel _wealthMeterModel;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IReadOnlyWealthMeterModel _wealthMeterModel;
 
         private IDisposable _stateSubscription;
 
         public ResultScreenPresenter(
             IResultScreenView view,
             IGameFlowService gameFlowService,
-            ILevelService levelService,
+            ILevelProgress levelProgress,
             IFeedbackPerformer feedbackPerformer,
-            GameStateModel gameStateModel,
-            WealthMeterModel wealthMeterModel)
+            IReadOnlyGameStateModel gameStateModel,
+            IReadOnlyWealthMeterModel wealthMeterModel)
         {
             _view = view;
             _gameFlowService = gameFlowService;
-            _levelService = levelService;
+            _levelProgress = levelProgress;
             _feedbackPerformer = feedbackPerformer;
             _gameStateModel = gameStateModel;
             _wealthMeterModel = wealthMeterModel;
@@ -66,7 +66,7 @@ namespace UI.ResultScreen
             switch (state)
             {
                 case GameState.Win:
-                    _view.SetLevelNumber(_levelService.CurrentLevelNumber);
+                    _view.SetLevelNumber(_levelProgress.CurrentLevelNumber);
                     _view.SetWinResult();
                     ShowResult();
                     break;

@@ -9,15 +9,15 @@ namespace ViewComponents.CharacterTurn
     public sealed class CharacterTurnPresenter : ISubscriptionLifecycle
     {
         private readonly ICharacterTurnView _view;
-        private readonly GameStateModel _gameStateModel;
-        private readonly RunnerMovementModel _runnerMovementModel;
+        private readonly IReadOnlyGameStateModel _gameStateModel;
+        private readonly IReadOnlyRunnerMovementModel _runnerMovementModel;
 
         private IDisposable _sideSubscription;
 
         public CharacterTurnPresenter(
             ICharacterTurnView view,
-            GameStateModel gameStateModel,
-            RunnerMovementModel runnerMovementModel)
+            IReadOnlyGameStateModel gameStateModel,
+            IReadOnlyRunnerMovementModel runnerMovementModel)
         {
             _view = view;
             _gameStateModel = gameStateModel;

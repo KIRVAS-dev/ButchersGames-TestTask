@@ -14,14 +14,14 @@ namespace ProjectDebug
         [SerializeField] private LifetimeScope _coreScope;
 
         private IGameFlowService _gameFlowService;
-        private IGameStateMachine _gameStateMachine;
+        private IReadOnlyGameStateModel _gameStateModel;
         private bool _isInjected;
 
         [Inject]
-        private void Construct(IGameFlowService gameFlowService, IGameStateMachine gameStateMachine)
+        private void Construct(IGameFlowService gameFlowService, IReadOnlyGameStateModel gameStateModel)
         {
             _gameFlowService = gameFlowService;
-            _gameStateMachine = gameStateMachine;
+            _gameStateModel = gameStateModel;
             _isInjected = true;
         }
 
@@ -38,7 +38,7 @@ namespace ProjectDebug
         private void Update()
         {
             if (!_isInjected
-             || _gameStateMachine.State != GameState.Run)
+             || _gameStateModel.State.CurrentValue != GameState.Run)
             {
                 return;
             }

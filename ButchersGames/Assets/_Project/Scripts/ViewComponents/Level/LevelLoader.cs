@@ -10,6 +10,7 @@ namespace ViewComponents.Level
     public sealed class LevelLoader
         : MonoBehaviour,
           ILevelLoader,
+          ILevelLoaderEvents,
           IValidatable
     {
         [SerializeField] private LevelListConfig _config;
