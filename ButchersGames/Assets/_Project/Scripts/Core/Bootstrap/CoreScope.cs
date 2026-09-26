@@ -26,6 +26,7 @@ using UI.WealthIndicator;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using ViewComponents.AnimationSounds;
 using ViewComponents.Audio;
 using ViewComponents.CelebrationCamera;
 using ViewComponents.CharacterAnimation;
@@ -62,6 +63,7 @@ namespace Core.Bootstrap
             RegisterCharacterTurn(builder);
             RegisterCelebrationCamera(builder);
             RegisterAudioListenerFollow(builder);
+            RegisterAnimationSounds(builder);
             RegisterFeedbackPresentation(builder);
             RegisterUi(builder);
         }
@@ -213,6 +215,11 @@ namespace Core.Bootstrap
         private static void RegisterAudioListenerFollow(IContainerBuilder builder)
         {
             builder.RegisterComponentInHierarchy<AudioListenerCameraFollower>();
+        }
+
+        private static void RegisterAnimationSounds(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<AnimationSoundEmitter>().As<IValidatable>();
         }
 
         private static void RegisterFeedbackPresentation(IContainerBuilder builder)

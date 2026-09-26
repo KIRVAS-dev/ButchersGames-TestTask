@@ -319,10 +319,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac037b343c595104584784ddc065bf04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ViewComponents::ViewComponents.Footsteps.FootstepSoundView
-  _sound:
-    Guid:
-      Data1: -1843730927
-      Data2: 1111013215
-      Data3: -1107972947
-      Data4: -1064791093
-    Path: event:/SFX/Footsteps
+  _animator: {fileID: 6963039423089275547}
+--- !u!95 &6963039423089275547 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4492592288350926809, guid: fb7b821a6275d8049a85453c278fdf58, type: 3}
+  m_PrefabInstance: {fileID: 6843584209967514946}
+  m_PrefabAsset: {fileID: 0}

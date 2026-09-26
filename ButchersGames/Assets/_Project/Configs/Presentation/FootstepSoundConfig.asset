@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c5fa6bb5951124289e2db693cdcd88, type: 3}
+  m_Name: FootstepSoundConfig
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.AnimationSounds.AnimationSoundConfig
+  _sound:
+    Guid:
+      Data1: -1843730927
+      Data2: 1111013215
+      Data3: -1107972947
+      Data4: -1064791093
+    Path: event:/SFX/Footsteps
