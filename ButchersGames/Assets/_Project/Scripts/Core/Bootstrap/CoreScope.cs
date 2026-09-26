@@ -35,6 +35,7 @@ using ViewComponents.Level;
 using ViewComponents.RunnerBody;
 using ViewComponents.RunnerCollision;
 using ViewComponents.RunnerMovement;
+using ViewComponents.TrackColor;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
 
@@ -49,17 +50,18 @@ namespace Core.Bootstrap
         {
             RegisterEntryPoint(builder);
             RegisterGameFlow(builder);
+            RegisterLevel(builder);
+            RegisterTrackColor(builder);
+            RegisterTransformRotators(builder);
             RegisterWealthMeter(builder);
             RegisterWealthPointsModifier(builder);
-            RegisterLevel(builder);
             RegisterRunnerBody(builder);
             RegisterRunnerMovement(builder);
             RegisterRunnerCollision(builder);
-            RegisterTransformRotators(builder);
             RegisterCharacterAnimation(builder);
             RegisterCharacterTurn(builder);
             RegisterCelebrationCamera(builder);
-            RegisterStudioListenerFollow(builder);
+            RegisterAudioListenerFollow(builder);
             RegisterFeedbackPresentation(builder);
             RegisterUi(builder);
         }
@@ -163,6 +165,11 @@ namespace Core.Bootstrap
             builder.Register<LevelService>(Lifetime.Singleton).As<ILevelService>().As<ILevelProgress>();
         }
 
+        private static void RegisterTrackColor(IContainerBuilder builder)
+        {
+            builder.Register<TrackColorPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
         private static void RegisterWealthPointsModifier(IContainerBuilder builder)
         {
             builder.Register<WealthPointsModifierService>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
@@ -203,9 +210,9 @@ namespace Core.Bootstrap
             builder.Register<CelebrationCameraPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
-        private static void RegisterStudioListenerFollow(IContainerBuilder builder)
+        private static void RegisterAudioListenerFollow(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<StudioListenerCameraFollower>();
+            builder.RegisterComponentInHierarchy<AudioListenerCameraFollower>();
         }
 
         private static void RegisterFeedbackPresentation(IContainerBuilder builder)

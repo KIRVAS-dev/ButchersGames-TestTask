@@ -10,6 +10,7 @@ using ViewComponents.Gates;
 using ViewComponents.LaneBarriers;
 using ViewComponents.Obstacles;
 using ViewComponents.Track;
+using ViewComponents.TrackColor;
 using ViewComponents.TransformRotators;
 
 namespace ViewComponents.Level
@@ -32,9 +33,11 @@ namespace ViewComponents.Level
         IReadOnlyCollection<ILaneBarrier> ILaneBarrierRegistry.Barriers => _barriers;
         IReadOnlyCollection<IWealthPointsModifier> IWealthPointsModifierRegistry.Modifiers => _modifiers;
         IReadOnlyCollection<ITransformRotatorView> ITransformRotatorsRegistry.Rotators => _rotators;
+
         float ITrackProvider.StartCoordinate => _startCoordinate;
         float ITrackProvider.FinishCoordinate => _finishCoordinate;
         float ITrackProvider.RunLength => _finishCoordinate - _startCoordinate;
+        internal ITrackColorView TrackColorView { get; private set; }
         internal TrackPath Track { get; private set; }
 
         internal void Set(Level level)
@@ -68,6 +71,7 @@ namespace ViewComponents.Level
             }
 
             Track = track;
+            TrackColorView = level.TrackColorView;
             _startCoordinate = startCoordinate;
             _finishCoordinate = finishCoordinate;
             _obstacles = obstacles;

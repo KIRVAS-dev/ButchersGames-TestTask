@@ -5,7 +5,7 @@ using VContainer;
 namespace ViewComponents.Audio
 {
     [DisallowMultipleComponent]
-    public sealed class StudioListenerCameraFollower : MonoBehaviour
+    public sealed class AudioListenerCameraFollower : MonoBehaviour
     {
         private IStudioListenerAnchor _anchor;
 

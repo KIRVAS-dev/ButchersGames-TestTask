@@ -874,6 +874,15 @@ MonoBehaviour:
         Data4: -302119267
       Path: event:/SFX/OnWealthDecreased
     _particles: []
+  - _type: 4
+    _sound:
+      Guid:
+        Data1: 450052810
+        Data2: 1330848009
+        Data3: -1759189323
+        Data4: -850866281
+      Path: event:/SFX/OnWealthStageChanged
+    _particles: []
 --- !u!1 &1295242498
 GameObject:
   m_ObjectHideFlags: 0
