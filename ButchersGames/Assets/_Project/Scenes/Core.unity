@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 115491789}
   - component: {fileID: 115491791}
   - component: {fileID: 115491790}
+  - component: {fileID: 115491792}
   m_Layer: 0
   m_Name: DebugTools
   m_TagString: Untagged
@@ -186,6 +187,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Debug::ProjectDebug.DebugSceneRestart
   _hotkey: 32
   _bootScene: {fileID: 102900000, guid: dbbe7bb1013c52e4d85921d94af85fe4, type: 3}
+--- !u!114 &115491792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115491787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aec3caab0da98fc4aa202cf6d8ef9873, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Debug::ProjectDebug.DebugPause
+  _hotkey: 1
 --- !u!1 &581031784
 GameObject:
   m_ObjectHideFlags: 0
