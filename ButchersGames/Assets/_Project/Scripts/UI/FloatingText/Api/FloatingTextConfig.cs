@@ -6,7 +6,9 @@ using UnityEngine;
 namespace UI.FloatingText
 {
     [CreateAssetMenu(menuName = "Configs/Floating Text Config")]
-    internal sealed class FloatingTextConfig : ScriptableObject, IValidatable
+    internal sealed class FloatingTextConfig
+        : ScriptableObject,
+          IValidatable
     {
         [SerializeField] private float _sideOffset = 120f;
         [SerializeField] private int _prewarmCount = 8;
@@ -25,6 +27,11 @@ namespace UI.FloatingText
         [SerializeField] private float _disappearDuration = 0.3f;
         [SerializeField] private Ease _disappearEase = Ease.InQuad;
 
+        [Header("Amount change")]
+        [SerializeField] private float _amountChangeStopDuration = 0.12f;
+        [SerializeField] private float _amountChangePunchScale = 0.2f;
+        [SerializeField] private float _amountChangePunchDuration = 0.1f;
+
         public float SideOffset => _sideOffset;
         public int PrewarmCount => _prewarmCount;
 
@@ -39,6 +46,10 @@ namespace UI.FloatingText
         public float DisappearDuration => _disappearDuration;
         public Ease DisappearEase => _disappearEase;
 
+        public float AmountChangeStopDuration => _amountChangeStopDuration;
+        public float AmountChangePunchScale => _amountChangePunchScale;
+        public float AmountChangePunchDuration => _amountChangePunchDuration;
+
         public void Validate()
         {
             Guard.AgainstNegative(_sideOffset, () => Invalid(nameof(_sideOffset), _sideOffset));
@@ -48,6 +59,21 @@ namespace UI.FloatingText
             Guard.AgainstNegative(_appearDuration, () => Invalid(nameof(_appearDuration), _appearDuration));
             Guard.AgainstNegative(_appearStartScale, () => Invalid(nameof(_appearStartScale), _appearStartScale));
             Guard.AgainstNegative(_disappearDuration, () => Invalid(nameof(_disappearDuration), _disappearDuration));
+
+            Guard.AgainstNegative(
+                _amountChangeStopDuration,
+                () => Invalid(nameof(_amountChangeStopDuration), _amountChangeStopDuration)
+            );
+
+            Guard.AgainstNegative(
+                _amountChangePunchScale,
+                () => Invalid(nameof(_amountChangePunchScale), _amountChangePunchScale)
+            );
+
+            Guard.AgainstNegative(
+                _amountChangePunchDuration,
+                () => Invalid(nameof(_amountChangePunchDuration), _amountChangePunchDuration)
+            );
 
             Guard.AgainstGreaterThan(
                 _appearDuration + _disappearDuration,

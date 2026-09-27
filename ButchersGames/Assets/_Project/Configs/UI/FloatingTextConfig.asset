@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb6a25e773f8a94dac8866ed79ed023, type: 3}
   m_Name: FloatingTextConfig
   m_EditorClassIdentifier: UI::UI.FloatingText.FloatingTextConfig
-  _sideOffset: 120
+  _sideOffset: 250
   _prewarmCount: 8
-  _lifetime: 0.8
-  _riseDistance: 150
-  _moveEase: 6
-  _appearDuration: 0.15
-  _appearStartScale: 0.5
-  _appearEase: 27
-  _disappearDuration: 0.3
+  _lifetime: 0.6
+  _riseDistance: 210
+  _moveEase: 1
+  _appearDuration: 0.06
+  _appearStartScale: 0.4
+  _appearEase: 6
+  _disappearDuration: 0.25
   _disappearEase: 5
+  _amountChangeStopDuration: 0.12
+  _amountChangePunchScale: 0.2
+  _amountChangePunchDuration: 0.1

@@ -1,8 +1,13 @@
+using System;
+
 namespace UI.FloatingText
 {
     public interface IFloatingTextView
     {
-        void ShowGain(int amount);
-        void ShowLoss(int amount);
+        event Action GainSeriesEnded;
+        event Action LossSeriesEnded;
+
+        void ShowGain(int total);
+        void ShowLoss(int total);
     }
 }

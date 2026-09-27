@@ -14,9 +14,6 @@ namespace UI.FloatingText
           IValidatable,
           IWarmupLifecycle
     {
-        private const string GainAmountTextFormat = "+{0}";
-        private const string LossAmountTextFormat = "-{0}";
-
         [SerializeField] private Camera _worldCamera;
         [SerializeField] private Transform _anchor;
         [SerializeField] private Canvas _canvas;
@@ -25,10 +22,11 @@ namespace UI.FloatingText
         [SerializeField] private FloatingTextPopup _lossPrefab;
         [SerializeField] private FloatingTextConfig _config;
 
-        private ObjectPool<FloatingTextPopup> _gainPool;
-        private ObjectPool<FloatingTextPopup> _lossPool;
-        private Action<FloatingTextPopup> _releaseGain;
-        private Action<FloatingTextPopup> _releaseLoss;
+        private FloatingTextSeries _gainSeries;
+        private FloatingTextSeries _lossSeries;
+
+        public event Action GainSeriesEnded;
+        public event Action LossSeriesEnded;
 
         void IValidatable.Validate()
         {
@@ -49,36 +47,27 @@ namespace UI.FloatingText
 
         void IWarmupLifecycle.Warmup()
         {
-            _gainPool = CreatePool(_gainPrefab);
-            _lossPool = CreatePool(_lossPrefab);
+            ObjectPool<FloatingTextPopup> gainPool = CreatePool(_gainPrefab);
+            ObjectPool<FloatingTextPopup> lossPool = CreatePool(_lossPrefab);
 
-            _releaseGain = _gainPool.Release;
-            _releaseLoss = _lossPool.Release;
+            Prewarm(gainPool);
+            Prewarm(lossPool);
 
-            Prewarm(_gainPool);
-            Prewarm(_lossPool);
+            _gainSeries = new FloatingTextSeries(gainPool, _config, _config.SideOffset);
+            _lossSeries = new FloatingTextSeries(lossPool, _config, -_config.SideOffset);
+
+            _gainSeries.Ended += OnGainSeriesEnded;
+            _lossSeries.Ended += OnLossSeriesEnded;
         }
 
-        void IFloatingTextView.ShowGain(int amount)
+        void IFloatingTextView.ShowGain(int total)
         {
-            Show(
-                _gainPool,
-                _releaseGain,
-                GainAmountTextFormat,
-                amount,
-                _config.SideOffset
-            );
+            _gainSeries.Show(total, AnchorPosition());
         }
 
-        void IFloatingTextView.ShowLoss(int amount)
+        void IFloatingTextView.ShowLoss(int total)
         {
-            Show(
-                _lossPool,
-                _releaseLoss,
-                LossAmountTextFormat,
-                amount,
-                -_config.SideOffset
-            );
+            _lossSeries.Show(total, AnchorPosition());
         }
 
         private ObjectPool<FloatingTextPopup> CreatePool(FloatingTextPopup prefab)
@@ -106,26 +95,19 @@ namespace UI.FloatingText
             }
         }
 
-        private void Show(
-            ObjectPool<FloatingTextPopup> pool,
-            Action<FloatingTextPopup> release,
-            string textFormat,
-            int amount,
-            float sideOffset)
+        private void OnGainSeriesEnded()
         {
-            Vector2 position = CanvasPointHelper.WorldToContainerPoint(_anchor.position, _worldCamera, _canvas, _container);
+            GainSeriesEnded?.Invoke();
+        }
 
-            position.x += sideOffset;
+        private void OnLossSeriesEnded()
+        {
+            LossSeriesEnded?.Invoke();
+        }
 
-            FloatingTextPopup floatingText = pool.Get();
-
-            floatingText.Play(
-                textFormat,
-                amount,
-                position,
-                _config,
-                release
-            );
+        private Vector2 AnchorPosition()
+        {
+            return CanvasPointHelper.WorldToContainerPoint(_anchor.position, _worldCamera, _canvas, _container);
         }
     }
 }
