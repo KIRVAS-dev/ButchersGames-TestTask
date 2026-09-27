@@ -1,40 +1,43 @@
+using System;
+using System.Threading;
+using Core.Bootstrap;
 using Core.Bootstrap.Scene;
-using Core.Validation;
 using Cysharp.Threading.Tasks;
 using Infrastructure.Audio;
-using System.Threading;
-using UI.LoadingScreen;
 using VContainer.Unity;
 
 namespace Infrastructure.Bootstrap
 {
-    internal sealed class EntryPoint : IStartable
+    internal sealed class EntryPoint
+        : IStartable,
+          IDisposable
     {
         private const string CoreSceneName = "Core";
 
         private readonly IAudioLoader _audioLoader;
         private readonly ISceneLoader _sceneLoader;
-        private readonly ILoadingScreenView _loadingScreenView;
-        private readonly SessionValidation _sessionValidation;
+        private readonly ScopeLifecycle _scopeLifecycle;
 
         public EntryPoint(
             IAudioLoader audioLoader,
             ISceneLoader sceneLoader,
-            ILoadingScreenView loadingScreenView,
-            SessionValidation sessionValidation)
+            ScopeLifecycle scopeLifecycle)
         {
             _audioLoader = audioLoader;
             _sceneLoader = sceneLoader;
-            _loadingScreenView = loadingScreenView;
-            _sessionValidation = sessionValidation;
+            _scopeLifecycle = scopeLifecycle;
         }
 
         void IStartable.Start()
         {
-            _sessionValidation.Validate();
-            _loadingScreenView.Show();
+            _scopeLifecycle.Start();
 
             LoadCoreAsync().Forget();
+        }
+
+        void IDisposable.Dispose()
+        {
+            _scopeLifecycle.Stop();
         }
 
         private async UniTaskVoid LoadCoreAsync()

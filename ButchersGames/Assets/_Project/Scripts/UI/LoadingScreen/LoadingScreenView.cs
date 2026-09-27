@@ -62,6 +62,7 @@ namespace UI.LoadingScreen
 
         void ILoadingScreenView.Show()
         {
+            _root.DOKill();
             KillAnimations();
             _root.alpha = VisibleAlpha;
             _root.gameObject.SetActive(true);

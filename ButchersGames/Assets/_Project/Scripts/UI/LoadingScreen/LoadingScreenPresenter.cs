@@ -1,33 +1,43 @@
-using Core.Gameplay.LevelProgression;
+using System;
 using Core.Lifecycle;
+using Core.Loading;
+using R3;
 
 namespace UI.LoadingScreen
 {
     public sealed class LoadingScreenPresenter : ISubscriptionLifecycle
     {
         private readonly ILoadingScreenView _view;
-        private readonly ILevelLoaderEvents _levelLoaderEvents;
+        private readonly IReadOnlyLoadingModel _loadingModel;
 
-        public LoadingScreenPresenter(ILoadingScreenView view, ILevelLoaderEvents levelLoaderEvents)
+        private IDisposable _loadingSubscription;
+
+        public LoadingScreenPresenter(ILoadingScreenView view, IReadOnlyLoadingModel loadingModel)
         {
             _view = view;
-            _levelLoaderEvents = levelLoaderEvents;
+            _loadingModel = loadingModel;
         }
 
         void ISubscriptionLifecycle.Start()
         {
-            _levelLoaderEvents.LevelLoaded += OnLevelLoaded;
+            _loadingSubscription = _loadingModel.IsLoading.Subscribe(OnLoadingChanged);
         }
 
         void ISubscriptionLifecycle.Stop()
         {
-            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
+            _loadingSubscription?.Dispose();
         }
 
-        private void OnLevelLoaded()
+        private void OnLoadingChanged(bool isLoading)
         {
-            _levelLoaderEvents.LevelLoaded -= OnLevelLoaded;
-            _view.Hide();
+            if (isLoading)
+            {
+                _view.Show();
+            }
+            else
+            {
+                _view.Hide();
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 using ContentValidation;
+using Core.Bootstrap;
 using Core.Bootstrap.Scene;
-using Core.Validation;
+using Core.Lifecycle;
+using Core.Loading;
 using Infrastructure.Audio;
 using Infrastructure.ExtendedExceptions;
 using UI.LoadingScreen;
@@ -21,18 +23,25 @@ namespace Infrastructure.Bootstrap
             RegisterEntryPoint(builder);
             RegisterSceneLoading(builder);
             RegisterAudio(builder);
+            RegisterLoading(builder);
             RegisterLoadingScreen(builder);
         }
 
         private static void RegisterEntryPoint(IContainerBuilder builder)
         {
             builder.RegisterEntryPoint<EntryPoint>();
-            builder.Register<SessionValidation>(Lifetime.Singleton);
+            builder.Register<ScopeLifecycle>(Lifetime.Singleton);
         }
 
         private static void RegisterSceneLoading(IContainerBuilder builder)
         {
             builder.Register<CoreLoader>(Lifetime.Singleton).As<ISceneLoader>();
+        }
+
+        private static void RegisterLoading(IContainerBuilder builder)
+        {
+            builder.Register<LoadingModel>(Lifetime.Singleton).AsSelf().As<IReadOnlyLoadingModel>();
+            builder.Register<LoadingService>(Lifetime.Singleton).As<ILoadingService>();
         }
 
         private void RegisterAudio(IContainerBuilder builder)
@@ -45,9 +54,13 @@ namespace Infrastructure.Bootstrap
 
         private void RegisterLoadingScreen(IContainerBuilder builder)
         {
-            Guard.AgainstNull(_loadingScreenView, () => new MissingLoadingScreenViewException());
+            Guard.AgainstNull(
+                _loadingScreenView,
+                () => new MissingLoadingScreenViewException(nameof(_loadingScreenView), gameObject.name)
+            );
 
             builder.RegisterComponent(_loadingScreenView).As<ILoadingScreenView>().As<IValidatable>();
+            builder.Register<LoadingScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
     }
 }

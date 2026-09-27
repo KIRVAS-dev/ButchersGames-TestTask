@@ -15,13 +15,11 @@ using Core.Input;
 using Core.Input.RunnerMovement;
 using Core.Lifecycle;
 using Core.Loop;
-using Core.Validation;
 using Infrastructure.ExtendedExceptions;
 using Infrastructure.Persistence;
 using Input;
 using UI.FloatingText;
 using UI.Hud;
-using UI.LoadingScreen;
 using UI.ResultScreen;
 using UI.StartScreen;
 using UI.WealthIndicator;
@@ -75,7 +73,7 @@ namespace Core.Bootstrap
         {
             builder.RegisterEntryPoint<CoreEntryPoint>();
             builder.RegisterEntryPoint<GameLoop>();
-            builder.Register<SessionValidation>(Lifetime.Singleton);
+            builder.Register<ScopeLifecycle>(Lifetime.Singleton);
         }
 
         private static void RegisterGameFlow(IContainerBuilder builder)
@@ -272,7 +270,6 @@ namespace Core.Bootstrap
                .As<IWarmupLifecycle>();
 
             builder.Register<FloatingTextPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
-            builder.Register<LoadingScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
     }
 }

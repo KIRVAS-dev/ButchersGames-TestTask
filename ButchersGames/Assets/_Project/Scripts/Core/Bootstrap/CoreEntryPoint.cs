@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Core.Gameplay.GameFlow;
-using Core.Lifecycle;
-using Core.Validation;
+using Core.Loading;
 using VContainer.Unity;
 
 namespace Core.Bootstrap
@@ -12,45 +10,29 @@ namespace Core.Bootstrap
           IDisposable
     {
         private readonly IGameFlowService _gameFlowService;
-        private readonly IReadOnlyList<ISubscriptionLifecycle> _subscriptionLifecycles;
-        private readonly IReadOnlyList<IWarmupLifecycle> _warmupLifecycles;
-        private readonly SessionValidation _sessionValidation;
+        private readonly ILoadingService _loadingService;
+        private readonly ScopeLifecycle _scopeLifecycle;
 
         public CoreEntryPoint(
             IGameFlowService gameFlowService,
-            IReadOnlyList<ISubscriptionLifecycle> subscriptionLifecycles,
-            IReadOnlyList<IWarmupLifecycle> warmupLifecycles,
-            SessionValidation sessionValidation)
+            ILoadingService loadingService,
+            ScopeLifecycle scopeLifecycle)
         {
             _gameFlowService = gameFlowService;
-            _subscriptionLifecycles = subscriptionLifecycles;
-            _warmupLifecycles = warmupLifecycles;
-            _sessionValidation = sessionValidation;
+            _loadingService = loadingService;
+            _scopeLifecycle = scopeLifecycle;
         }
 
         void IStartable.Start()
         {
-            _sessionValidation.Validate();
-
-            foreach (IWarmupLifecycle warmupLifecycle in _warmupLifecycles)
-            {
-                warmupLifecycle.Warmup();
-            }
-
-            foreach (ISubscriptionLifecycle subscriptionLifecycle in _subscriptionLifecycles)
-            {
-                subscriptionLifecycle.Start();
-            }
-
+            _scopeLifecycle.Start();
             _gameFlowService.PrepareGame();
+            _loadingService.Complete();
         }
 
         void IDisposable.Dispose()
         {
-            foreach (ISubscriptionLifecycle subscriptionLifecycle in _subscriptionLifecycles)
-            {
-                subscriptionLifecycle.Stop();
-            }
+            _scopeLifecycle.Stop();
         }
     }
 }
