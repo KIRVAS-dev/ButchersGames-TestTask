@@ -31,6 +31,14 @@ namespace Infrastructure.ExtendedExceptions
             }
         }
 
+        public static void AgainstNullOrEmpty(string value, Func<ExtendedException> exceptionFactory)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw exceptionFactory();
+            }
+        }
+
         public static void AgainstNonPositive(float value, Func<ExtendedException> exceptionFactory)
         {
             if (value <= 0f)

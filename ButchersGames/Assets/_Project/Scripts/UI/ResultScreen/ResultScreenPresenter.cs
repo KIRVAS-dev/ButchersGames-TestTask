@@ -13,7 +13,7 @@ namespace UI.ResultScreen
         private readonly IResultScreenView _view;
         private readonly IGameFlowService _gameFlowService;
         private readonly ILevelProgress _levelProgress;
-        private readonly IFeedbackPerformer _feedbackPerformer;
+        private readonly IAudioFeedbackPerformer _feedbackPerformer;
         private readonly IReadOnlyGameStateModel _gameStateModel;
         private readonly IReadOnlyWealthMeterModel _wealthMeterModel;
 
@@ -23,7 +23,7 @@ namespace UI.ResultScreen
             IResultScreenView view,
             IGameFlowService gameFlowService,
             ILevelProgress levelProgress,
-            IFeedbackPerformer feedbackPerformer,
+            IAudioFeedbackPerformer feedbackPerformer,
             IReadOnlyGameStateModel gameStateModel,
             IReadOnlyWealthMeterModel wealthMeterModel)
         {
@@ -51,13 +51,13 @@ namespace UI.ResultScreen
 
         private void OnRetryClicked()
         {
-            _feedbackPerformer.Play(FeedbackType.ButtonClick);
+            _feedbackPerformer.Play(AudioFeedbackType.ButtonClick);
             _gameFlowService.PrepareGame();
         }
 
         private void OnNextClicked()
         {
-            _feedbackPerformer.Play(FeedbackType.ButtonClick);
+            _feedbackPerformer.Play(AudioFeedbackType.ButtonClick);
             _gameFlowService.GoToNextGame();
         }
 

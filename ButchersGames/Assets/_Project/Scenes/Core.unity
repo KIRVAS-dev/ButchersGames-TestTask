@@ -742,7 +742,7 @@ GameObject:
   - component: {fileID: 1219698803}
   - component: {fileID: 1219698806}
   m_Layer: 0
-  m_Name: FeedbackPerformer
+  m_Name: AudioFeedbackPerformer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -784,7 +784,6 @@ MonoBehaviour:
         Data3: 1424023735
         Data4: -26255127
       Path: event:/UI/OnPointerDown
-    _particles: []
   - _type: 2
     _sound:
       Guid:
@@ -793,7 +792,6 @@ MonoBehaviour:
         Data3: 938834326
         Data4: 391991835
       Path: event:/Music/WinMusic
-    _particles: []
   - _type: 5
     _sound:
       Guid:
@@ -802,7 +800,6 @@ MonoBehaviour:
         Data3: -1779013487
         Data4: 1763377042
       Path: event:/SFX/OnWealthIncreased
-    _particles: []
   - _type: 6
     _sound:
       Guid:
@@ -811,7 +808,6 @@ MonoBehaviour:
         Data3: 1602482608
         Data4: -302119267
       Path: event:/SFX/OnWealthDecreased
-    _particles: []
   - _type: 4
     _sound:
       Guid:
@@ -820,7 +816,22 @@ MonoBehaviour:
         Data3: -1759189323
         Data4: -850866281
       Path: event:/SFX/OnWealthStageChanged
-    _particles: []
+  - _type: 7
+    _sound:
+      Guid:
+        Data1: -809328698
+        Data2: 1133194528
+        Data3: -607487841
+        Data4: 2012574301
+      Path: event:/SFX/Sad
+  - _type: 8
+    _sound:
+      Guid:
+        Data1: 1097686523
+        Data2: 1127275963
+        Data3: 2121183104
+        Data4: -693006534
+      Path: event:/SFX/Happy
 --- !u!1 &1295242498
 GameObject:
   m_ObjectHideFlags: 0
@@ -1802,6 +1813,8 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 3014239616718700921}
+  - {fileID: 1953621920}
   - {fileID: 631628028}
   - {fileID: 642159710}
   - {fileID: 626349683}
@@ -1813,8 +1826,6 @@ SceneRoots:
   - {fileID: 2121053847}
   - {fileID: 1107524011}
   - {fileID: 1219698803}
-  - {fileID: 581031786}
   - {fileID: 8612605277764375664}
   - {fileID: 802531587}
-  - {fileID: 3014239616718700921}
-  - {fileID: 1953621920}
+  - {fileID: 581031786}

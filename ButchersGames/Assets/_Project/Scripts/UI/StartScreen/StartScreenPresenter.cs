@@ -11,7 +11,7 @@ namespace UI.StartScreen
     {
         private readonly IStartScreenView _view;
         private readonly IGameFlowService _gameFlowService;
-        private readonly IFeedbackPerformer _feedbackPerformer;
+        private readonly IAudioFeedbackPerformer _feedbackPerformer;
         private readonly ILevelLoaderEvents _levelLoaderEvents;
         private readonly ILevelProgress _levelProgress;
         private readonly IReadOnlyGameStateModel _gameStateModel;
@@ -21,7 +21,7 @@ namespace UI.StartScreen
         public StartScreenPresenter(
             IStartScreenView view,
             IGameFlowService gameFlowService,
-            IFeedbackPerformer feedbackPerformer,
+            IAudioFeedbackPerformer feedbackPerformer,
             ILevelLoaderEvents levelLoaderEvents,
             ILevelProgress levelProgress,
             IReadOnlyGameStateModel gameStateModel)
@@ -50,7 +50,7 @@ namespace UI.StartScreen
 
         private void OnStartClicked()
         {
-            _feedbackPerformer.Play(FeedbackType.ButtonClick);
+            _feedbackPerformer.Play(AudioFeedbackType.ButtonClick);
             _gameFlowService.StartGame();
         }
 

@@ -44,4 +44,10 @@ namespace ViewComponents.CharacterAnimation
                 $"GameState '{state}' is not handled by the character animation presenter"
             ) { }
     }
+
+    internal sealed class UnhandledCharacterAnimationSlotException : ExtendedException
+    {
+        internal UnhandledCharacterAnimationSlotException(CharacterAnimationSlot slot)
+            : base("character-animation-presenter-2", $"Slot '{slot}' is not handled by the character animation presenter") { }
+    }
 }

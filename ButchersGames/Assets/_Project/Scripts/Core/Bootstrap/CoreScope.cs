@@ -62,9 +62,9 @@ namespace Core.Bootstrap
             RegisterCharacterAnimation(builder);
             RegisterCharacterTurn(builder);
             RegisterCelebrationCamera(builder);
-            RegisterAudioListenerFollow(builder);
             RegisterAnimationSounds(builder);
-            RegisterFeedbackPresentation(builder);
+            RegisterAudioListenerFollow(builder);
+            RegisterAudioFeedback(builder);
             RegisterUi(builder);
         }
 
@@ -102,6 +102,9 @@ namespace Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<CharacterAppearanceView>().As<ICharacterAppearanceView>().As<IValidatable>();
             builder.Register<CharacterAppearancePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+
+            builder.RegisterComponentInHierarchy<WealthParticlesView>().As<IWealthParticlesView>().As<IValidatable>();
+            builder.Register<WealthParticlesPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterRunnerBody(IContainerBuilder builder)
@@ -224,15 +227,15 @@ namespace Core.Bootstrap
             builder.RegisterComponentInHierarchy<AnimationSoundEmitter>().As<IValidatable>();
         }
 
-        private static void RegisterFeedbackPresentation(IContainerBuilder builder)
+        private static void RegisterAudioFeedback(IContainerBuilder builder)
         {
             builder
-               .RegisterComponentInHierarchy<FeedbackPerformer>()
-               .As<IFeedbackPerformer>()
+               .RegisterComponentInHierarchy<AudioFeedbackPerformer>()
+               .As<IAudioFeedbackPerformer>()
                .As<IValidatable>()
                .As<IWarmupLifecycle>();
 
-            builder.Register<FeedbackPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+            builder.Register<AudioFeedbackPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterUi(IContainerBuilder builder)

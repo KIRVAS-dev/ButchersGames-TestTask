@@ -1,4 +1,5 @@
 using System;
+using Core.Gameplay.Feedback;
 using Core.Gameplay.GameFlow;
 using Core.Gameplay.RunnerMovement;
 using Core.Gameplay.WealthMeter;
@@ -10,6 +11,7 @@ namespace ViewComponents.CharacterAnimation
     public sealed class CharacterAnimationPresenter : ISubscriptionLifecycle
     {
         private readonly ICharacterAnimationView _view;
+        private readonly IAudioFeedbackPerformer _audioFeedbackPerformer;
         private readonly IWealthMeterEvents _wealthMeterEvents;
         private readonly IReadOnlyGameStateModel _gameStateModel;
         private readonly IReadOnlyRunnerMovementModel _runnerMovementModel;
@@ -20,11 +22,13 @@ namespace ViewComponents.CharacterAnimation
 
         public CharacterAnimationPresenter(
             ICharacterAnimationView view,
+            IAudioFeedbackPerformer audioFeedbackPerformer,
             IWealthMeterEvents wealthMeterEvents,
             IReadOnlyGameStateModel gameStateModel,
             IReadOnlyRunnerMovementModel runnerMovementModel)
         {
             _view = view;
+            _audioFeedbackPerformer = audioFeedbackPerformer;
             _wealthMeterEvents = wealthMeterEvents;
             _gameStateModel = gameStateModel;
             _runnerMovementModel = runnerMovementModel;
@@ -38,7 +42,7 @@ namespace ViewComponents.CharacterAnimation
             _slotSubscription = Observable
                .CombineLatest(_gameStateModel.State, _runnerMovementModel.State, _stopReaction, PlaySlotFor)
                .DistinctUntilChanged()
-               .Subscribe(_view.Play);
+               .Subscribe(OnSlotChanged);
         }
 
         void ISubscriptionLifecycle.Stop()
@@ -73,6 +77,31 @@ namespace ViewComponents.CharacterAnimation
 
                 default:
                     throw new UnhandledCharacterAnimationStateException(gameState);
+            }
+        }
+
+        private void OnSlotChanged(CharacterAnimationSlot slot)
+        {
+            _view.Play(slot);
+
+            switch (slot)
+            {
+                case CharacterAnimationSlot.Sad:
+                    _audioFeedbackPerformer.Play(AudioFeedbackType.Sad);
+                    break;
+
+                case CharacterAnimationSlot.Happy:
+                    _audioFeedbackPerformer.Play(AudioFeedbackType.Happy);
+                    break;
+
+                case CharacterAnimationSlot.Idle:
+                case CharacterAnimationSlot.Run:
+                case CharacterAnimationSlot.Victory:
+                case CharacterAnimationSlot.Defeat:
+                    break;
+
+                default:
+                    throw new UnhandledCharacterAnimationSlotException(slot);
             }
         }
 

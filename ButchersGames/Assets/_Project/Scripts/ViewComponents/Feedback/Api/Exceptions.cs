@@ -10,9 +10,21 @@ namespace ViewComponents.Feedback
             : base("feedback-1", $"GameState '{state}' is not handled by the feedback presenter") { }
     }
 
-    internal sealed class DuplicateFeedbackEntryException : ExtendedException
+    internal sealed class DuplicateAudioFeedbackEntryException : ExtendedException
     {
-        public DuplicateFeedbackEntryException(FeedbackType type, string objectName)
+        public DuplicateAudioFeedbackEntryException(AudioFeedbackType type, string objectName)
             : base("feedback-2", $"Feedback entry for '{type}' is duplicated on '{objectName}'") { }
+    }
+
+    internal sealed class MissingAudioFeedbackEntryException : ExtendedException
+    {
+        public MissingAudioFeedbackEntryException(AudioFeedbackType type, string objectName)
+            : base("feedback-3", $"Feedback entry for '{type}' is missing on '{objectName}'") { }
+    }
+
+    internal sealed class MissingAudioFeedbackSoundException : ExtendedException
+    {
+        public MissingAudioFeedbackSoundException(AudioFeedbackType type, string objectName)
+            : base("feedback-4", $"Feedback entry for '{type}' has no sound on '{objectName}'") { }
     }
 }

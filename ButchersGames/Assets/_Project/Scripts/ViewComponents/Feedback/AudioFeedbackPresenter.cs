@@ -7,9 +7,9 @@ using R3;
 
 namespace ViewComponents.Feedback
 {
-    public sealed class FeedbackPresenter : ISubscriptionLifecycle
+    public sealed class AudioFeedbackPresenter : ISubscriptionLifecycle
     {
-        private readonly IFeedbackPerformer _feedbackPerformer;
+        private readonly IAudioFeedbackPerformer _feedbackPerformer;
         private readonly IWealthMeterEvents _wealthMeterEvents;
         private readonly IReadOnlyGameStateModel _gameStateModel;
         private readonly IReadOnlyWealthMeterModel _wealthMeterModel;
@@ -17,8 +17,8 @@ namespace ViewComponents.Feedback
         private IDisposable _stageSubscription;
         private IDisposable _stateSubscription;
 
-        public FeedbackPresenter(
-            IFeedbackPerformer feedbackPerformer,
+        public AudioFeedbackPresenter(
+            IAudioFeedbackPerformer feedbackPerformer,
             IWealthMeterEvents wealthMeterEvents,
             IReadOnlyGameStateModel gameStateModel,
             IReadOnlyWealthMeterModel wealthMeterModel)
@@ -33,7 +33,7 @@ namespace ViewComponents.Feedback
         {
             _wealthMeterEvents.Increased += OnMoneyIncreased;
             _wealthMeterEvents.Decreased += OnMoneyDecreased;
-            _stageSubscription = _wealthMeterModel.Stage.Subscribe(OnStageChanged);
+            _stageSubscription = _wealthMeterModel.Stage.Subscribe(OnWealthStageChanged);
             _stateSubscription = _gameStateModel.State.Subscribe(OnGameStateChanged);
         }
 
@@ -47,21 +47,21 @@ namespace ViewComponents.Feedback
 
         private void OnMoneyIncreased(int amount)
         {
-            _feedbackPerformer.Play(FeedbackType.MoneyGained);
+            _feedbackPerformer.Play(AudioFeedbackType.MoneyGained);
         }
 
         private void OnMoneyDecreased(int amount)
         {
-            _feedbackPerformer.Play(FeedbackType.MoneyLost);
+            _feedbackPerformer.Play(AudioFeedbackType.MoneyLost);
         }
 
-        private void OnStageChanged(WealthStage stage)
+        private void OnWealthStageChanged(WealthStage stage)
         {
             bool isRunning = _gameStateModel.State.CurrentValue == GameState.Run;
 
             if (isRunning)
             {
-                _feedbackPerformer.Play(FeedbackType.StageChanged);
+                _feedbackPerformer.Play(AudioFeedbackType.StageChanged);
             }
         }
 
@@ -69,18 +69,12 @@ namespace ViewComponents.Feedback
         {
             switch (state)
             {
-                case GameState.Run:
-                    _feedbackPerformer.Play(FeedbackType.GameStarted);
-                    break;
-
                 case GameState.Win:
-                    _feedbackPerformer.Play(FeedbackType.Win);
+                    _feedbackPerformer.Play(AudioFeedbackType.Win);
                     break;
 
+                case GameState.Run:
                 case GameState.Lose:
-                    _feedbackPerformer.Play(FeedbackType.Lose);
-                    break;
-
                 case GameState.Tutorial:
                     break;
 
