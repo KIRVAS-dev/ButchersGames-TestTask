@@ -32,7 +32,7 @@ namespace UI.FloatingText
         private Tween _resumeTween;
         private TweenCallback _resumeLifetime;
 
-        void IValidatable.Validate()
+        public void Validate()
         {
             Guard.AgainstNull(_rectTransform, () => Missing(nameof(_rectTransform)));
             Guard.AgainstNull(_canvasGroup, () => Missing(nameof(_canvasGroup)));

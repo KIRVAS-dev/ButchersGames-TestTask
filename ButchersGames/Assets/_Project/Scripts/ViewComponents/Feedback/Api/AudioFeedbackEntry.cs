@@ -11,7 +11,7 @@ namespace ViewComponents.Feedback
         [SerializeField] private AudioFeedbackType _type;
         [SerializeField] private EventReference _sound;
 
-        public AudioFeedbackType Type => _type;
-        public EventReference Sound => _sound;
+        internal AudioFeedbackType Type => _type;
+        internal EventReference Sound => _sound;
     }
 }

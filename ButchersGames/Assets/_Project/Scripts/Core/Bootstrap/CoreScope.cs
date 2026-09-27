@@ -112,7 +112,7 @@ namespace Core.Bootstrap
             builder
                .RegisterComponentInHierarchy<RunnerBody>()
                .As<IRunnerBodyProvider>()
-               .As<IRunnerCollision>()
+               .As<IRunnerBodyCollision>()
                .As<IValidatable>();
         }
 
@@ -151,12 +151,7 @@ namespace Core.Bootstrap
 
         private static void RegisterLevel(IContainerBuilder builder)
         {
-            builder
-               .RegisterComponentInHierarchy<LevelLoader>()
-               .As<ILevelLoader>()
-               .As<ILevelLoaderEvents>()
-               .AsSelf()
-               .As<IValidatable>();
+            builder.RegisterComponentInHierarchy<LevelLoader>().As<ILevelLoader>().As<ILevelLoaderEvents>().As<IValidatable>();
 
             builder
                .Register<CurrentLevel>(Lifetime.Singleton)

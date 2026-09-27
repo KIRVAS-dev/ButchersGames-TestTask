@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Gameplay.LaneBarrier;
 using Core.Gameplay.RunnerBody;
+using Infrastructure.ExtendedExceptions;
 
 namespace Core.Gameplay.RunnerMovement
 {
@@ -44,7 +45,7 @@ namespace Core.Gameplay.RunnerMovement
             public float Boundary { get; }
         }
 
-        public RunnerMovementSimulator(
+        internal RunnerMovementSimulator(
             IRunnerMovementSettings settings,
             IRunnerBodyProvider runnerBodyProvider,
             RunnerMovementModel model)
@@ -55,7 +56,7 @@ namespace Core.Gameplay.RunnerMovement
             _lateralHalfRange = settings.LateralRange * HalfFactor;
         }
 
-        public void Tick(float deltaTime, float finishCoordinate)
+        internal void Tick(float deltaTime, float finishCoordinate)
         {
             if (_model.State.Value == RunnerMovementState.Moving)
             {
@@ -101,12 +102,17 @@ namespace Core.Gameplay.RunnerMovement
         {
             _activeObstacleCount--;
 
+            Guard.AgainstLessThan(
+                _activeObstacleCount,
+                NoActiveObstacles,
+                () => new UnmatchedRunnerObstacleReleaseException(_activeObstacleCount)
+            );
+
             if (_activeObstacleCount > NoActiveObstacles)
             {
                 return;
             }
 
-            _activeObstacleCount = NoActiveObstacles;
             _model.State.Value = RunnerMovementState.Moving;
         }
 

@@ -7,6 +7,9 @@ namespace Core.Gameplay.LevelProgression
         : ILevelService,
           ILevelProgress
     {
+        private const int NoCompletedLevels = 0;
+        private const int FirstLevelIndex = 0;
+
         private readonly ILevelLoader _levelLoader;
         private readonly ILevelProgressStore _progressStore;
         private readonly LevelModel _model;
@@ -23,19 +26,12 @@ namespace Core.Gameplay.LevelProgression
             _progressStore = progressStore;
             _model = model;
 
-            _model.CompletedLevelCount = _progressStore.LoadCompletedLevelCount();
-            _model.CurrentLevelIndex = _progressStore.LoadCurrentLevelIndex();
+            _model.CompletedLevelCount = RestoredCompletedLevelCount(_progressStore.LoadCompletedLevelCount());
 
-            Guard.AgainstLessThan(
-                _model.CurrentLevelIndex,
-                0,
-                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelLoader.LevelCount)
-            );
-
-            Guard.AgainstGreaterThan(
-                _model.CurrentLevelIndex,
-                _levelLoader.LevelCount - 1,
-                () => new InvalidLevelIndexException(_model.CurrentLevelIndex, _levelLoader.LevelCount)
+            _model.CurrentLevelIndex = RestoredLevelIndex(
+                _progressStore.LoadCurrentLevelIndex(),
+                _model.CompletedLevelCount,
+                _levelLoader.LevelCount
             );
         }
 
@@ -55,6 +51,28 @@ namespace Core.Gameplay.LevelProgression
             _levelLoader.LoadLevel(_model.CurrentLevelIndex);
         }
 
+        private static int RestoredCompletedLevelCount(int savedCompletedLevelCount)
+        {
+            return Math.Max(savedCompletedLevelCount, NoCompletedLevels);
+        }
+
+        private static int RestoredLevelIndex(
+            int savedLevelIndex,
+            int completedLevelCount,
+            int levelCount)
+        {
+            bool isSavedIndexInRange = savedLevelIndex >= FirstLevelIndex && savedLevelIndex < levelCount;
+
+            return isSavedIndexInRange
+                ? savedLevelIndex
+                : SequentialLevelIndex(completedLevelCount, levelCount);
+        }
+
+        private static int SequentialLevelIndex(int completedLevelCount, int levelCount)
+        {
+            return completedLevelCount % levelCount;
+        }
+
         private int NextLevelIndex()
         {
             int levelCount = _levelLoader.LevelCount;
@@ -66,12 +84,9 @@ namespace Core.Gameplay.LevelProgression
 
             bool canPickRandomLevel = _levelLoader.IsRandomized && levelCount > 1;
 
-            if (canPickRandomLevel)
-            {
-                return RandomLevelIndexExcludingCurrent(levelCount);
-            }
-
-            return _model.CompletedLevelCount % levelCount;
+            return canPickRandomLevel
+                ? RandomLevelIndexExcludingCurrent(levelCount)
+                : SequentialLevelIndex(_model.CompletedLevelCount, levelCount);
         }
 
         private int RandomLevelIndexExcludingCurrent(int levelCount)

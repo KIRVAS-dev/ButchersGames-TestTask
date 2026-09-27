@@ -22,6 +22,8 @@ namespace ViewComponents.Feedback
 
         void IValidatable.Validate()
         {
+            Guard.AgainstNullOrEmpty(_entries, () => new MissingAudioFeedbackFieldException(nameof(_entries), gameObject.name));
+
             HashSet<AudioFeedbackType> seenTypes = new HashSet<AudioFeedbackType>();
 
             foreach (AudioFeedbackEntry entry in _entries)

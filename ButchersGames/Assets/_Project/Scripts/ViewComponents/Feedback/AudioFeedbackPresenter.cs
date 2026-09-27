@@ -79,7 +79,7 @@ namespace ViewComponents.Feedback
                     break;
 
                 default:
-                    throw new UnhandledFeedbackStateException(state);
+                    throw new UnhandledAudioFeedbackStateException(state);
             }
         }
     }

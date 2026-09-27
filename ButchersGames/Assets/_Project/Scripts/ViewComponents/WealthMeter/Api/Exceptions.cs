@@ -4,13 +4,13 @@ namespace ViewComponents.WealthMeter
 {
     internal sealed class MissingCharacterAppearanceViewFieldException : ExtendedException
     {
-        public MissingCharacterAppearanceViewFieldException(string fieldName, string objectName)
-            : base("character-appearance-view-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
+        internal MissingCharacterAppearanceViewFieldException(string fieldName, string objectName)
+            : base("wealth-meter-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
 
     internal sealed class MissingWealthParticlesViewFieldException : ExtendedException
     {
-        public MissingWealthParticlesViewFieldException(string fieldName, string objectName)
-            : base("wealth-particles-view-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
+        internal MissingWealthParticlesViewFieldException(string fieldName, string objectName)
+            : base("wealth-meter-2", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
 }

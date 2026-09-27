@@ -19,4 +19,13 @@ namespace Core.Gameplay.RunnerMovement
         internal UnhandledRunnerLateralDirectionException(RunnerLateralDirection direction)
             : base("runner-movement-3", $"RunnerLateralDirection '{direction}' is not handled by the lane barrier clamp") { }
     }
+
+    internal sealed class UnmatchedRunnerObstacleReleaseException : ExtendedException
+    {
+        internal UnmatchedRunnerObstacleReleaseException(int activeObstacleCount)
+            : base(
+                "runner-movement-4",
+                $"Obstacle released without a matching hit, active obstacle count {activeObstacleCount}"
+            ) { }
+    }
 }

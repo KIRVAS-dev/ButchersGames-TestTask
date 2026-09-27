@@ -1,6 +1,5 @@
 using ContentValidation;
 using Core.Gameplay.RunnerBody;
-using Core.Gameplay.RunnerCollision;
 using Infrastructure.ExtendedExceptions;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace ViewComponents.RunnerBody
     public sealed class RunnerBody
         : MonoBehaviour,
           IRunnerBodyProvider,
-          IRunnerCollision,
+          IRunnerBodyCollision,
           IValidatable
     {
         private const float DiameterFactor = 2f;
@@ -34,12 +33,12 @@ namespace ViewComponents.RunnerBody
             ExtendedException Missing(string fieldName) => new MissingRunnerBodyFieldException(fieldName, gameObject.name);
         }
 
-        void IRunnerCollision.EnableCollisions()
+        void IRunnerBodyCollision.EnableCollisions()
         {
             _rigidbody.detectCollisions = true;
         }
 
-        void IRunnerCollision.DisableCollisions()
+        void IRunnerBodyCollision.DisableCollisions()
         {
             _rigidbody.detectCollisions = false;
         }

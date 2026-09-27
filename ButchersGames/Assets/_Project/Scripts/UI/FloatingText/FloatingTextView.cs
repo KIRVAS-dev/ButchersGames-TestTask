@@ -39,6 +39,8 @@ namespace UI.FloatingText
             Guard.AgainstNull(_config, () => Missing(nameof(_config)));
 
             _config.Validate();
+            _gainPrefab.Validate();
+            _lossPrefab.Validate();
 
             return;
 

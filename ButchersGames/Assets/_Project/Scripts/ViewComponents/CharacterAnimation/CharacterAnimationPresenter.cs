@@ -13,10 +13,11 @@ namespace ViewComponents.CharacterAnimation
         private readonly ICharacterAnimationView _view;
         private readonly IAudioFeedbackPerformer _audioFeedbackPerformer;
         private readonly IWealthMeterEvents _wealthMeterEvents;
+        private readonly IRunnerMovementEvents _runnerMovementEvents;
         private readonly IReadOnlyGameStateModel _gameStateModel;
         private readonly IReadOnlyRunnerMovementModel _runnerMovementModel;
         private readonly ReactiveProperty<CharacterAnimationSlot> _stopReaction =
-            new ReactiveProperty<CharacterAnimationSlot>(CharacterAnimationSlot.Sad);
+            new ReactiveProperty<CharacterAnimationSlot>(CharacterAnimationSlot.Idle);
 
         private IDisposable _slotSubscription;
 
@@ -24,12 +25,14 @@ namespace ViewComponents.CharacterAnimation
             ICharacterAnimationView view,
             IAudioFeedbackPerformer audioFeedbackPerformer,
             IWealthMeterEvents wealthMeterEvents,
+            IRunnerMovementEvents runnerMovementEvents,
             IReadOnlyGameStateModel gameStateModel,
             IReadOnlyRunnerMovementModel runnerMovementModel)
         {
             _view = view;
             _audioFeedbackPerformer = audioFeedbackPerformer;
             _wealthMeterEvents = wealthMeterEvents;
+            _runnerMovementEvents = runnerMovementEvents;
             _gameStateModel = gameStateModel;
             _runnerMovementModel = runnerMovementModel;
         }
@@ -38,6 +41,7 @@ namespace ViewComponents.CharacterAnimation
         {
             _wealthMeterEvents.Increased += OnWealthIncreased;
             _wealthMeterEvents.Decreased += OnWealthDecreased;
+            _runnerMovementEvents.PositionReset += OnPositionReset;
 
             _slotSubscription = Observable
                .CombineLatest(_gameStateModel.State, _runnerMovementModel.State, _stopReaction, PlaySlotFor)
@@ -49,6 +53,7 @@ namespace ViewComponents.CharacterAnimation
         {
             _wealthMeterEvents.Increased -= OnWealthIncreased;
             _wealthMeterEvents.Decreased -= OnWealthDecreased;
+            _runnerMovementEvents.PositionReset -= OnPositionReset;
 
             _slotSubscription?.Dispose();
             _stopReaction.Dispose();
@@ -105,14 +110,10 @@ namespace ViewComponents.CharacterAnimation
             }
         }
 
-        private void OnWealthIncreased(int amount)
-        {
-            _stopReaction.Value = CharacterAnimationSlot.Happy;
-        }
+        private void OnWealthIncreased(int amount) => _stopReaction.Value = CharacterAnimationSlot.Happy;
 
-        private void OnWealthDecreased(int amount)
-        {
-            _stopReaction.Value = CharacterAnimationSlot.Sad;
-        }
+        private void OnWealthDecreased(int amount) => _stopReaction.Value = CharacterAnimationSlot.Sad;
+
+        private void OnPositionReset() => _stopReaction.Value = CharacterAnimationSlot.Idle;
     }
 }
