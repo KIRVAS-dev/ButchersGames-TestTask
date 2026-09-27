@@ -36,6 +36,7 @@ using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerBody;
 using ViewComponents.RunnerMovement;
+using ViewComponents.StartCamera;
 using ViewComponents.TrackColor;
 using ViewComponents.TransformRotators;
 using ViewComponents.WealthMeter;
@@ -61,6 +62,7 @@ namespace Core.Bootstrap
             RegisterRunnerCollision(builder);
             RegisterCharacterAnimation(builder);
             RegisterCharacterTurn(builder);
+            RegisterStartCamera(builder);
             RegisterCelebrationCamera(builder);
             RegisterAnimationSounds(builder);
             RegisterAudioListenerFollow(builder);
@@ -203,6 +205,13 @@ namespace Core.Bootstrap
                .As<IWarmupLifecycle>();
 
             builder.Register<CharacterTurnPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterStartCamera(IContainerBuilder builder)
+        {
+            builder.RegisterComponentInHierarchy<StartCameraView>().As<IStartCameraView>().As<IValidatable>();
+
+            builder.Register<StartCameraPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterCelebrationCamera(IContainerBuilder builder)

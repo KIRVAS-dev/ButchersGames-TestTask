@@ -29,8 +29,11 @@ namespace UI.FloatingText
         private Tween _appearScaleTween;
         private Tween _punchTween;
         private Tween _disappearTween;
-        private Tween _resumeTween;
-        private TweenCallback _resumeLifetime;
+        private Tween _restartTween;
+        private TweenCallback _restartLifetime;
+        private TweenCallback _disappearStarted;
+        private TweenCallback _disappeared;
+        private float _riseTargetY;
 
         public void Validate()
         {
@@ -53,23 +56,19 @@ namespace UI.FloatingText
             _config = config;
             _detached = detached;
             _completed = completed;
-            _resumeLifetime ??= ResumeLifetime;
+            _restartLifetime ??= RestartLifetime;
+            _disappearStarted ??= OnDisappearStarted;
+            _disappeared ??= OnDisappeared;
 
             _rectTransform.DOKill();
             _canvasGroup.DOKill();
-            _resumeTween?.Kill();
+            _restartTween?.Kill();
 
             _text.SetText(AmountTextFormat, amount);
             _rectTransform.anchoredPosition = anchoredPosition;
             _rectTransform.localScale = Vector3.one * config.AppearStartScale;
             _canvasGroup.alpha = HiddenAlpha;
-
-            float disappearDelay = config.Lifetime - config.DisappearDuration;
-
-            _riseTween = _rectTransform
-               .DOAnchorPosY(anchoredPosition.y + config.RiseDistance, config.Lifetime)
-               .SetEase(config.MoveEase)
-               .SetLink(gameObject);
+            _riseTargetY = anchoredPosition.y + config.RiseDistance;
 
             _appearScaleTween = _rectTransform
                .DOScale(DefaultScale, config.AppearDuration)
@@ -78,14 +77,7 @@ namespace UI.FloatingText
 
             _canvasGroup.DOFade(VisibleAlpha, config.AppearDuration).SetEase(config.AppearEase).SetLink(gameObject);
 
-            _disappearTween = _canvasGroup
-               .DOFade(HiddenAlpha, config.DisappearDuration)
-               .From(VisibleAlpha, setImmediately: false)
-               .SetEase(config.DisappearEase)
-               .SetDelay(disappearDelay)
-               .SetLink(gameObject)
-               .OnStart(OnDisappearStarted)
-               .OnComplete(OnDisappeared);
+            PlayLifetime();
         }
 
         internal void SetAmount(int amount)
@@ -94,10 +86,10 @@ namespace UI.FloatingText
 
             _riseTween.Pause();
             _disappearTween.Pause();
-            _resumeTween?.Kill();
+            _restartTween?.Kill();
 
-            _resumeTween = DOVirtual
-               .DelayedCall(_config.AmountChangeStopDuration, _resumeLifetime, ignoreTimeScale: false)
+            _restartTween = DOVirtual
+               .DelayedCall(_config.AmountChangeStopDuration, _restartLifetime, ignoreTimeScale: false)
                .SetLink(gameObject);
 
             PlayPunch();
@@ -119,10 +111,31 @@ namespace UI.FloatingText
                .SetLink(gameObject);
         }
 
-        private void ResumeLifetime()
+        private void RestartLifetime()
         {
-            _riseTween.Play();
-            _disappearTween.Play();
+            _riseTween.Kill();
+            _disappearTween.Kill();
+
+            PlayLifetime();
+        }
+
+        private void PlayLifetime()
+        {
+            float disappearDelay = _config.Lifetime - _config.DisappearDuration;
+
+            _riseTween = _rectTransform
+               .DOAnchorPosY(_riseTargetY, _config.Lifetime)
+               .SetEase(_config.MoveEase)
+               .SetLink(gameObject);
+
+            _disappearTween = _canvasGroup
+               .DOFade(HiddenAlpha, _config.DisappearDuration)
+               .From(VisibleAlpha, setImmediately: false)
+               .SetEase(_config.DisappearEase)
+               .SetDelay(disappearDelay)
+               .SetLink(gameObject)
+               .OnStart(_disappearStarted)
+               .OnComplete(_disappeared);
         }
 
         private void OnDisappearStarted()

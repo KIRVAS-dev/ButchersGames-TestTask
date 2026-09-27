@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55945d5bbe2833540a54d3ca8924e8d2, type: 3}
   m_Name: CelebrationCameraConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.CelebrationCamera.CelebrationCameraConfig
-  _arcDistance: 1.5
+  _arcDistance: 1.75
   _arcSpeed: 1.5
   _accelerationEase: 5
   _decelerationEase: 6
