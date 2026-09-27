@@ -21,6 +21,7 @@ using Infrastructure.Persistence;
 using Input;
 using UI.FloatingText;
 using UI.Hud;
+using UI.LoadingScreen;
 using UI.ResultScreen;
 using UI.StartScreen;
 using UI.WealthIndicator;
@@ -271,6 +272,7 @@ namespace Core.Bootstrap
                .As<IWarmupLifecycle>();
 
             builder.Register<FloatingTextPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+            builder.Register<LoadingScreenPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
     }
 }

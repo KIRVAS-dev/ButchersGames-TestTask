@@ -8,7 +8,9 @@
         "Core",
         "Infrastructure.Audio",
         "ViewComponents",
-        "ExtendedExceptions"
+        "UI",
+        "ExtendedExceptions",
+        "ContentValidation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
