@@ -195,8 +195,6 @@ MonoBehaviour:
     StateName: Idle
   - AnimationSlot: 1
     StateName: Run
-  - AnimationSlot: 2
-    StateName: GetHit
   - AnimationSlot: 3
     StateName: Victory
   - AnimationSlot: 4

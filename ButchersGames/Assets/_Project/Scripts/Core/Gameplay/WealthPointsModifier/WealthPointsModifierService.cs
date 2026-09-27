@@ -1,3 +1,4 @@
+using System;
 using Core.Gameplay.LevelProgression;
 using Core.Gameplay.WealthMeter;
 using Core.Lifecycle;
@@ -6,9 +7,12 @@ namespace Core.Gameplay.WealthPointsModifier
 {
     public sealed class WealthPointsModifierService : ISubscriptionLifecycle
     {
+        private const double IncreaseChance = 0.5;
+
         private readonly ILevelLoaderEvents _levelLoaderEvents;
         private readonly IWealthPointsModifierRegistry _registry;
         private readonly IWealthMeterService _wealthMeter;
+        private readonly Random _random = new Random();
 
         public WealthPointsModifierService(
             ILevelLoaderEvents levelLoaderEvents,
@@ -60,8 +64,26 @@ namespace Core.Gameplay.WealthPointsModifier
                     _wealthMeter.Decrease(amount);
                     break;
 
+                case WealthPointsModifierType.Random:
+                    ApplyRandomModifier(amount);
+                    break;
+
                 default:
                     throw new InvalidWealthPointsModifierTypeException(type);
+            }
+        }
+
+        private void ApplyRandomModifier(int amount)
+        {
+            bool isIncrease = _random.NextDouble() < IncreaseChance;
+
+            if (isIncrease)
+            {
+                _wealthMeter.Increase(amount);
+            }
+            else
+            {
+                _wealthMeter.Decrease(amount);
             }
         }
     }

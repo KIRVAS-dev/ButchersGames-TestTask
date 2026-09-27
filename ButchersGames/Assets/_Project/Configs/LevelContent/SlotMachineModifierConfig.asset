@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ef501ed6066c694b8eafa08a21829c6, type: 3}
   m_Name: SlotMachineModifierConfig
   m_EditorClassIdentifier: ViewComponents::ViewComponents.WealthPointsModifier.WealthPointsModifierConfig
-  _modifierType: 1
+  _modifierType: 2
   _wealthPoints: 100

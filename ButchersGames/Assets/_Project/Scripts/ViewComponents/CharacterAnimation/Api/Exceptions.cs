@@ -1,5 +1,4 @@
 using Core.Gameplay.GameFlow;
-using Core.Gameplay.WealthPointsModifier;
 using Infrastructure.ExtendedExceptions;
 
 namespace ViewComponents.CharacterAnimation
@@ -43,15 +42,6 @@ namespace ViewComponents.CharacterAnimation
             : base(
                 "character-animation-presenter-1",
                 $"GameState '{state}' is not handled by the character animation presenter"
-            ) { }
-    }
-
-    internal sealed class UnhandledWealthPointsModifierTypeException : ExtendedException
-    {
-        internal UnhandledWealthPointsModifierTypeException(WealthPointsModifierType modifierType)
-            : base(
-                "character-animation-presenter-2",
-                $"WealthPointsModifierType '{modifierType}' is not handled by the character animation presenter"
             ) { }
     }
 }

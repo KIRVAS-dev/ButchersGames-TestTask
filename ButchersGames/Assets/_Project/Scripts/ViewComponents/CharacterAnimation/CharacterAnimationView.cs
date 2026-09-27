@@ -26,7 +26,6 @@ namespace ViewComponents.CharacterAnimation
         [SerializeField] private StateNamesMapItem[] _rawStatesMap;
 
         private Dictionary<CharacterAnimationSlot, int> _stateHashes;
-        private Dictionary<CharacterAnimationSlot, int> _reactionTriggers;
 
         void IValidatable.Validate()
         {
@@ -53,22 +52,11 @@ namespace ViewComponents.CharacterAnimation
         void IWarmupLifecycle.Warmup()
         {
             _stateHashes = BuildStateHashes();
-            _reactionTriggers = BuildReactionTriggers();
         }
 
         void ICharacterAnimationView.Play(CharacterAnimationSlot slot)
         {
             _animator.CrossFadeInFixedTime(_stateHashes[slot], _crossFadeDuration);
-        }
-
-        void ICharacterAnimationView.SetReaction(CharacterAnimationSlot slot)
-        {
-            foreach (int triggerHash in _reactionTriggers.Values)
-            {
-                _animator.ResetTrigger(triggerHash);
-            }
-
-            _animator.SetTrigger(_reactionTriggers[slot]);
         }
 
         private void ValidateStateMap()
@@ -108,15 +96,6 @@ namespace ViewComponents.CharacterAnimation
             }
 
             return stateHashes;
-        }
-
-        private Dictionary<CharacterAnimationSlot, int> BuildReactionTriggers()
-        {
-            return new Dictionary<CharacterAnimationSlot, int>
-            {
-                [CharacterAnimationSlot.Happy] = _stateHashes[CharacterAnimationSlot.Happy],
-                [CharacterAnimationSlot.Sad] = _stateHashes[CharacterAnimationSlot.Sad]
-            };
         }
     }
 }
