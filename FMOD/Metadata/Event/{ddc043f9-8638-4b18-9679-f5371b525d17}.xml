@@ -12,7 +12,6 @@
 		</relationship>
 		<relationship name="tags">
 			<destination>{e0afcff9-d84c-4ca6-8771-eb126a0083fc}</destination>
-			<destination>{aae550c8-039d-4f79-99ad-81ee24a9a73d}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{8eb81e84-02b9-4ce6-bd6e-f8fb4a5909d7}</destination>
