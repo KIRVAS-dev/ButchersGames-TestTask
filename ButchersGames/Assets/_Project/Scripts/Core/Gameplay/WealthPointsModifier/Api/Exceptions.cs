@@ -10,7 +10,7 @@ namespace Core.Gameplay.WealthPointsModifier
 
     internal sealed class InvalidWealthPointsModifierTypeException : ExtendedException
     {
-        public InvalidWealthPointsModifierTypeException(WealthPointsModifierType type)
+        internal InvalidWealthPointsModifierTypeException(WealthPointsModifierType type)
             : base("wealthpointsmodifier-2", $"Unsupported WealthPointsModifierType value {type}") { }
     }
 }

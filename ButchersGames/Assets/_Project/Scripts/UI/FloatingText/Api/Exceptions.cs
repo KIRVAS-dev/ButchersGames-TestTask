@@ -4,19 +4,19 @@ namespace UI.FloatingText
 {
     internal sealed class MissingFloatingTextFieldException : ExtendedException
     {
-        public MissingFloatingTextFieldException(string fieldName, string objectName)
+        internal MissingFloatingTextFieldException(string fieldName, string objectName)
             : base("floating-text-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
 
     internal sealed class InvalidFloatingTextValueException : ExtendedException
     {
-        public InvalidFloatingTextValueException(string fieldName, float value)
+        internal InvalidFloatingTextValueException(string fieldName, float value)
             : base("floating-text-2", $"Field '{fieldName}' has invalid value '{value}'") { }
     }
 
     internal sealed class InvalidFloatingTextTimingException : ExtendedException
     {
-        public InvalidFloatingTextTimingException(
+        internal InvalidFloatingTextTimingException(
             float lifetime,
             float appearDuration,
             float disappearDuration)

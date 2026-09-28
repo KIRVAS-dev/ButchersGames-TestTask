@@ -4,7 +4,7 @@ namespace Core.Gameplay.LevelProgression
 {
     internal sealed class InvalidLevelCountException : ExtendedException
     {
-        public InvalidLevelCountException(int levelCount)
+        internal InvalidLevelCountException(int levelCount)
             : base("level-1", $"Level count from provider must be positive, got {levelCount}") { }
     }
 }

@@ -4,7 +4,7 @@ namespace ViewComponents.TransformRotators
 {
     internal sealed class MissingTransformRotatorFieldException : ExtendedException
     {
-        public MissingTransformRotatorFieldException(string fieldName, string objectName)
+        internal MissingTransformRotatorFieldException(string fieldName, string objectName)
             : base("transform-rotator-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
 }

@@ -4,13 +4,13 @@ namespace UI.LoadingScreen
 {
     internal sealed class MissingLoadingScreenFieldException : ExtendedException
     {
-        public MissingLoadingScreenFieldException(string fieldName, string objectName)
+        internal MissingLoadingScreenFieldException(string fieldName, string objectName)
             : base("loading-screen-1", $"Field '{fieldName}' is not assigned on '{objectName}'") { }
     }
 
-    internal sealed class InvalidLoadingScreenViewValueException : ExtendedException
+    internal sealed class InvalidLoadingScreenValueException : ExtendedException
     {
-        public InvalidLoadingScreenViewValueException(
+        internal InvalidLoadingScreenValueException(
             string fieldName,
             string objectName,
             int value)
@@ -19,13 +19,13 @@ namespace UI.LoadingScreen
 
     internal sealed class InvalidLoadingScreenConfigValueException : ExtendedException
     {
-        public InvalidLoadingScreenConfigValueException(string fieldName, float value)
+        internal InvalidLoadingScreenConfigValueException(string fieldName, float value)
             : base("loading-screen-3", $"Field '{fieldName}' has invalid value '{value}'") { }
     }
 
     internal sealed class InvalidLoadingScreenTextException : ExtendedException
     {
-        public InvalidLoadingScreenTextException(
+        internal InvalidLoadingScreenTextException(
             string fieldName,
             string objectName,
             int dotCount)

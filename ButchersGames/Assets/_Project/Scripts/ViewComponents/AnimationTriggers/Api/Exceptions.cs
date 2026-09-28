@@ -4,13 +4,13 @@ namespace ViewComponents.AnimationTriggers
 {
     internal sealed class MissingAnimationTriggerZoneFieldException : ExtendedException
     {
-        public MissingAnimationTriggerZoneFieldException(string fieldName, string objectName)
+        internal MissingAnimationTriggerZoneFieldException(string fieldName, string objectName)
             : base("animation-trigger-1", $"Missing field {fieldName} on {objectName}") { }
     }
 
     internal sealed class InvalidAnimationTriggerZoneColliderException : ExtendedException
     {
-        public InvalidAnimationTriggerZoneColliderException(string objectName)
+        internal InvalidAnimationTriggerZoneColliderException(string objectName)
             : base("animation-trigger-2", $"Collider on {objectName} must have isTrigger enabled") { }
     }
 }
