@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21927bc916b93de44913f9ab1d3974aa, type: 3}
+  m_Name: EnvironmentThemeConfig
+  m_EditorClassIdentifier: ViewComponents::ViewComponents.EnvironmentTheme.EnvironmentThemeConfig
+  _themes:
+  - _sky: {fileID: 2800000, guid: dd53a9ca39afa8449b0549aa63771ccd, type: 3}
+    _sea: {fileID: 2800000, guid: 432f944321fbc0e4586e10d2b3b96940, type: 3}
+    _fogColor: {r: 0.275, g: 0.953, b: 1, a: 1}
+    _ambientColor: {r: 0.66, g: 0.64, b: 0.92, a: 1}
+  - _sky: {fileID: 2800000, guid: 47ab83a76acd7024582c7ab6875bf1d6, type: 3}
+    _sea: {fileID: 2800000, guid: ed4d8bbe17d444d4ca02caf4d79cdbf6, type: 3}
+    _fogColor: {r: 0.851, g: 1, b: 1, a: 1}
+    _ambientColor: {r: 0.7, g: 0.72, b: 0.92, a: 1}
+  - _sky: {fileID: 2800000, guid: f621abc1f5b938b498705dd1c175cbf2, type: 3}
+    _sea: {fileID: 2800000, guid: 432f944321fbc0e4586e10d2b3b96940, type: 3}
+    _fogColor: {r: 1, g: 0.953, b: 0.486, a: 1}
+    _ambientColor: {r: 0.95, g: 0.72, b: 0.62, a: 1}
+  - _sky: {fileID: 2800000, guid: 74d086c1e17f398468f865a4eddf27bc, type: 3}
+    _sea: {fileID: 2800000, guid: aa28adfad81de4d4eb2b312fcf0bfd3f, type: 3}
+    _fogColor: {r: 0.976, g: 0.914, b: 1, a: 1}
+    _ambientColor: {r: 0.72, g: 0.55, b: 0.88, a: 1}
+  - _sky: {fileID: 2800000, guid: 52981312db600fd4fbed629efb4c5e14, type: 3}
+    _sea: {fileID: 2800000, guid: aa28adfad81de4d4eb2b312fcf0bfd3f, type: 3}
+    _fogColor: {r: 0.106, g: 0.067, b: 0.271, a: 1}
+    _ambientColor: {r: 0.52, g: 0.46, b: 0.78, a: 1}

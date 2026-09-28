@@ -1,20 +1,19 @@
 using Core.Gameplay.LevelProgression;
 using Core.Lifecycle;
 using ViewComponents.Common;
-using ViewComponents.Level;
 
-namespace ViewComponents.TrackColor
+namespace ViewComponents.EnvironmentTheme
 {
-    public sealed class TrackColorPresenter : ISubscriptionLifecycle
+    public sealed class EnvironmentThemePresenter : ISubscriptionLifecycle
     {
         private readonly ILevelLoaderEvents _levelLoaderEvents;
-        private readonly CurrentLevel _currentLevel;
+        private readonly IEnvironmentThemeView _view;
         private readonly NonRepeatingRandomIndex _randomIndex = new NonRepeatingRandomIndex();
 
-        public TrackColorPresenter(ILevelLoaderEvents levelLoaderEvents, CurrentLevel currentLevel)
+        public EnvironmentThemePresenter(ILevelLoaderEvents levelLoaderEvents, IEnvironmentThemeView view)
         {
             _levelLoaderEvents = levelLoaderEvents;
-            _currentLevel = currentLevel;
+            _view = view;
         }
 
         void ISubscriptionLifecycle.Start()
@@ -29,9 +28,7 @@ namespace ViewComponents.TrackColor
 
         private void OnLevelLoaded()
         {
-            ITrackColorView view = _currentLevel.TrackColorView;
-
-            view.SetColor(_randomIndex.NextIndex(view.ColorCount));
+            _view.SetTheme(_randomIndex.NextIndex(_view.ThemeCount));
         }
     }
 }

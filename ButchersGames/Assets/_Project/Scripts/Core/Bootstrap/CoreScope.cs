@@ -31,6 +31,7 @@ using ViewComponents.Audio;
 using ViewComponents.CelebrationCamera;
 using ViewComponents.CharacterAnimation;
 using ViewComponents.CharacterTurn;
+using ViewComponents.EnvironmentTheme;
 using ViewComponents.Feedback;
 using ViewComponents.Level;
 using ViewComponents.RunnerBody;
@@ -53,6 +54,7 @@ namespace Core.Bootstrap
             RegisterGameFlow(builder);
             RegisterLevel(builder);
             RegisterTrackColor(builder);
+            RegisterEnvironmentTheme(builder);
             RegisterTransformRotators(builder);
             RegisterWealthMeter(builder);
             RegisterWealthPointsModifier(builder);
@@ -171,6 +173,17 @@ namespace Core.Bootstrap
         private static void RegisterTrackColor(IContainerBuilder builder)
         {
             builder.Register<TrackColorPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+        }
+
+        private static void RegisterEnvironmentTheme(IContainerBuilder builder)
+        {
+            builder
+               .RegisterComponentInHierarchy<EnvironmentThemeView>()
+               .As<IEnvironmentThemeView>()
+               .As<IValidatable>()
+               .As<IWarmupLifecycle>();
+
+            builder.Register<EnvironmentThemePresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
         private static void RegisterWealthPointsModifier(IContainerBuilder builder)
