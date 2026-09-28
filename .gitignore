@@ -136,3 +136,7 @@ ButchersGames/[Aa]ssets/StreamingAssets/**/*.bank.meta
 ButchersGames/fmod_editor.log
 
 FMOD/.*
+
+# Play Mode Changes Saver — local state stores, recreated by the plugin
+ButchersGames/[Aa]ssets/Plugins/PlayModeChangesSaver/Scriptable_Objects/
+ButchersGames/[Aa]ssets/Plugins/PlayModeChangesSaver/Scriptable_Objects.meta
