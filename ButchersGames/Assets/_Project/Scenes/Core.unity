@@ -351,8 +351,8 @@ GameObject:
   m_Component:
   - component: {fileID: 642159710}
   m_Layer: 0
-  m_Name: '=============== '
-  m_TagString: Untagged
+  m_Name: ===============
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -755,7 +755,7 @@ GameObject:
   - component: {fileID: 927560327}
   m_Layer: 0
   m_Name: ===============
-  m_TagString: Untagged
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -843,8 +843,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1107524011}
   m_Layer: 0
-  m_Name: '=============== '
-  m_TagString: Untagged
+  m_Name: ===============
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1222,8 +1222,8 @@ MonoBehaviour:
   _anchor: {fileID: 2022428272}
   _canvas: {fileID: 1686622450}
   _container: {fileID: 1707887763}
-  _gainPrefab: {fileID: 1433980976037863138, guid: b42a3dfdd73d69749b0aa936996976cd, type: 3}
-  _lossPrefab: {fileID: 5358219964627808175, guid: 10934e2d324cbc84890ad84ae0e7ce9d, type: 3}
+  _gainPrefab: {fileID: 7820348538523442475, guid: 5a53188c621c1d44dadafe8fe4f2fc43, type: 3}
+  _lossPrefab: {fileID: 2208812303608836736, guid: 6b8eced40fe8ae44cbeb72e3ba696fce, type: 3}
   _config: {fileID: 11400000, guid: 34c77fc3ca9f11149a32cdf96504a6c4, type: 2}
 --- !u!1 &1735168857
 GameObject:
@@ -1391,8 +1391,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1979827867}
   m_Layer: 0
-  m_Name: '=============== '
-  m_TagString: Untagged
+  m_Name: ===============
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
