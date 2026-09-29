@@ -10,7 +10,8 @@ namespace UI.FloatingText
         : ScriptableObject,
           IValidatable
     {
-        [SerializeField] private float _sideOffset = 120f;
+        [SerializeField] private Vector3 _worldAnchorOffset = new Vector3(0f, 0.75f, 0f);
+        [SerializeField] private float _canvasSideOffset = 120f;
         [SerializeField] private int _prewarmCount = 8;
 
         [Header("Move")]
@@ -32,7 +33,8 @@ namespace UI.FloatingText
         [SerializeField] private float _amountChangePunchScale = 0.2f;
         [SerializeField] private float _amountChangePunchDuration = 0.1f;
 
-        public float SideOffset => _sideOffset;
+        public Vector3 WorldAnchorOffset => _worldAnchorOffset;
+        public float CanvasSideOffset => _canvasSideOffset;
         public int PrewarmCount => _prewarmCount;
 
         public float Lifetime => _lifetime;
@@ -52,7 +54,7 @@ namespace UI.FloatingText
 
         public void Validate()
         {
-            Guard.AgainstNegative(_sideOffset, () => Invalid(nameof(_sideOffset), _sideOffset));
+            Guard.AgainstNegative(_canvasSideOffset, () => Invalid(nameof(_canvasSideOffset), _canvasSideOffset));
             Guard.AgainstNegative(_prewarmCount, () => Invalid(nameof(_prewarmCount), _prewarmCount));
             Guard.AgainstNonPositive(_lifetime, () => Invalid(nameof(_lifetime), _lifetime));
             Guard.AgainstNonPositive(_riseDistance, () => Invalid(nameof(_riseDistance), _riseDistance));

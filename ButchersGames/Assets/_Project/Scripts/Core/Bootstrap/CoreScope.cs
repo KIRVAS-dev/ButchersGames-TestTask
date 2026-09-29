@@ -21,6 +21,7 @@ using Input;
 using UI.FloatingText;
 using UI.Hud;
 using UI.ResultScreen;
+using UI.RunnerOverlay;
 using UI.StartScreen;
 using UI.WealthIndicator;
 using UnityEngine;
@@ -45,6 +46,9 @@ namespace Core.Bootstrap
 {
     internal sealed class CoreScope : LifetimeScope
     {
+        [SerializeField] private Camera _worldCamera;
+        [SerializeField] private Canvas _overlayCanvas;
+        [SerializeField] private Transform _runner;
         [SerializeField] private WealthMeterConfig _wealthMeterConfig;
         [SerializeField] private RunnerMovementConfig _runnerMovementConfig;
 
@@ -254,8 +258,14 @@ namespace Core.Bootstrap
             builder.Register<AudioFeedbackPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
         }
 
-        private static void RegisterUi(IContainerBuilder builder)
+        private void RegisterUi(IContainerBuilder builder)
         {
+            Guard.AgainstNull(_worldCamera, () => Missing(nameof(_worldCamera)));
+            Guard.AgainstNull(_overlayCanvas, () => Missing(nameof(_overlayCanvas)));
+            Guard.AgainstNull(_runner, () => Missing(nameof(_runner)));
+
+            builder.RegisterInstance(new RunnerOverlayTarget(_worldCamera, _overlayCanvas, _runner)).As<IRunnerOverlayTarget>();
+
             builder
                .RegisterComponentInHierarchy<StartScreenView>()
                .As<IStartScreenView>()
@@ -283,6 +293,10 @@ namespace Core.Bootstrap
                .As<IWarmupLifecycle>();
 
             builder.Register<FloatingTextPresenter>(Lifetime.Singleton).As<ISubscriptionLifecycle>();
+
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingRunnerOverlayFieldException(fieldName, gameObject.name);
         }
     }
 }

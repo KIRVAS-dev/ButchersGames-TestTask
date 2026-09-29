@@ -12,6 +12,9 @@ namespace UI.WealthIndicator
           IValidatable
     {
         [SerializeField] private WealthStageAppearance[] _stageAppearances;
+        [SerializeField] private Vector3 _worldAnchorOffset = new Vector3(0f, 1.5f, 0f);
+
+        public Vector3 WorldAnchorOffset => _worldAnchorOffset;
 
         public WealthStageAppearance AppearanceOf(WealthStage stage)
         {

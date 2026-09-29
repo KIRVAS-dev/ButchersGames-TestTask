@@ -374,9 +374,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6a789aea7f2754d913e54d297242b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UI::UI.WealthIndicator.WealthIndicatorView
-  _worldCamera: {fileID: 0}
-  _anchor: {fileID: 0}
-  _canvas: {fileID: 0}
   _container: {fileID: 8312210407212905357}
   _root: {fileID: 7730191641744658272}
   _stageNameText: {fileID: 4393899325094918620}

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using ContentValidation;
 using Core.Lifecycle;
 using Infrastructure.ExtendedExceptions;
+using UI.RunnerOverlay;
 using UnityEngine;
 using UnityEngine.Pool;
+using VContainer;
 
 namespace UI.FloatingText
 {
@@ -14,26 +16,27 @@ namespace UI.FloatingText
           IValidatable,
           IWarmupLifecycle
     {
-        [SerializeField] private Camera _worldCamera;
-        [SerializeField] private Transform _anchor;
-        [SerializeField] private Canvas _canvas;
         [SerializeField] private RectTransform _container;
         [SerializeField] private FloatingTextPopup _gainPrefab;
         [SerializeField] private FloatingTextPopup _lossPrefab;
         [SerializeField] private FloatingTextConfig _config;
 
+        private IRunnerOverlayTarget _target;
         private FloatingTextSeries _gainSeries;
         private FloatingTextSeries _lossSeries;
 
         public event Action GainSeriesEnded;
         public event Action LossSeriesEnded;
 
+        [Inject]
+        private void Construct(IRunnerOverlayTarget target)
+        {
+            _target = target;
+        }
+
         void IValidatable.Validate()
         {
-            Guard.AgainstNull(_canvas, () => Missing(nameof(_canvas)));
             Guard.AgainstNull(_container, () => Missing(nameof(_container)));
-            Guard.AgainstNull(_worldCamera, () => Missing(nameof(_worldCamera)));
-            Guard.AgainstNull(_anchor, () => Missing(nameof(_anchor)));
             Guard.AgainstNull(_gainPrefab, () => Missing(nameof(_gainPrefab)));
             Guard.AgainstNull(_lossPrefab, () => Missing(nameof(_lossPrefab)));
             Guard.AgainstNull(_config, () => Missing(nameof(_config)));
@@ -55,8 +58,8 @@ namespace UI.FloatingText
             Prewarm(gainPool);
             Prewarm(lossPool);
 
-            _gainSeries = new FloatingTextSeries(gainPool, _config, _config.SideOffset);
-            _lossSeries = new FloatingTextSeries(lossPool, _config, -_config.SideOffset);
+            _gainSeries = new FloatingTextSeries(gainPool, _config, _config.CanvasSideOffset);
+            _lossSeries = new FloatingTextSeries(lossPool, _config, -_config.CanvasSideOffset);
 
             _gainSeries.Ended += OnGainSeriesEnded;
             _lossSeries.Ended += OnLossSeriesEnded;
@@ -109,7 +112,7 @@ namespace UI.FloatingText
 
         private Vector2 AnchorPosition()
         {
-            return CanvasPointHelper.WorldToContainerPoint(_anchor.position, _worldCamera, _canvas, _container);
+            return _target.ContainerPointOf(_config.WorldAnchorOffset, _container);
         }
     }
 }

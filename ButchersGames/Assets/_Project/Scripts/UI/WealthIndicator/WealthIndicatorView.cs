@@ -2,8 +2,10 @@ using ContentValidation;
 using Core.Gameplay.WealthMeter;
 using Infrastructure.ExtendedExceptions;
 using TMPro;
+using UI.RunnerOverlay;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
 
 namespace UI.WealthIndicator
 {
@@ -12,14 +14,19 @@ namespace UI.WealthIndicator
           IWealthIndicatorView,
           IValidatable
     {
-        [SerializeField] private Camera _worldCamera;
-        [SerializeField] private Transform _anchor;
-        [SerializeField] private Canvas _canvas;
         [SerializeField] private RectTransform _container;
         [SerializeField] private RectTransform _root;
         [SerializeField] private TextMeshProUGUI _stageNameText;
         [SerializeField] private Image _fillBarImage;
         [SerializeField] private WealthIndicatorConfig _config;
+
+        private IRunnerOverlayTarget _target;
+
+        [Inject]
+        private void Construct(IRunnerOverlayTarget target)
+        {
+            _target = target;
+        }
 
         private void OnDestroy()
         {
@@ -28,9 +35,6 @@ namespace UI.WealthIndicator
 
         void IValidatable.Validate()
         {
-            Guard.AgainstNull(_worldCamera, () => Missing(nameof(_worldCamera)));
-            Guard.AgainstNull(_anchor, () => Missing(nameof(_anchor)));
-            Guard.AgainstNull(_canvas, () => Missing(nameof(_canvas)));
             Guard.AgainstNull(_container, () => Missing(nameof(_container)));
             Guard.AgainstNull(_root, () => Missing(nameof(_root)));
             Guard.AgainstNull(_stageNameText, () => Missing(nameof(_stageNameText)));
@@ -72,7 +76,7 @@ namespace UI.WealthIndicator
 
         private void FollowAnchor()
         {
-            _root.anchoredPosition = CanvasPointHelper.WorldToContainerPoint(_anchor.position, _worldCamera, _canvas, _container);
+            _root.anchoredPosition = _target.ContainerPointOf(_config.WorldAnchorOffset, _container);
         }
     }
 }

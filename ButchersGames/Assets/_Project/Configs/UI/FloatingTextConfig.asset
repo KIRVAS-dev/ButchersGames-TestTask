@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb6a25e773f8a94dac8866ed79ed023, type: 3}
   m_Name: FloatingTextConfig
   m_EditorClassIdentifier: UI::UI.FloatingText.FloatingTextConfig
-  _sideOffset: 250
+  _worldAnchorOffset: {x: 0, y: 0.75, z: 0}
+  _canvasSideOffset: 250
   _prewarmCount: 8
   _lifetime: 0.6
   _riseDistance: 210
