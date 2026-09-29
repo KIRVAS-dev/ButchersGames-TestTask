@@ -10,8 +10,6 @@ namespace Input
         : IDragInput,
           IInputTickable
     {
-        private const float ScreenHalfFactor = 0.5f;
-
         private bool _wasPressed;
         private float _previousPointerX;
 
@@ -37,8 +35,7 @@ namespace Input
                 return;
             }
 
-            float screenHalfWidth = Screen.width * ScreenHalfFactor;
-            float normalizedDelta = (pointerX - _previousPointerX) / screenHalfWidth;
+            float normalizedDelta = (pointerX - _previousPointerX) / Screen.dpi;
 
             _previousPointerX = pointerX;
 
