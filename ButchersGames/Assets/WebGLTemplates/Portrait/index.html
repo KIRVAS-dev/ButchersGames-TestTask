@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ButchersGames-TestTask</title>
+    <title>{{{ PRODUCT_NAME }}}</title>
     <style>
         html, body {
             margin: 0;
@@ -99,7 +99,7 @@
 <body>
 <div id="stage">
     <div id="game">
-        <canvas id="unity-canvas" width=360 height=640 tabindex="-1"></canvas>
+        <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1"></canvas>
         <div id="overlay">
             <button id="play-button">Play</button>
             <div id="progress"><div id="progress-fill"></div></div>
@@ -107,7 +107,7 @@
     </div>
 </div>
 
-<script src="Build/8f567033ae0ca79b68e0cf5219d147f7.loader.js"></script>
+<script src="Build/{{{ LOADER_FILENAME }}}"></script>
 <script>
     var stage = document.querySelector("#stage");
     var canvas = document.querySelector("#unity-canvas");
@@ -128,13 +128,18 @@
 
         createUnityInstance(canvas, {
             arguments: [],
-            dataUrl: "Build/850d179d3ab4a4c410dc118e409b6f6a.data.unityweb",
-            frameworkUrl: "Build/84cfb5c5f86d2fbd8c2500aefc1f17dc.framework.js.unityweb",
-            codeUrl: "Build/8e4a437dc8da7e15f91ee5ff2dcade80.wasm.unityweb",
+            dataUrl: "Build/{{{ DATA_FILENAME }}}",
+            frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_WASM
+            codeUrl: "Build/{{{ CODE_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+            symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+#endif
             streamingAssetsUrl: "StreamingAssets",
-            companyName: "KIRVAS",
-            productName: "ButchersGames-TestTask",
-            productVersion: "0.1.0",
+            companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+            productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+            productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
         }, function (value) {
             progressFill.style.width = 100 * value + "%";
         }).then(function () {
