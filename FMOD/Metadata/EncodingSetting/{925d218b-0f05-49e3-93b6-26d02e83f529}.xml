@@ -4,6 +4,9 @@
 		<property name="encodingFormat">
 			<value>1</value>
 		</property>
+		<property name="sampleRateMode">
+			<value>2</value>
+		</property>
 		<relationship name="platform">
 			<destination>{11beb750-045b-44b0-ba21-747b26753d18}</destination>
 		</relationship>
