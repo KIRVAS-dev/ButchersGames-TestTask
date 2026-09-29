@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{{{ PRODUCT_NAME }}}</title>
     <style>
+        @font-face {
+            font-family: "LiberationSans";
+            src: url("TemplateData/LiberationSans.ttf") format("truetype");
+        }
+
         html, body {
             margin: 0;
             width: 100%;
@@ -16,7 +21,6 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
-            font-family: Arial, sans-serif;
         }
 
         #stage {
@@ -32,6 +36,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            container-type: size;
         }
 
         /* Mouse as the primary pointer (desktop): portrait column over the full height. */
@@ -47,52 +52,106 @@
             width: 100%;
             height: 100%;
             outline: none;
-            background: black;
+            background: #231F20;
         }
 
+        /* Mirrors the LoadingScreen prefab: 1080 x 1920 reference, scaled by width. */
         #overlay {
+            --unit: calc(100cqw / 1080);
+            --text-color: #A89C69;
+            --glow-color: rgb(255, 237, 153);
             position: absolute;
             inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: black;
+            background: #231F20;
+            font-family: "LiberationSans", Arial, sans-serif;
+            transition: opacity 0.35s ease-out;
+        }
+
+        #overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         #play-button {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 4px solid white;
-            padding: 30px 60px;
-            font-size: 32px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: calc(var(--unit) * 36) calc(var(--unit) * 96);
+            font-family: inherit;
+            font-size: calc(var(--unit) * 64);
+            color: var(--text-color);
+            background: transparent;
+            border: calc(var(--unit) * 6) solid var(--text-color);
+            border-radius: calc(var(--unit) * 28);
             cursor: pointer;
-            border-radius: 16px;
             transition: transform 0.2s ease, background 0.2s ease;
         }
 
         #play-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+            background: rgba(255, 237, 153, 0.12);
+            transform: translate(-50%, -50%) scale(1.05);
         }
 
         #play-button:active {
-            transform: scale(0.95);
+            transform: translate(-50%, -50%) scale(0.95);
         }
 
-        #progress {
+        #loading {
             display: none;
-            width: 60%;
-            height: 12px;
-            border: 2px solid white;
-            border-radius: 8px;
-            overflow: hidden;
         }
 
-        #progress-fill {
-            width: 0;
-            height: 100%;
-            background: white;
+        #glow {
+            position: absolute;
+            left: 50%;
+            top: calc(50% - var(--unit) * 80);
+            width: calc(var(--unit) * 700);
+            height: calc(var(--unit) * 700);
+            transform: translate(-50%, -50%);
+            background: var(--glow-color);
+            -webkit-mask: url("TemplateData/Glow.png") center / 100% 100% no-repeat;
+            mask: url("TemplateData/Glow.png") center / 100% 100% no-repeat;
+            animation: glow-pulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-pulse {
+            from {
+                opacity: 0.2;
+            }
+
+            to {
+                opacity: 0.05;
+            }
+        }
+
+        #coins {
+            position: absolute;
+            left: 50%;
+            top: calc(50% - var(--unit) * 80);
+            width: calc(var(--unit) * 420);
+            height: calc(var(--unit) * 420);
+            transform: translate(-50%, -50%);
+            object-fit: contain;
+        }
+
+        #loading-text {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: calc(var(--unit) * 800);
+            height: calc(var(--unit) * 120);
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap;
+            font-size: calc(var(--unit) * 64);
+            color: var(--text-color);
+            text-shadow: 0 calc(var(--unit) * 6) calc(var(--unit) * 3) rgba(13, 38, 89, 0.6);
+        }
+
+        .dot.hidden {
+            visibility: hidden;
         }
     </style>
 </head>
@@ -101,26 +160,47 @@
     <div id="game">
         <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1"></canvas>
         <div id="overlay">
-            <button id="play-button">Play</button>
-            <div id="progress"><div id="progress-fill"></div></div>
+            <button id="play-button">ИГРАТЬ</button>
+            <div id="loading">
+                <div id="glow"></div>
+                <img id="coins" src="TemplateData/Coins_50.png" alt="">
+                <div id="loading-text">
+                    ЗАГРУЗКА<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>&nbsp;<span id="percent">0%</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="Build/{{{ LOADER_FILENAME }}}"></script>
 <script>
+    var FrameDuration = 200;
+    var DotInterval = 350;
+    var FadeOutDuration = 350;
+    var CoinFrames = ["Coins_50", "Coins_200", "Coins_500", "Coins_1000", "Coins_5000"];
+
     var stage = document.querySelector("#stage");
     var canvas = document.querySelector("#unity-canvas");
     var overlay = document.querySelector("#overlay");
     var playButton = document.querySelector("#play-button");
-    var progress = document.querySelector("#progress");
-    var progressFill = document.querySelector("#progress-fill");
+    var loading = document.querySelector("#loading");
+    var coins = document.querySelector("#coins");
+    var dots = document.querySelectorAll(".dot");
+    var percent = document.querySelector("#percent");
     var isStarted = false;
+    var loadingTimers = [];
+
+    var coinImages = CoinFrames.map(function (name) {
+        var image = new Image();
+        image.src = "TemplateData/" + name + ".png";
+        return image;
+    });
 
     // The game starts on click so the user gesture unlocks audio (FMOD / WebAudio).
     playButton.addEventListener("click", function () {
         playButton.style.display = "none";
-        progress.style.display = "block";
+        loading.style.display = "block";
+        playLoadingAnimation();
 
         if (window.matchMedia("(pointer: coarse)").matches) {
             enterFullscreenPortrait();
@@ -141,15 +221,49 @@
             productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
             productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
         }, function (value) {
-            progressFill.style.width = 100 * value + "%";
+            percent.textContent = Math.round(100 * value) + "%";
         }).then(function () {
-            overlay.remove();
             isStarted = true;
             canvas.focus();
+            hideOverlay();
         }).catch(function (message) {
             alert(message);
         });
     });
+
+    function playLoadingAnimation() {
+        var lastFrameIndex = coinImages.length - 1;
+        var frameStep = 0;
+        var dotStep = 0;
+
+        loadingTimers.push(setInterval(function () {
+            frameStep = (frameStep + 1) % (lastFrameIndex * 2);
+            var frameIndex = frameStep <= lastFrameIndex ? frameStep : lastFrameIndex * 2 - frameStep;
+            coins.src = coinImages[frameIndex].src;
+        }, FrameDuration));
+
+        showDots(0);
+
+        loadingTimers.push(setInterval(function () {
+            dotStep = (dotStep + 1) % (dots.length + 1);
+            showDots(dotStep);
+        }, DotInterval));
+    }
+
+    function showDots(visibleCount) {
+        dots.forEach(function (dot, index) {
+            dot.classList.toggle("hidden", index >= visibleCount);
+        });
+    }
+
+    function hideOverlay() {
+        overlay.classList.add("hidden");
+
+        setTimeout(function () {
+            loadingTimers.forEach(clearInterval);
+            overlay.remove();
+        }, FadeOutDuration);
+    }
 
     function enterFullscreenPortrait() {
         var root = document.documentElement;
