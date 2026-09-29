@@ -15,4 +15,4 @@ MonoBehaviour:
   _forwardSpeed: 4.5
   _lateralRange: 3
   _lateralCorrectionSpeed: 15
-  _lateralDragSensitivity: 0.8
+  _lateralDragSensitivity: 1
