@@ -45,7 +45,7 @@ namespace ViewComponents.Level
             IWealthPointsModifier[] modifiers = level.GetComponentsInChildren<IWealthPointsModifier>();
             Obstacle[] obstacles = level.GetComponentsInChildren<Obstacle>();
             LaneBarrierZone[] barriers = level.GetComponentsInChildren<LaneBarrierZone>();
-            TransformRotator[] rotators = level.GetComponentsInChildren<TransformRotator>();
+            TransformRotatorWhileRendererVisible[] rotators = level.GetComponentsInChildren<TransformRotatorWhileRendererVisible>();
             Gate[] gates = level.GetComponentsInChildren<Gate>();
 
             TrackPath track = new TrackPath(level.SplineContainer);

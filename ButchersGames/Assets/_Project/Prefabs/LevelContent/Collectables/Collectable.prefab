@@ -227,6 +227,7 @@ MonoBehaviour:
   _targetTransform: {fileID: 3597446569889760384}
   _speed: {x: 0, y: 45, z: 0}
   _direction: 0
+  _visibilityRenderer: {fileID: 4477562497983474046}
 --- !u!1 &8317812629082319393
 GameObject:
   m_ObjectHideFlags: 0

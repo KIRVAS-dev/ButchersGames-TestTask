@@ -5,11 +5,12 @@ using UnityEngine;
 
 namespace ViewComponents.TransformRotators
 {
-    internal sealed class TransformRotator
+    internal sealed class TransformRotatorWhileRendererVisible
         : MonoBehaviour,
           ITransformRotatorView,
           IValidatable
     {
+        [SerializeField] private Renderer _visibilityRenderer;
         [SerializeField] private Transform _targetTransform;
         [SerializeField] private Vector3 _speed;
         [SerializeField] private RotationDirection _direction = RotationDirection.Clockwise;
@@ -20,15 +21,19 @@ namespace ViewComponents.TransformRotators
 
         void IValidatable.Validate()
         {
-            Guard.AgainstNull(
-                _targetTransform,
-                () => new MissingTransformRotatorFieldException(nameof(_targetTransform), gameObject.name)
-            );
+            Guard.AgainstNull(_targetTransform, () => Missing(nameof(_targetTransform)));
+            Guard.AgainstNull(_visibilityRenderer, () => Missing(nameof(_visibilityRenderer)));
+
+            return;
+
+            ExtendedException Missing(string fieldName) => new MissingTransformRotatorFieldException(fieldName, gameObject.name);
         }
 
         void ITransformRotatorView.Rotate()
         {
-            if (!isActiveAndEnabled)
+            bool canRotate = isActiveAndEnabled && _visibilityRenderer.isVisible;
+
+            if (!canRotate)
             {
                 return;
             }
