@@ -70,6 +70,7 @@ sysinfo.txt
 mono_crash.*
 
 # Builds
+/Builds/
 *.apk
 *.aab
 *.app
@@ -140,3 +141,8 @@ FMOD/.*
 # Play Mode Changes Saver — local state stores, recreated by the plugin
 ButchersGames/[Aa]ssets/Plugins/PlayModeChangesSaver/Scriptable_Objects/
 ButchersGames/[Aa]ssets/Plugins/PlayModeChangesSaver/Scriptable_Objects.meta
+
+# Player build leftovers: Burst debug info, performance test run files, Burst data
+docs/*_DoNotShip/
+ButchersGames/[Aa]ssets/Resources/PerformanceTestRun*
+ButchersGames/Data/
