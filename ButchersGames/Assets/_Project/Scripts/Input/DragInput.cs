@@ -10,6 +10,8 @@ namespace Input
         : IDragInput,
           IInputTickable
     {
+        private const float FallbackScreenDpi = 160f;
+
         private bool _wasPressed;
         private float _previousPointerX;
 
@@ -35,7 +37,11 @@ namespace Input
                 return;
             }
 
-            float normalizedDelta = (pointerX - _previousPointerX) / Screen.dpi;
+            float screenDpi = Screen.dpi > 0f
+                ? Screen.dpi
+                : FallbackScreenDpi;
+
+            float normalizedDelta = (pointerX - _previousPointerX) / screenDpi;
 
             _previousPointerX = pointerX;
 
