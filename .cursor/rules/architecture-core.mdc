@@ -1,0 +1,72 @@
+---
+description: WebGL-Template — layers, decision tree, runtime flow, dependency rules (always)
+alwaysApply: true
+---
+
+# Architecture (core)
+
+Архитектура WebGL-Template. Детали (asmdef, DI, эталон фичи, Presenter, UI) — `architecture-reference.mdc`. Index — `rules-index.mdc`. Craft — `principles.mdc`; codestyle — `codestyle.mdc`; exceptions — `exceptions.mdc`; Unity — `unity-mcp.mdc`; Rider — `rider-mcp.mdc`.
+
+## Context
+
+- Платформа: **Unity 6.5**, WebGL playable ad
+- Скрипты: `ButchersGames/Assets/_Project/Scripts/`
+- OOP, **не ECS**
+
+| Сцена | Назначение |
+|---|---|
+| **Bootstrap** | `ProjectScope`, загрузка геймплей-сцены |
+| **Core** | Gameplay: scopes фич, View, Providers |
+
+## Stack
+
+VContainer (DI), UniTask (async), R3 (реактивное связывание Model → View), DOTween/FMOD (анимации и звук во View). Unity API сверять с документацией Unity 6.5.
+
+## Слои (кратко)
+
+`ExtendedExceptions` ← `Core` ← `ViewComponents`; `Core` ← `Input` ← `Bootstrap` ← `Infrastructure.Bootstrap`; `Core` ← `Infrastructure.Persistence` ← `Bootstrap`; `UI` — экраны (View, Presenter); `Debug` — editor-only; `Rendering` изолирован (URP only). Config SO — во ViewComponents (`I*Settings` в Core). Полный asmdef-граф — `architecture-reference.mdc`.
+
+## Dependency rule
+
+| Запрещено | Почему |
+|---|---|
+| `Core` → `ViewComponents` | Core не знает сцену |
+| `Core` → `Input` | Порты ввода принадлежат Core; адаптер устройства в `Input` зависит от Core, не наоборот |
+| View вызывает `I*Service` напрямую | Обход входного адаптера |
+| Model использует `UnityEngine.*` | State должен быть pure C# |
+| View принимает gameplay-решения / меняет Model | Логика только в Service |
+
+Разрешено: `ViewComponents` → `Core` (реализует `I*View` / `I*Provider`); `Input` → `Core` (реализует `I*Input` / `IInputTickable`); Bootstrap регистрирует конкретные View в DI.
+
+Полный запрет (Presenter, `I*Performer` / `I*Loader`) — `architecture-reference.mdc`.
+
+## Decision tree
+
+```
+Пользовательский ввод? → InputHandler → I*Service (UI-экран: клик View → Presenter → I*Service)
+Gameplay state / правила? → Model + Service (Core)
+Отображение / анимация / VFX? → ViewComponents View
+Данные сцены для Core? → Provider (ViewComponents → Api)
+DI / bootstrap / load scene? → ProjectScope / CoreScope
+URP / post-effects? → Rendering
+```
+
+**Anti-patterns:** View → Service напрямую; Model с `UnityEngine.*`; бизнес-логика во View; Core → ViewComponents.
+
+## Runtime flow
+
+```
+Bootstrap (ProjectScope) → additive load Core.unity
+  → CoreScope → CoreEntryPoint.Start() (ISubscriptionLifecycle.Start → PrepareGame)
+  → gameplay (GameLoop.Tick: IInputTickable → IGameplayTickable → IPresentationTickable каждый кадр) → CoreEntryPoint.Dispose()
+```
+
+`CoreEntryPoint` — единственный стартер Core-геймплея: запускает подписки фич и сервисов, не только ввода. `GameLoop` — второй `RegisterEntryPoint` в Core-scope, но только ради `ITickable` (порядок «ввод → геймплей»), фичи он не запускает. Ключевые типы: Infrastructure `EntryPoint`, `CoreScope`, `CoreEntryPoint`, `GameLoop`, scene loader API.
+
+## Soft-checks
+
+Bad data и невалидная конфигурация → `ExtendedException` (обычно через `Guard` — `exceptions.mdc`). Запрещено: soft `return`/early-exit без throw, `LogWarning` вместо исключения, «проглотить ошибку и продолжить» в Service/Validate/Provider. UX-гейты во InputHandler (busy → игнор клика) — не soft-check.
+
+**Не предлагать:** ECS, System Groups, Event Queue, Command Bus, CQRS, Presenter на каждую геймплей-сущность. Исключение — UI-экраны (MVP) и любой View, которому иначе пришлось бы держать ссылку на `*Model`, — `architecture-reference.mdc` §«UI-экраны» и §«Model → View через Presenter».
+
+**MCP:** Unity — namespace `user-unityMCP`; Rider — namespace `user-rider`. Схема тула перед непривычным вызовом. Project `.cursor/mcp.json` не используется. Детали — `unity-mcp.mdc`, `rider-mcp.mdc`.

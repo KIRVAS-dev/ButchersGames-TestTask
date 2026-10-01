@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__unityMCP__create_script",
+      "mcp__rider__reformat_file",
+      "mcp__unityMCP__read_console"
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(unity status:*)",
+      "Bash(unity logs:*)",
+      "mcp__unityMCP__read_console",
+      "mcp__unityMCP__find_gameobjects",
+      "mcp__rider__lint_files",
+      "mcp__rider__get_file_problems",
+      "mcp__rider__get_symbol_info",
+      "mcp__rider__search_symbol",
+      "mcp__rider__search_text",
+      "mcp__rider__search_file",
+      "mcp__rider__read_file"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/remind-workflow.js",
+            "shell": "bash",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|mcp__unityMCP__create_script|mcp__unityMCP__manage_script",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/remind-cs-rules.js",
+            "shell": "bash",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__unityMCP__manage_prefabs|mcp__unityMCP__manage_asset|mcp__unityMCP__manage_gameobject|mcp__unityMCP__import_model|mcp__unityMCP__import_model_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/remind-asset-rules.js",
+            "shell": "bash",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

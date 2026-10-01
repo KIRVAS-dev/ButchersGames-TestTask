@@ -1,0 +1,39 @@
+---
+description: WebGL-Template — rules index (when each .mdc applies)
+alwaysApply: true
+---
+
+# Rules index
+
+WebGL-Template only. **Always:** approval, architecture-core, principles, review, этот index.
+
+Файлы с `globs` подгружаются, когда открыт подходящий файл. Автозагрузка при **создании** нового `.cs` не гарантирована — тогда прочитай нужные файлы перед правкой. Остальные (planning, refactor, perfmeter) — по триггеру.
+
+| Rule | Когда |
+|---|---|
+| `user-approval-mode.mdc` | Всегда (объём правок, report-only) |
+| `architecture-core.mdc` | Всегда (слои, decision tree) |
+| `architecture-reference.mdc` | Globs: `ButchersGames/Assets/_Project/Scripts/**/*.cs`; вопросы про слои/DI/эталон фичи |
+| `codestyle.mdc` | Globs: Scripts `.cs` |
+| `exceptions.mdc` | Globs: Scripts `.cs` |
+| `rider-mcp.mdc` | Globs: Scripts `.cs` (rename/format) |
+| `class-design.mdc` | Globs: Scripts `.cs` |
+| `method-design.mdc` | Globs: Scripts `.cs` |
+| `variable-design.mdc` | Globs: Scripts `.cs` |
+| `unity-mcp.mdc` | Globs: Scripts, сцена, prefab |
+| `planning.mdc` | Триггер: `grill me` / «план» / Plan mode |
+| `review.mdc` | Always (процедура); триггер Review / ревью для применения |
+| `refactor.mdc` | Не always; по триггеру — **Read** (см. ниже) |
+| `perfmeter.mdc` | Триггер: Perf / PerfMeter / «перф» |
+
+Без открытого `.cs`: прочитать `architecture-reference.mdc` или открыть файл в Scripts.
+
+## Refactor (stub)
+
+Триггер: `Refactor` / `refactor` / `refactoring` / «рефактор» / «рефакторинг» — в начале сообщения или отдельной строкой.
+
+При срабатывании:
+
+1. **Read** `.cursor/rules/refactor.mdc` целиком и следуй ему
+2. **Только отчёт** с рекомендациями; правки — по отдельному ok (`user-approval-mode.mdc`)
+3. Вне триггера — не применять
