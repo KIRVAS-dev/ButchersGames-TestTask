@@ -119,3 +119,11 @@ Journal for skill `retro`. Not loaded automatically. A candidate reaching 3 conf
 - Example: WebGL-Template Core kept a second directional light; `DebugPause` / `DebugSceneRestart` ported without `DebugTools.prefab`
 - Count: 1
 - Episodes: 2026-10-02 — WebGL-Template stage 2 review
+
+### Switch to WebGL before the player build
+- Rule: before a WebGL player build check the Editor's active build target; not WebGL → `switch_build_target` first, wait for the Editor to be ready, then build
+- Target: skills/smoke, Build
+- Why: switching inside the build run fails the build late and uses the wrong quality level
+- Example: WebGL-Template smoke — active target Windows, 21 min build failed with "Backend has requested a buildprogram run 6 times", log listed `PC_RPAsset`
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template stage 3 smoke
