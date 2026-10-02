@@ -127,3 +127,19 @@ Journal for skill `retro`. Not loaded automatically. A candidate reaching 3 conf
 - Example: WebGL-Template smoke — active target Windows, 21 min build failed with "Backend has requested a buildprogram run 6 times", log listed `PC_RPAsset`
 - Count: 1
 - Episodes: 2026-10-02 — WebGL-Template stage 3 smoke
+
+### Read the code before deciding a port
+- Rule: grill about porting / reusing code — read the code of everything in scope (dependencies, consumers) before proposing decisions, so implementation does not reopen them
+- Target: skills/planning, Close before the plan
+- Why: decisions made from file lists fall apart on implementation and come back as a question flood
+- Example: WebGL-Template Portables — modules chosen by name in the grill; their runner dependencies surfaced in stage 4 as questions 24–32
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template stage 4
+
+### Edit the generator, not its output
+- Rule: generated files — change the generator's source; hand edits to the output are lost on the next run
+- Target: CLAUDE.md, Working style
+- Why: a rerun silently overwrites manual fixes
+- Example: WebGL-Template Portables README generator rerun to refresh file lists wiped the review fixes
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template stage 4 review
