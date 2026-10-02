@@ -87,3 +87,19 @@ Journal for skill `retro`. Not loaded automatically. A candidate reaching 3 conf
 - Example: rotator gating A/B — 248 "visible" instead of 32 with the Scene view open
 - Count: 1
 - Episodes: 2026-09-30 — rotator gating measurements (twice)
+
+### Windows paths inside Python scripts
+- Rule: in Bash on Windows, paths inside a Python script (heredoc / `-c`) are `E:/…`, not `/e/…`; Git Bash converts only command arguments
+- Target: CLAUDE.md, Working style
+- Why: the script fails with `FileNotFoundError` and needs a retry
+- Example: copying CLAUDE.md into WebGL-Template — `open('/e/Unity/...')` failed
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template rule port
+
+### Purpose of an empty placeholder before removal
+- Rule: before recommending to delete an empty / unused folder or module stub, ask what it was meant for and offer "fill it" next to "delete it"
+- Target: skills/planning, Grill rules
+- Why: the user reverses the decision once the purpose comes back into view
+- Example: WebGL-Template `Portables/` — recommended deletion, user turned it into the home for optional modules
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template grill
