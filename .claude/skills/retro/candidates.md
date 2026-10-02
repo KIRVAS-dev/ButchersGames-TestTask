@@ -16,14 +16,6 @@ Journal for skill `retro`. Not loaded automatically. A candidate reaching 3 conf
 
 ## Candidates
 
-### manage_asset move false failure
-- Rule: `manage_asset move` returned an error → check the files on disk and the `.meta` GUID before retrying; the move may have succeeded
-- Target: unity-mcp.md
-- Why: a retry of a completed move can fail or duplicate work
-- Example: moving `Core/Audio` files — 4 × "MoveAsset call failed unexpectedly", all files moved with GUIDs kept
-- Count: 2
-- Episodes: 2026-09-27 — Core/Audio move out of Core; 2026-09-30 — `manage_asset rename` of `RendererVisibilitySwitch.cs` reported failure, file renamed with GUID kept
-
 ### runInBackground outside Play Mode
 - Rule: set `Application.runInBackground` only in Play Mode; outside it the setter is `PlayerSettings.runInBackground` and may be saved to `ProjectSettings.asset`
 - Target: unity-mcp.md
@@ -103,3 +95,27 @@ Journal for skill `retro`. Not loaded automatically. A candidate reaching 3 conf
 - Example: WebGL-Template `Portables/` — recommended deletion, user turned it into the home for optional modules
 - Count: 1
 - Episodes: 2026-10-02 — WebGL-Template grill
+
+### Placeholder art at native size
+- Rule: placeholder / third-party art — take an official source at native size (e.g. Unity WebGL template `TemplateData` in the Editor install); never upscale a small icon
+- Target: ui.md, Sprites
+- Why: an upscaled 128 px icon looks blurry and gets rejected
+- Example: WebGL-Template loading screen — `UnityLogoLarge` 128 px stretched to 420 px; replaced with `unity-logo-dark.png` 154×130 from the PWA template
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template loading screen
+
+### capture_game_view save_path lands in Assets
+- Rule: Pipeline `capture_game_view` `save_path` resolves under `Assets/` → capture inline (no `save_path`) or delete the file with its `.meta` and folder right away
+- Target: unity-mcp.md
+- Why: screenshots get imported into the project as assets
+- Example: `save_path` `Temp/loading.png` and `Library/loading.png` → `Assets/Temp/`, `Assets/Library/`
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template loading screen check
+
+### Align to a reference by children and hosts
+- Rule: aligning a scene / prefab to a reference — compare children and components, not only root names; porting MonoBehaviours — port the prefabs that host them too
+- Target: assets.md
+- Why: leftovers and missing hosts surface only in review
+- Example: WebGL-Template Core kept a second directional light; `DebugPause` / `DebugSceneRestart` ported without `DebugTools.prefab`
+- Count: 1
+- Episodes: 2026-10-02 — WebGL-Template stage 2 review

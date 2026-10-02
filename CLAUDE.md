@@ -80,6 +80,7 @@ On «обоснуй» / «подробно» / «расскажи подробн
 - Temporary test change on request: comment the original out, add the test code beside it, say how to revert
 - File edits — Edit / Write, not scripts; never put a destructive command in the same call as a step that may fail
 - Tool call failed / empty / needs retries → tell the user at once (what, likely cause, what is needed), no silent loops
+- User term or "fixed / agreed" item not found under that name in the rules → map it to an existing list or earlier decision (rules first, then past sessions via `search_session_transcripts`), confirm with a concrete example before writing anything new
 - Web page unreadable via WebFetch → try Tavily (extract / search) before giving up
 - URLs to open — markdown links, not backticks
 - Platform render / quality settings: the Editor-tuned PC quality level is the reference; change only what the platform cannot support, list optional optimizations separately

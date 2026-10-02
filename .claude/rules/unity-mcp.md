@@ -43,6 +43,8 @@ Do not connect the second Unity MCP server (`unity mcp`) — it duplicates Copla
 
 Never rewrite `.unity`, `.prefab`, `.asset` with a manual diff, and never guess scene or hierarchy contents without querying the Editor. Neither Coplay nor Pipeline available → stop and tell the user.
 
+Coplay / Pipeline returned an error or timeout → check the actual state (files on disk, `.meta` GUID, loaded scene) before retrying: the action may have succeeded.
+
 ## Sequences
 
 - **Inspect a scene** — `manage_scene` (active / load) → hierarchy (`page_size` ~50, paging) → find target → `manage_components` with `include_properties=false` first
